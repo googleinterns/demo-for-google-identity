@@ -45,9 +45,14 @@ public class UserServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
     @Inject
-    private Provider<UserSession> session = null;
+    private final Provider<UserSession> session;
 
     private Configuration configuration;
+
+    @Inject
+    public UserServlet(Provider<UserSession> session){
+        this.session = session;
+    }
 
     public void init() throws ServletException{
         Version version= new Version("2.3.30");

@@ -34,7 +34,12 @@ public class UserAuthenticationFilter implements Filter {
     private static final long serialVersionUID = 1L;
 
     @Inject
-    private Provider<UserSession> session = null;
+    private final Provider<UserSession> session;
+
+    @Inject
+    public UserAuthenticationFilter(Provider<UserSession> session){
+        this.session = session;
+    }
 
     public void init(FilterConfig filterConfig) throws ServletException {
 
@@ -53,8 +58,6 @@ public class UserAuthenticationFilter implements Filter {
         else{
             usersession.setOlduri(httprequest.getRequestURI());
         }
-
-      //  System.out.println(httprequest.getRequestURI());
 
         if(usersession.getUser() == null){
             httpresponse.sendRedirect("/login");

@@ -63,7 +63,8 @@ public class DefaultUserDetails implements UserDetails {
     @Override
     public String toString(){
         if( additionalInformation != null) {
-            return "username:" + username + "\tpassword:" + password + "\tauthority:" + StringUtils.join(authority) + "additionalinformation:" + additionalInformation.toString();
+            return "username:" + username + "\tpassword:" + password + "\tauthority:" + StringUtils.join(authority)
+                    + "additionalinformation:" + additionalInformation.toString();
         }
         else{
             return "username:" + username + "\tpassword:" + password + "\tauthority:" + StringUtils.join(authority);

@@ -13,6 +13,7 @@
     See the License for the specific language governing permissions and
     limitations under the License.
 */
+
 package com.google.googleidentity.config;
 
 import com.google.googleidentity.security.LoginCheckServlet;
@@ -24,10 +25,10 @@ import com.google.googleidentity.user.UserDetails;
 import com.google.inject.AbstractModule;
 import com.google.inject.servlet.ServletModule;
 
-public class OAuth2Module extends AbstractModule {
+class OAuth2Module extends AbstractModule {
     @Override
     protected void configure(){
-        install(new ServletModule(){
+        install(new ServletModule() {
             @Override
             protected void configureServlets(){
                 serve("/resource/user").with(UserServlet.class);

@@ -13,8 +13,8 @@
     See the License for the specific language governing permissions and
     limitations under the License.
 */
-package com.google.googleidentity.config;
 
+package com.google.googleidentity.config;
 
 import com.google.inject.Guice;
 import com.google.inject.Injector;

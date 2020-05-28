@@ -38,45 +38,40 @@ public class LoginServlet extends HttpServlet {
 
     private static final long serialVersionUID = 1L;
 
-    @Inject
-    private Provider<UserSession> session = null;
-
     private Configuration configuration;
 
     public void init() throws ServletException {
-        Version version= new Version("2.3.30");
+        Version version = new Version("2.3.30");
 
         configuration = new Configuration(version);
 
         configuration.setServletContextForTemplateLoading(getServletContext(), "template");
     }
 
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
 
         try {
-            LoginPage(request,  response);
-        } catch (TemplateException e) {
-            e.printStackTrace();
-        }
-
-
-    }
-
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-
-        try {
-            LoginPage(request,  response);
+            loginPage(request,  response);
         } catch (TemplateException e) {
             e.printStackTrace();
         }
 
     }
 
-    private void LoginPage(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException, TemplateException {
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
 
-        UserSession user = session.get();
+        try {
+            loginPage(request,  response);
+        } catch (TemplateException e) {
+            e.printStackTrace();
+        }
 
-        System.out.println(user.getOlduri());
+    }
+
+    private void loginPage(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException, TemplateException {
 
         Template template = configuration.getTemplate("Login.ftl");
 

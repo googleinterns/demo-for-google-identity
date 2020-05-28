@@ -36,7 +36,13 @@ public class LoginCheckServlet extends HttpServlet {
     @Inject
     private Provider<UserSession> session = null;
 
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    @Inject
+    public LoginCheckServlet(Provider<UserSession> session){
+        this.session = session;
+    }
+
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
         String username = request.getParameter("username");
         String password = request.getParameter("password");
 
@@ -47,17 +53,20 @@ public class LoginCheckServlet extends HttpServlet {
             usersession.setUser(user);
 
             if(usersession.getOlduri().equals("")){
-                response.getWriter().println("http://" + request.getServerName() + ":" + request.getServerPort() + "/resource/user");
+                response.getWriter().println("http://" + request.getServerName() + ":"
+                        + request.getServerPort() + "/resource/user");
                 response.getWriter().flush();
                 return;
             }
             else{
-                response.getWriter().println("http://" + request.getServerName() + ":" + request.getServerPort() + usersession.getOlduri());
+                response.getWriter().println("http://" + request.getServerName() + ":"
+                        + request.getServerPort() + usersession.getOlduri());
             }
 
         }
         else{
-            response.getWriter().println("http://" + request.getServerName() + ":" + request.getServerPort() + "/login");
+            response.getWriter().println("http://" + request.getServerName() + ":"
+                    + request.getServerPort() + "/login");
         }
 
     }
