@@ -16,8 +16,6 @@
 
 package com.google.googleidentity.security;
 
-import com.google.inject.Inject;
-import com.google.inject.Provider;
 import com.google.inject.Singleton;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
@@ -57,7 +55,7 @@ public final class LoginServlet extends HttpServlet {
             throws ServletException, IOException {
 
         try {
-            loginPage(request,  response);
+            loginPage(request, response);
         } catch (TemplateException e) {
             e.printStackTrace();
         }
@@ -68,7 +66,7 @@ public final class LoginServlet extends HttpServlet {
             throws ServletException, IOException {
 
         try {
-            loginPage(request,  response);
+            loginPage(request, response);
         } catch (TemplateException e) {
             e.printStackTrace();
         }

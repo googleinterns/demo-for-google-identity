@@ -13,38 +13,40 @@
     See the License for the specific language governing permissions and
     limitations under the License.
 */
-package com.google.googleidentity.user;
+
+package com.google.googleidentity.oauth2.client;
 
 import java.util.List;
 
+
 /**
- * UserDetailsService Interface.
- * Support basic user information access and modification
+ * ClientDetailsService Interface.
+ * Support basic client information access and modification
  */
 
-public interface UserDetailsService {
+public interface ClientDetailsService {
 
     /**
-     * @param username usernmae
-     * @return the user with the same username
+     * @param clientID the clientID
+     * @return the client information with the clientID
      */
-    UserDetails.User getUserByName(String username);
+    ClientDetails.Client getUserByID(String clientID);
 
     /**
-     * @param user new user information
+     * @param client new Client Information
      * @return update success or not
      */
-    boolean updateUser(UserDetails.User user);
+    boolean updateClient(ClientDetails.Client client);
 
     /**
-     * @param user new user information
+     * @param client new Client Information
      * @return add success or not
      */
-    boolean addUser(UserDetails.User user);
+    boolean addClient(ClientDetails.Client client);
 
     /**
-     * @return all users
+     * @return all clients
      */
-    List<UserDetails.User> listUser();
+    List<ClientDetails.Client> listClient();
 
 }

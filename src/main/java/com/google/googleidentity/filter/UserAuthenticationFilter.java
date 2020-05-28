@@ -21,9 +21,14 @@ import com.google.inject.Inject;
 import com.google.inject.Provider;
 import com.google.inject.Singleton;
 
-
-import javax.servlet.*;
-import javax.servlet.http.*;
+import javax.servlet.Filter;
+import javax.servlet.FilterConfig;
+import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
+import javax.servlet.FilterChain;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 /**
@@ -44,37 +49,39 @@ public final class UserAuthenticationFilter implements Filter {
     private final Provider<UserSession> session;
 
     @Inject
-    public UserAuthenticationFilter(Provider<UserSession> session){
+    public UserAuthenticationFilter(Provider<UserSession> session) {
         this.session = session;
     }
 
     public void init(FilterConfig filterConfig) throws ServletException {
 
     }
-    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
 
-        HttpServletResponse httpresponse = (HttpServletResponse) response;
+    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
+            throws IOException, ServletException {
 
-        HttpServletRequest httprequest = (HttpServletRequest) request;
+        HttpServletResponse httpResponse = (HttpServletResponse) response;
 
-        UserSession usersession = session.get();
+        HttpServletRequest httpRequest = (HttpServletRequest) request;
 
-        usersession.setOlduri(null);
+        UserSession userSession = session.get();
 
-        if(httprequest.getQueryString() != null) {
-            usersession.setOlduri(httprequest.getRequestURI() + "?" + httprequest.getQueryString());
+        userSession.setOlduri(null);
+
+        if (httpRequest.getQueryString() != null) {
+            userSession.setOlduri(httpRequest.getRequestURI() + "?" + httpRequest.getQueryString());
+        } else {
+            userSession.setOlduri(httpRequest.getRequestURI());
         }
-        else{
-            usersession.setOlduri(httprequest.getRequestURI());
-        }
 
-        if(usersession.getUser() == null){
-            httpresponse.sendRedirect("/login");
-        }
-        else{
-            chain.doFilter(request,  response);
+        if (userSession.getUser() == null) {
+            httpResponse.sendRedirect("/login");
+        } else {
+            chain.doFilter(request, response);
         }
     }
-    public void destroy() { }
+
+    public void destroy() {
+    }
 
 }

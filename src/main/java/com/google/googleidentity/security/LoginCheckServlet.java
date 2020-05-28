@@ -51,7 +51,7 @@ public final class LoginCheckServlet extends HttpServlet {
     private final UserDetailsService userDetailsService;
 
     @Inject
-    public LoginCheckServlet(Provider<UserSession> session, UserDetailsService userDetailsService){
+    public LoginCheckServlet(Provider<UserSession> session, UserDetailsService userDetailsService) {
         this.session = session;
         this.userDetailsService = userDetailsService;
     }
@@ -63,7 +63,7 @@ public final class LoginCheckServlet extends HttpServlet {
 
         response.setContentType("text/html;charset=utf-8");
 
-        if(check(username, password)) {
+        if (check(username, password)) {
             UserSession usersession = session.get();
 
             UserDetails.User user =
@@ -74,19 +74,17 @@ public final class LoginCheckServlet extends HttpServlet {
 
             usersession.setUser(user);
 
-            if(usersession.getOlduri() == null){
+            if (usersession.getOlduri() == null) {
                 response.setStatus(HttpStatusCodes.STATUS_CODE_OK);
                 response.getWriter().println("http://" + request.getServerName() + ":"
                         + request.getServerPort() + "/resource/user");
-            }
-            else{
+            } else {
                 response.setStatus(HttpStatusCodes.STATUS_CODE_OK);
                 response.getWriter().println("http://" + request.getServerName() + ":"
                         + request.getServerPort() + usersession.getOlduri());
             }
 
-        }
-        else{
+        } else {
             response.setStatus(HttpStatusCodes.STATUS_CODE_UNAUTHORIZED);
             response.getWriter().println("http://" + request.getServerName() + ":"
                     + request.getServerPort() + "/login");
@@ -97,10 +95,10 @@ public final class LoginCheckServlet extends HttpServlet {
 
     }
 
-    private boolean check(String username, String password){
+    private boolean check(String username, String password) {
         UserDetails.User user = userDetailsService.getUserByName(username);
 
-        if(user == null){
+        if (user == null) {
             return false;
         }
 

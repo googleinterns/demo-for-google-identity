@@ -16,8 +16,6 @@
 
 package com.google.googleidentity.user;
 
-import com.google.inject.Singleton;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
@@ -26,23 +24,24 @@ import java.util.concurrent.ConcurrentHashMap;
  * Default InMemory UserDetailsService for user information Store.
  */
 
-public class InMemoryUserDetailsService implements UserDetailsService{
+public class InMemoryUserDetailsService implements UserDetailsService {
 
-    private ConcurrentHashMap<String, UserDetails.User>  userStore = new ConcurrentHashMap<String, UserDetails.User>();
+    private ConcurrentHashMap<String, UserDetails.User> userStore = new ConcurrentHashMap<String, UserDetails.User>();
 
     public UserDetails.User getUserByName(String username) {
+
         return userStore.getOrDefault(username, null);
     }
 
     public boolean updateUser(UserDetails.User user) {
-        if(user == null){
+        if (user == null) {
             return false;
         }
         String username = user.getUsername();
-        if(username == null){
+        if (username == null) {
             return false;
         }
-        if(!userStore.containsKey(username)){
+        if (!userStore.containsKey(username)) {
             return false;
         }
         userStore.put(username, user);
@@ -51,14 +50,14 @@ public class InMemoryUserDetailsService implements UserDetailsService{
 
     @Override
     public boolean addUser(UserDetails.User user) {
-        if(user == null){
+        if (user == null) {
             return false;
         }
         String username = user.getUsername();
-        if(username == null){
+        if (username == null) {
             return false;
         }
-        if(userStore.containsKey(username)){
+        if (userStore.containsKey(username)) {
             return false;
         }
         userStore.put(username, user);

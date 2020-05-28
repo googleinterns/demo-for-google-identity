@@ -24,14 +24,9 @@ import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.google.inject.servlet.GuiceServletContextListener;
 
-/**
- * Start Guice Servlet, Create an Injector for Guice using {@link com.google.googleidentity.config.OAuth2Module}.
- */
-
-
 public class OAuth2GuiceServletContextListener extends GuiceServletContextListener {
     @Override
-    protected Injector getInjector(){
+    protected Injector getInjector() {
         return Guice.createInjector(new OAuth2Module());
     }
 

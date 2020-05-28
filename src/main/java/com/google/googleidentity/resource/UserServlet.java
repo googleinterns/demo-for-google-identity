@@ -21,6 +21,11 @@ import com.google.googleidentity.security.UserSession;
 import com.google.googleidentity.user.UserDetails;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
+import com.google.inject.Singleton;
+import freemarker.template.Configuration;
+import freemarker.template.Template;
+import freemarker.template.TemplateException;
+import freemarker.template.Version;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -32,12 +37,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import com.google.inject.Singleton;
-import freemarker.template.Configuration;
-import freemarker.template.Template;
-import freemarker.template.TemplateException;
-import freemarker.template.Version;
 
 
 /**
@@ -60,45 +59,44 @@ public final class UserServlet extends HttpServlet {
     private Configuration configuration;
 
     @Inject
-    public UserServlet(Provider<UserSession> session){
+    public UserServlet(Provider<UserSession> session) {
         this.session = session;
     }
 
-    public void init() throws ServletException{
+    public void init() throws ServletException {
 
-        Version version= new Version("2.3.30");
+        Version version = new Version("2.3.30");
 
         configuration = new Configuration(version);
 
         configuration.setServletContextForTemplateLoading(getServletContext(), "template");
 
-        log.setLevel(Level.WARNING);
     }
 
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
 
         try {
-            MainPage(request,  response);
+            mainPage(request, response);
         } catch (TemplateException e) {
             log.info("MainPage Error!");
-            e.printStackTrace();
-        }
-
-
-    }
-
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-
-        try {
-            MainPage(request,  response);
-        } catch (TemplateException e) {
-            log.info("MainPage Error!");
-            e.printStackTrace();
         }
 
     }
 
-    private void MainPage(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException, TemplateException {
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+
+        try {
+            mainPage(request, response);
+        } catch (TemplateException e) {
+            log.info("MainPage Error!");
+        }
+
+    }
+
+    private void mainPage(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException, TemplateException {
 
         UserSession usersession = session.get();
 

@@ -20,7 +20,6 @@ import com.google.googleidentity.user.UserDetails;
 import com.google.inject.servlet.SessionScoped;
 
 import java.io.Serializable;
-import java.util.Optional;
 
 /**
  * UserSession Object
@@ -37,30 +36,30 @@ public class UserSession implements Serializable {
 
     private String olduri = null;
 
-    public UserDetails.User getUser(){
+    public UserDetails.User getUser() {
         return user;
     }
 
-    public String getOlduri(){
+    public String getOlduri() {
         return olduri;
     }
 
-    public void setUser(UserDetails.User user){
+    public void setUser(UserDetails.User user) {
         this.user = user;
     }
 
-    public void setOlduri(String olduri){
+    public void setOlduri(String olduri) {
         this.olduri = olduri;
     }
 
     @Override
-    public String toString(){
+    public String toString() {
 
         StringBuilder sb = new StringBuilder();
-        if(user != null){
+        if (user != null) {
             sb.append("user:" + user.toString() + "\t");
         }
-        if(olduri != null) {
+        if (olduri != null) {
             sb.append("olduri:" + olduri + "\t");
         }
         return sb.toString();
