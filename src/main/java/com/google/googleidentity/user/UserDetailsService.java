@@ -13,21 +13,18 @@
     See the License for the specific language governing permissions and
     limitations under the License.
 */
-
-
 package com.google.googleidentity.user;
 
-import java.io.Serializable;
+import com.google.inject.Singleton;
 
-public interface UserDetails extends Serializable {
+import java.util.List;
 
-    String getUsername();
+@Singleton
+public interface UserDetailsService {
 
-    String getPassword();
+    UserDetails getUserById(String username);
 
-    void setPassword(String password);
+    void updateUser(UserDetails user);
 
-    void setAdditionalInformation(Object additionalInformation);
-
-    Object getAdditionalInformation();
+    List<UserDetails> listUser();
 }
