@@ -28,7 +28,7 @@ Apache header:
     See the License for the specific language governing permissions and
     limitations under the License.
 
-##Current Progress
+## Current Progress
 
 Finish Basic Login Filter using Guice-Servlet
 
@@ -39,8 +39,8 @@ The default port is 8080
 All resources under /resource is protected(currently only have /resource/user)
 
 How to runit:
-Use cloud SDK and maven:
-
+1. download ,install google cloud SDK and maven  
+2. Run it
 locally:
 mvn package appengine:run
 
