@@ -18,7 +18,6 @@ package com.google.googleidentity.resource;
 
 
 import com.google.googleidentity.security.UserSession;
-import com.google.googleidentity.user.DefaultUserDetails;
 import com.google.googleidentity.user.UserDetails;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
@@ -31,6 +30,8 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import com.google.inject.Singleton;
 import freemarker.template.Configuration;
@@ -44,6 +45,8 @@ public class UserServlet extends HttpServlet {
 
     private static final long serialVersionUID = 1L;
 
+    private static final Logger log = Logger.getLogger("UserServlet");
+
     @Inject
     private final Provider<UserSession> session;
 
@@ -55,11 +58,14 @@ public class UserServlet extends HttpServlet {
     }
 
     public void init() throws ServletException{
+
         Version version= new Version("2.3.30");
 
         configuration = new Configuration(version);
 
         configuration.setServletContextForTemplateLoading(getServletContext(), "template");
+
+        log.setLevel(Level.WARNING);
     }
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -67,6 +73,7 @@ public class UserServlet extends HttpServlet {
         try {
             MainPage(request,  response);
         } catch (TemplateException e) {
+            log.info("MainPage Error!");
             e.printStackTrace();
         }
 
@@ -78,6 +85,7 @@ public class UserServlet extends HttpServlet {
         try {
             MainPage(request,  response);
         } catch (TemplateException e) {
+            log.info("MainPage Error!");
             e.printStackTrace();
         }
 
@@ -87,7 +95,7 @@ public class UserServlet extends HttpServlet {
 
         UserSession usersession = session.get();
 
-        UserDetails user = usersession.getUser();
+        UserDetails.User user = usersession.getUser();
 
         Map<String, Object> information = new HashMap<String, Object>();
 

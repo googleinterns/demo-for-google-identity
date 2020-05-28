@@ -22,9 +22,13 @@ import java.util.List;
 @Singleton
 public interface UserDetailsService {
 
-    UserDetails getUserById(String username);
+    UserDetails.User getUserByName(String username);
 
-    void updateUser(UserDetails user);
+    boolean updateUser(UserDetails.User user);
 
-    List<UserDetails> listUser();
+    boolean addUser(UserDetails.User user);
+
+    List<UserDetails.User> listUser();
+
+
 }

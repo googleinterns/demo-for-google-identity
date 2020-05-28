@@ -16,7 +16,6 @@
 
 package com.google.googleidentity.security;
 
-import com.google.googleidentity.user.DefaultUserDetails;
 import com.google.googleidentity.user.UserDetails;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
@@ -29,7 +28,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 @Singleton
-public class LoginCheckServlet extends HttpServlet {
+public final class LoginCheckServlet extends HttpServlet {
 
     private static final long serialVersionUID = 4L;
 
@@ -49,7 +48,12 @@ public class LoginCheckServlet extends HttpServlet {
         if(check(username, password)) {
             UserSession usersession = session.get();
 
-            UserDetails user = new DefaultUserDetails(username, password, null);
+            UserDetails.User user =
+                    UserDetails.User.newBuilder()
+                            .setUsername(username)
+                            .setPassword(password)
+                            .build();
+
             usersession.setUser(user);
 
             if(usersession.getOlduri().equals("")){

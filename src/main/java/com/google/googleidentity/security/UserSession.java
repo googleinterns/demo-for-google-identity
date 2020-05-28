@@ -20,17 +20,18 @@ import com.google.googleidentity.user.UserDetails;
 import com.google.inject.servlet.SessionScoped;
 
 import java.io.Serializable;
+import java.util.Optional;
 
 @SessionScoped
 public class UserSession implements Serializable {
 
     private static final long serialVersionUID = 3L;
 
-    private UserDetails user = null;
+    private UserDetails.User user = null;
 
-    private String olduri = "";
+    private String olduri = null;
 
-    public UserDetails getUser(){
+    public UserDetails.User getUser(){
         return user;
     }
 
@@ -38,7 +39,7 @@ public class UserSession implements Serializable {
         return olduri;
     }
 
-    public void setUser(UserDetails user){
+    public void setUser(UserDetails.User user){
         this.user = user;
     }
 
@@ -46,13 +47,17 @@ public class UserSession implements Serializable {
         this.olduri = olduri;
     }
 
+    @Override
     public String toString(){
-        if(user != null) {
-            return "user:" + user.toString() + "\tolduri:" + olduri;
+
+        StringBuilder sb = new StringBuilder();
+        if(user != null){
+            sb.append("user:" + user.toString() + "\t");
         }
-        else{
-            return "olduri:" + olduri;
+        if(olduri != null) {
+            sb.append("olduri:" + olduri + "\t");
         }
+        return sb.toString();
     }
 
 

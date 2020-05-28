@@ -16,8 +16,6 @@
 
 package com.google.googleidentity.filter;
 
-
-
 import com.google.googleidentity.security.UserSession;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
@@ -29,7 +27,7 @@ import javax.servlet.http.*;
 import java.io.IOException;
 
 @Singleton
-public class UserAuthenticationFilter implements Filter {
+public final class UserAuthenticationFilter implements Filter {
 
     private static final long serialVersionUID = 1L;
 
@@ -51,6 +49,7 @@ public class UserAuthenticationFilter implements Filter {
         HttpServletRequest httprequest = (HttpServletRequest) request;
 
         UserSession usersession = session.get();
+
 
         if(httprequest.getQueryString() != null) {
             usersession.setOlduri(httprequest.getRequestURI() + "?" + httprequest.getQueryString());

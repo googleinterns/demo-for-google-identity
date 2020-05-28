@@ -34,7 +34,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Singleton
-public class LoginServlet extends HttpServlet {
+public final class LoginServlet extends HttpServlet {
 
     private static final long serialVersionUID = 1L;
 

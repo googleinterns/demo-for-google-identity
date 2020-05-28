@@ -13,6 +13,7 @@
     See the License for the specific language governing permissions and
     limitations under the License.
 */
+
 package com.google.googleidentity.user;
 
 import java.util.ArrayList;
@@ -22,27 +23,44 @@ import java.util.concurrent.ConcurrentHashMap;
 //default userdetails service
 public class InMemoryUserDetailsService implements UserDetailsService{
 
-    private ConcurrentHashMap<String, UserDetails>  userStore = new ConcurrentHashMap<String, UserDetails>();
+    private ConcurrentHashMap<String, UserDetails.User>  userStore = new ConcurrentHashMap<String, UserDetails.User>();
 
-    public UserDetails getUserById(String username) {
-        return null;
+    public UserDetails.User getUserByName(String username) {
+        return userStore.getOrDefault(username, null);
     }
 
-    public void updateUser(UserDetails user) {
+    public boolean updateUser(UserDetails.User user) {
         if(user == null){
-            throw new RuntimeException("No User!");
+            return false;
         }
         String username = user.getUsername();
         if(username == null){
-            throw new RuntimeException("No Username!");
+            return false;
         }
         if(!userStore.containsKey(username)){
-            throw new RuntimeException("No User Named" + username);
+            return false;
         }
         userStore.put(username, user);
+        return true;
     }
 
-    public List<UserDetails> listUser() {
-        return new ArrayList<UserDetails>(userStore.values());
+    @Override
+    public boolean addUser(UserDetails.User user) {
+        if(user == null){
+            return false;
+        }
+        String username = user.getUsername();
+        if(username == null){
+            return false;
+        }
+        if(userStore.containsKey(username)){
+            return false;
+        }
+        userStore.put(username, user);
+        return true;
+    }
+
+    public List<UserDetails.User> listUser() {
+        return new ArrayList<UserDetails.User>(userStore.values());
     }
 }
