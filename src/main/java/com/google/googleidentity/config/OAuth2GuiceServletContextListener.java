@@ -34,4 +34,5 @@ public class OAuth2GuiceServletContextListener extends GuiceServletContextListen
     protected Injector getInjector(){
         return Guice.createInjector(new OAuth2Module());
     }
+
 }

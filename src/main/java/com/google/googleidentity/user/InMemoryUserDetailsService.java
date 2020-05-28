@@ -16,6 +16,8 @@
 
 package com.google.googleidentity.user;
 
+import com.google.inject.Singleton;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;

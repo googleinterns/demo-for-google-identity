@@ -24,7 +24,6 @@ import java.util.List;
  * Support basic user information access and modification
  */
 
-@Singleton
 public interface UserDetailsService {
 
     UserDetails.User getUserByName(String username);
@@ -34,6 +33,5 @@ public interface UserDetailsService {
     boolean addUser(UserDetails.User user);
 
     List<UserDetails.User> listUser();
-
 
 }

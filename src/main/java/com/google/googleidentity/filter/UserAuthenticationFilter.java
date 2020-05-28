@@ -59,6 +59,7 @@ public final class UserAuthenticationFilter implements Filter {
 
         UserSession usersession = session.get();
 
+        usersession.setOlduri(null);
 
         if(httprequest.getQueryString() != null) {
             usersession.setOlduri(httprequest.getRequestURI() + "?" + httprequest.getQueryString());

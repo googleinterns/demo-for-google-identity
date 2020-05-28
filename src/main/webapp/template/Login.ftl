@@ -72,9 +72,17 @@ limitations under the License.
         var password = $("#password").val();
         password = CryptoJS.MD5(password);
         var url = '/login_check';
-        $.post(url, 'username=' + username +  '&password=' + password,
-            function(data, textStatus){
-               window.location.href = data;
+        $.ajax({
+            url : "/login_check",
+            type : "POST",
+            data : "username=" + username + "&password=" +password,
+            success : function(data){
+                window.location.href = data;
+            },
+            error : function(xhr){
+                alert("Login Failed!");
+                window.location.reload();
+            }
         });
     })
 });

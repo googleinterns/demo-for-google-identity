@@ -20,10 +20,23 @@ import com.google.googleidentity.security.LoginCheckServlet;
 import com.google.googleidentity.security.LoginServlet;
 import com.google.googleidentity.filter.UserAuthenticationFilter;
 import com.google.googleidentity.resource.UserServlet;
+import com.google.googleidentity.user.InMemoryUserDetailsService;
+import com.google.googleidentity.user.UserDetails;
+import com.google.googleidentity.user.UserDetailsService;
+import com.google.googleidentity.util.OAuth2Utils;
 import com.google.inject.AbstractModule;
+import com.google.inject.Provides;
+import com.google.inject.Singleton;
 import com.google.inject.servlet.ServletModule;
 
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.logging.Logger;
+
 class OAuth2Module extends AbstractModule {
+
+
+
     @Override
     protected void configure(){
         install(new ServletModule() {
@@ -36,5 +49,29 @@ class OAuth2Module extends AbstractModule {
                 filterRegex("/oauth2/authorize",  "/resource/.*").through(UserAuthenticationFilter.class);
             }
         });
+    }
+
+    @Provides
+    @Singleton
+    UserDetailsService getUserDetailsService(){
+        UserDetailsService userDetails = new InMemoryUserDetailsService();
+
+        UserDetails.User user =
+                UserDetails.User.newBuilder()
+                        .setUsername("user")
+                        .setPassword(OAuth2Utils.MD5("123456"))
+                        .build();
+
+        userDetails.addUser(user);
+
+        UserDetails.User user1 =
+                UserDetails.User.newBuilder()
+                        .setUsername("user1")
+                        .setPassword(OAuth2Utils.MD5("12345678"))
+                        .build();
+
+        userDetails.addUser(user1);
+
+        return userDetails;
     }
 }
