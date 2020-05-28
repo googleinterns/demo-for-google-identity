@@ -65,5 +65,4 @@ public class UserSession implements Serializable {
         return sb.toString();
     }
 
-
 }

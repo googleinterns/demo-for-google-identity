@@ -17,6 +17,8 @@
 package com.google.googleidentity.config;
 
 import com.google.googleidentity.filter.UserAuthenticationFilter;
+import com.google.googleidentity.oauth2.endpoint.AuthorizationEndpoint;
+import com.google.googleidentity.oauth2.filter.ClientAuthenticationFilter;
 import com.google.googleidentity.resource.UserServlet;
 import com.google.googleidentity.security.LoginCheckServlet;
 import com.google.googleidentity.security.LoginServlet;
@@ -31,11 +33,10 @@ import com.google.inject.servlet.ServletModule;
 
 final class OAuth2Module extends AbstractModule {
 
-    static final String testUserName0 = "user";
-    static final String testUserPassword0 = "123456";
-    static final String testUserName1 = "user1";
-    static final String getTestUserPassword1 = "12345678";
-
+    static final String TESTUSERNAME0 = "user";
+    static final String TESTUSERPASSWORD0 = "123456";
+    static final String TESTUSERNAME1 = "user1";
+    static final String TESTUSERPASSWORD1 = "12345678";
 
     @Override
     protected void configure() {
@@ -51,9 +52,13 @@ final class OAuth2Module extends AbstractModule {
                         .with(LoginServlet.class);
                 serve("/login_check")
                         .with(LoginCheckServlet.class);
+                serve("/oauth2/authorize")
+                        .with(AuthorizationEndpoint.class);
                 filterRegex("/oauth2/authorize",
                         "/resource/.*")
                         .through(UserAuthenticationFilter.class);
+                filter("/oauth2/authorize")
+                        .through(ClientAuthenticationFilter.class);
             }
         });
     }
@@ -65,16 +70,16 @@ final class OAuth2Module extends AbstractModule {
 
         UserDetails.User user =
                 UserDetails.User.newBuilder()
-                        .setUsername(testUserName0)
-                        .setPassword(GeneralUtils.MD5(testUserPassword0))
+                        .setUsername(TESTUSERNAME0)
+                        .setPassword(GeneralUtils.MD5(TESTUSERPASSWORD0))
                         .build();
 
         userDetails.addUser(user);
 
         UserDetails.User user1 =
                 UserDetails.User.newBuilder()
-                        .setUsername(testUserName1)
-                        .setPassword(GeneralUtils.MD5(getTestUserPassword1))
+                        .setUsername(TESTUSERNAME1)
+                        .setPassword(GeneralUtils.MD5(TESTUSERPASSWORD1))
                         .build();
 
         userDetails.addUser(user1);
