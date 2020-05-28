@@ -33,6 +33,11 @@ import java.io.PrintWriter;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Demo Login Servlet
+ * Just Bind the login Servlet with a freemarker template.
+ */
+
 @Singleton
 public final class LoginServlet extends HttpServlet {
 

@@ -20,7 +20,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
-//default userdetails service
+/**
+ * Default InMemory UserDetailsService for user information Store.
+ */
+
 public class InMemoryUserDetailsService implements UserDetailsService{
 
     private ConcurrentHashMap<String, UserDetails.User>  userStore = new ConcurrentHashMap<String, UserDetails.User>();

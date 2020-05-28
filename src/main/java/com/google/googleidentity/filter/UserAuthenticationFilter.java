@@ -26,6 +26,15 @@ import javax.servlet.*;
 import javax.servlet.http.*;
 import java.io.IOException;
 
+/**
+ * The filter to protect resources using username password authentication.
+ * Once A user logged in, A UserDetails.User Object {@link com.google.googleidentity.user.UserDetails} will stored
+ * in the session through class {@link com.google.googleidentity.security.UserSession}.
+ * If the object in the session is null, then the request will be blocked and redirected to login page.
+ * The original request will be stored in the session through class
+ * {@link com.google.googleidentity.security.UserSession}.
+ */
+
 @Singleton
 public final class UserAuthenticationFilter implements Filter {
 

@@ -27,6 +27,15 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
+/**
+ * Demo Login Check Servlet
+ * Check the username and password in the post request, return the redirect link.
+ * For a success login request, a UserDetails.User Object {@link com.google.googleidentity.user.UserDetails} will
+ * be stored in the session through class {@link com.google.googleidentity.security.UserSession}.
+ * The redirect link for a success request is to the original request or the default as /resource/user.
+ * The redirect link for a failed request is still the login page.
+ */
+
 @Singleton
 public final class LoginCheckServlet extends HttpServlet {
 

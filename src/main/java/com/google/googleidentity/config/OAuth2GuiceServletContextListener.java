@@ -14,11 +14,20 @@
     limitations under the License.
 */
 
+/**
+ * Start GuiceServlet, Create an Injector for Guice in OAuth2Module{@OAuth2Module}
+ */
+
 package com.google.googleidentity.config;
 
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.google.inject.servlet.GuiceServletContextListener;
+
+/**
+ * Start Guice Servlet, Create an Injector for Guice using {@link com.google.googleidentity.config.OAuth2Module}.
+ */
+
 
 public class OAuth2GuiceServletContextListener extends GuiceServletContextListener {
     @Override

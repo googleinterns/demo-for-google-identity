@@ -40,8 +40,15 @@ import freemarker.template.TemplateException;
 import freemarker.template.Version;
 
 
+/**
+ * Demo UserServlet
+ * Read UserDetails.User Object {@link com.google.googleidentity.user.UserDetails}  stored in
+ * in the session through class {@link com.google.googleidentity.security.UserSession} and
+ * display the username.
+ */
+
 @Singleton
-public class UserServlet extends HttpServlet {
+public final class UserServlet extends HttpServlet {
 
     private static final long serialVersionUID = 1L;
 

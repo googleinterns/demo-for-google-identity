@@ -19,6 +19,11 @@ import com.google.inject.Singleton;
 
 import java.util.List;
 
+/**
+ * UserDetailsService Interface.
+ * Support basic user information access and modification
+ */
+
 @Singleton
 public interface UserDetailsService {
 
