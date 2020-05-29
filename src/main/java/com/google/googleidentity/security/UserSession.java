@@ -18,6 +18,7 @@ package com.google.googleidentity.security;
 
 import com.google.googleidentity.user.UserDetails;
 import com.google.inject.servlet.SessionScoped;
+import org.apache.commons.lang3.StringUtils;
 
 import java.io.Serializable;
 
@@ -26,7 +27,6 @@ import java.io.Serializable;
  * Store a logged in user's information in {@link com.google.googleidentity.user.UserDetails} Object.
  * Store an original request that filtered by {@link com.google.googleidentity.filter.UserAuthenticationFilter}.
  */
-
 @SessionScoped
 public class UserSession implements Serializable {
 

@@ -23,9 +23,6 @@ import com.google.googleidentity.user.UserDetails;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import com.google.inject.Singleton;
-import freemarker.template.Configuration;
-import freemarker.template.TemplateException;
-import freemarker.template.Version;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -38,7 +35,6 @@ import java.util.logging.Logger;
  * Demo AuthorizationEndpoint for OAuth2 Server
  *
  */
-
 @Singleton
 public final class AuthorizationEndpoint extends HttpServlet {
 
@@ -46,10 +42,8 @@ public final class AuthorizationEndpoint extends HttpServlet {
 
     private static final Logger log = Logger.getLogger("AuthorizationCodeEndpoint");
 
-    @Inject
     private final Provider<UserSession> userSession;
 
-    @Inject
     private final Provider<ClientSession> clientSession;
 
     @Inject
@@ -58,17 +52,15 @@ public final class AuthorizationEndpoint extends HttpServlet {
         this.clientSession = clientSession;
     }
 
-    public void init() throws ServletException {
-
-    }
+    public void init() throws ServletException {}
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
+            throws ServletException, IOException, UnsupportedOperationException{
 
     }
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
+            throws ServletException, IOException, UnsupportedOperationException{
 
 
     }

@@ -17,7 +17,7 @@
 package com.google.googleidentity.oauth2.client;
 
 
-import com.google.googleidentity.user.UserDetails;
+import com.google.common.base.Preconditions;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,11 +27,10 @@ import java.util.concurrent.ConcurrentHashMap;
  * Default InMemory ClientDetailsService for client information Store
  * An Implementation for {@link ClientDetailsService}
  */
-
 public class InMemoryClientDetailsService implements ClientDetailsService{
 
     private ConcurrentHashMap<String, ClientDetails.Client> clientStore
-            = new ConcurrentHashMap<String, ClientDetails.Client>();
+            = new ConcurrentHashMap<>();
 
     @Override
     public ClientDetails.Client getUserByID(String clientID) {
@@ -40,11 +39,11 @@ public class InMemoryClientDetailsService implements ClientDetailsService{
 
     @Override
     public boolean updateClient(ClientDetails.Client client) {
-        if (client == null) {
-            return false;
-        }
+
+        Preconditions.checkNotNull(client);
+
         String clientID = client.getClientID();
-        if (clientID == null) {
+        if (clientID.isEmpty()) {
             return false;
         }
         if (!clientStore.containsKey(clientID)) {
@@ -56,11 +55,11 @@ public class InMemoryClientDetailsService implements ClientDetailsService{
 
     @Override
     public boolean addClient(ClientDetails.Client client) {
-        if (client == null) {
-            return false;
-        }
+
+        Preconditions.checkNotNull(client);
+
         String clientID = client.getClientID();
-        if (clientID == null) {
+        if (clientID.isEmpty()) {
             return false;
         }
         if (clientStore.containsKey(clientID)) {

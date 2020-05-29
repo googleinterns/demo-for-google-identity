@@ -21,12 +21,11 @@ import java.security.NoSuchAlgorithmException;
 import java.util.logging.Logger;
 
 /**
- * OAuth2 Util class
+ * General Util library
  */
-
 public final class GeneralUtils {
 
-    private static final Logger log = Logger.getLogger("OAuth2Utils");
+    private static final Logger log = Logger.getLogger("GeneralUtils");
 
     public static String toHex(byte[] bytes) {
         StringBuilder sb = new StringBuilder();

@@ -45,7 +45,6 @@ import java.util.logging.Logger;
  * in the session through class {@link com.google.googleidentity.security.UserSession} and
  * display the username.
  */
-
 @Singleton
 public final class UserServlet extends HttpServlet {
 
@@ -53,7 +52,6 @@ public final class UserServlet extends HttpServlet {
 
     private static final Logger log = Logger.getLogger("UserServlet");
 
-    @Inject
     private final Provider<UserSession> session;
 
     private Configuration configuration;
@@ -66,9 +64,7 @@ public final class UserServlet extends HttpServlet {
     public void init() throws ServletException {
 
         Version version = new Version("2.3.30");
-
         configuration = new Configuration(version);
-
         configuration.setServletContextForTemplateLoading(getServletContext(), "template");
 
     }
@@ -99,17 +95,14 @@ public final class UserServlet extends HttpServlet {
             throws ServletException, IOException, TemplateException {
 
         UserSession usersession = session.get();
-
         UserDetails.User user = usersession.getUser();
 
         Map<String, Object> information = new HashMap<String, Object>();
-
         information.put("username", user.getUsername());
 
         Template template = configuration.getTemplate("MainPage.ftl");
 
         response.setCharacterEncoding("utf-8");
-
         PrintWriter printWriter = response.getWriter();
 
         template.process(information, printWriter);

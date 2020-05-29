@@ -35,7 +35,6 @@ import java.util.Map;
  * Demo Login Servlet
  * Just Bind the login Servlet with a freemarker template.
  */
-
 @Singleton
 public final class LoginServlet extends HttpServlet {
 
@@ -77,15 +76,10 @@ public final class LoginServlet extends HttpServlet {
             throws ServletException, IOException, TemplateException {
 
         Template template = configuration.getTemplate("Login.ftl");
-
         Map<String, Object> information = new HashMap<String, Object>();
-
         response.setCharacterEncoding("utf-8");
-
         PrintWriter printWriter = response.getWriter();
-
         template.process(information, printWriter);
-
         printWriter.flush();
 
     }
