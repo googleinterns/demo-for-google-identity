@@ -21,11 +21,11 @@ import java.security.NoSuchAlgorithmException;
 import java.util.logging.Logger;
 
 /**
- * General Util class
+ * General Util library
  */
 public final class GeneralUtils {
 
-    private static final Logger log = Logger.getLogger("OAuth2Utils");
+    private static final Logger log = Logger.getLogger("GeneralUtil");
 
     /**
      *
