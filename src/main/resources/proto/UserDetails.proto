@@ -17,15 +17,15 @@ syntax = "proto3";
 option java_package = "com.google.googleidentity.user";
 option java_outer_classname = "UserDetails";
 
-//user information for a registered user
+// user information for a registered user
 message User {
 
-    //username
+    // username
     string username = 1;
 
-    //user's password
+    // user's password
     string password = 2;
 
-    //user's email
+    // user's email
     string email = 3;
 }

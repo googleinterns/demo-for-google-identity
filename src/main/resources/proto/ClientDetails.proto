@@ -17,24 +17,24 @@ syntax = "proto3";
 option java_package = "com.google.googleidentity.oauth2.client";
 option java_outer_classname = "ClientDetails";
 
-//client information for a registered client
+// client information for a registered client
 message Client {
 
-    //clientID
+    // clientID
     string clientID = 1;
 
-    //client secret
+    // client secret
     string secret = 2;
 
-    //allowed grant types
+    // allowed grant types
     repeated string grantTypes = 3;
 
-    //whether scope is limited
+    // whether scope is limited
     bool isScoped = 4;
 
-    //allowed scopes
+    // allowed scopes
     repeated string scope = 5;
 
-    //redirect uri for authorization endpoint
+    // redirect uri for authorization endpoint
     string redirectUri = 6;
 }
