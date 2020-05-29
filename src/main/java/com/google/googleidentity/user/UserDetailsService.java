@@ -47,4 +47,3 @@ public interface UserDetailsService {
     List<UserDetails.User> listUser();
 
 }
-

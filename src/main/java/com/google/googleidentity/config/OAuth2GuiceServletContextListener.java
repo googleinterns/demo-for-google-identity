@@ -30,4 +30,3 @@ public class OAuth2GuiceServletContextListener extends GuiceServletContextListen
     }
 
 }
-

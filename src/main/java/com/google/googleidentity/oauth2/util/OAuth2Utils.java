@@ -17,6 +17,11 @@
 package com.google.googleidentity.oauth2.util;
 
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
+
 /**
  * OAuth2 Util Library
  */
@@ -36,5 +41,35 @@ public class OAuth2Utils {
     public static final String RESPONSE_TYPE = "response_type";
 
     public static final String SCOPE = "scope";
-}
 
+    /**
+     *
+     * @param scope string
+     * @return parsed scope set
+     */
+    public static Set<String> parseScope(String scope){
+        if(scope == null){
+            return Collections.emptySet();
+        }
+
+        String[] scopes = scope.split("\\s+");
+
+        return new HashSet<String>(Arrays.asList(scopes));
+
+    }
+
+    /**
+     *
+     * @param allowedScopes
+     * @param requestScopes
+     * @return whether requestScopes are all in allowedScopes
+     */
+    public static boolean checkScope(Set<String> allowedScopes, Set<String> requestScopes){
+        for(String scope : requestScopes){
+            if(!allowedScopes.contains(scope)){
+                return false;
+            }
+        }
+        return true;
+    }
+}

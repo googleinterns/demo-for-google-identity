@@ -70,4 +70,3 @@ public class InMemoryUserDetailsService implements UserDetailsService {
         return new ArrayList<UserDetails.User>(userStore.values());
     }
 }
-

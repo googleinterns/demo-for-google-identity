@@ -48,4 +48,3 @@ public interface ClientDetailsService {
     List<ClientDetails.Client> listClient();
 
 }
-

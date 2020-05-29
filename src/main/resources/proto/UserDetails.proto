@@ -29,4 +29,3 @@ message User {
     //user's email
     string email = 3;
 }
-

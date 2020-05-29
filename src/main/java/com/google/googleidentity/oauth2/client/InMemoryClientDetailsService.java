@@ -74,4 +74,3 @@ public class InMemoryClientDetailsService implements ClientDetailsService{
         return new ArrayList<ClientDetails.Client>(clientStore.values());
     }
 }
-

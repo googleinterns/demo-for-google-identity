@@ -68,4 +68,3 @@ public final class AuthorizationEndpoint extends HttpServlet {
 
 }
 
-
