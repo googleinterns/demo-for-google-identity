@@ -24,8 +24,10 @@ import java.io.Serializable;
 
 /**
  * UserSession Object
- * Store a logged in user's information in {@link com.google.googleidentity.user.UserDetails} Object.
- * Store an original request that filtered by {@link com.google.googleidentity.filter.UserAuthenticationFilter}.
+ * Store a logged in user's information in
+ * {@link com.google.googleidentity.user.UserDetails} Object.
+ * Store an original request that filtered by
+ * {@link com.google.googleidentity.filter.UserAuthenticationFilter}.
  */
 @SessionScoped
 public class UserSession implements Serializable {

@@ -71,7 +71,7 @@ final class OAuth2Module extends AbstractModule {
         UserDetails.User user =
                 UserDetails.User.newBuilder()
                         .setUsername(TESTUSERNAME0)
-                        .setPassword(GeneralUtils.MD5(TESTUSERPASSWORD0))
+                        .setPassword(GeneralUtils.toHex(GeneralUtils.MD5(TESTUSERPASSWORD0)))
                         .build();
 
         userDetails.addUser(user);
@@ -79,7 +79,7 @@ final class OAuth2Module extends AbstractModule {
         UserDetails.User user1 =
                 UserDetails.User.newBuilder()
                         .setUsername(TESTUSERNAME1)
-                        .setPassword(GeneralUtils.MD5(TESTUSERPASSWORD1))
+                        .setPassword(GeneralUtils.toHex(GeneralUtils.MD5(TESTUSERPASSWORD1)))
                         .build();
 
         userDetails.addUser(user1);

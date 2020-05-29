@@ -47,7 +47,8 @@ public final class AuthorizationEndpoint extends HttpServlet {
     private final Provider<ClientSession> clientSession;
 
     @Inject
-    public AuthorizationEndpoint(Provider<UserSession> userSession, Provider<ClientSession> clientSession) {
+    public AuthorizationEndpoint(Provider<UserSession> userSession,
+                                 Provider<ClientSession> clientSession) {
         this.userSession = userSession;
         this.clientSession = clientSession;
     }

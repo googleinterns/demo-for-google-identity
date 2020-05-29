@@ -20,7 +20,7 @@ limitations under the License.
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Login</title>
-    <link rel='stylesheet' href='../css/bootstrap/bootstrap.min.css' >
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
     <style>
             .container{
                 display:table;
@@ -63,8 +63,8 @@ limitations under the License.
     </div>
 </div>
 </body>
-<script type="text/javascript" src="../js/jquery-3.5.1.min.js";></script>
-<script type='text/javascript' src='../js/CryptoJS/rollups/md5.js'></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.2/rollups/md5.js"></script>
 <script type="text/javascript" >
     $(function(){
     $("#login").click(function(){

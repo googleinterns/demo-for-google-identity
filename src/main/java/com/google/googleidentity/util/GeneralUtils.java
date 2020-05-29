@@ -21,12 +21,17 @@ import java.security.NoSuchAlgorithmException;
 import java.util.logging.Logger;
 
 /**
- * General Util library
+ * General Util class
  */
 public final class GeneralUtils {
 
-    private static final Logger log = Logger.getLogger("GeneralUtils");
+    private static final Logger log = Logger.getLogger("OAuth2Utils");
 
+    /**
+     *
+     * @param bytes
+     * @return hex string of the bytes
+     */
     public static String toHex(byte[] bytes) {
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < bytes.length; i++) {
@@ -39,7 +44,12 @@ public final class GeneralUtils {
         return sb.toString();
     }
 
-    public static String MD5(String password) {
+    /**
+     *
+     * @param password
+     * @return md5 bytes of the password
+     */
+    public static byte[] MD5(String password) {
         MessageDigest md5 = null;
 
         try {
@@ -51,6 +61,6 @@ public final class GeneralUtils {
 
         md5.update(password.getBytes());
 
-        return toHex(md5.digest());
+        return md5.digest();
     }
 }

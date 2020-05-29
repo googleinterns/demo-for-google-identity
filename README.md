@@ -41,7 +41,9 @@ user1 		12345678
 
 The project can be reached at
 
-http://gal-2020-summer-intern.appspot.com/
+http://gal-2020-summer-intern.appspot.com/login
+
+http://gal-2020-summer-intern.appspot.com/resource/user
 
 All resources under /resource is protected(currently only have /resource/user)
 
