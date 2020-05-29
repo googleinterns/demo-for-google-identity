@@ -37,3 +37,4 @@ public class OAuth2Utils {
 
     public static final String SCOPE = "scope";
 }
+

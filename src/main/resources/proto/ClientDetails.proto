@@ -38,3 +38,4 @@ message Client {
     //redirect uri for authorization endpoint
     string redirectUri = 6;
 }
+

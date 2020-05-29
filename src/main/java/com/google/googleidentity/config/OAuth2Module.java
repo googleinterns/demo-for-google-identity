@@ -87,3 +87,4 @@ final class OAuth2Module extends AbstractModule {
         return userDetails;
     }
 }
+

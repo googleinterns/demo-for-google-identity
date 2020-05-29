@@ -54,9 +54,12 @@ How to run it:
 locally:
 mvn package appengine:run
 
-reach localhost:8080/
+reach localhost:8080/login
+
+localhost:8080/resource/user
 
 app engine:
 mvn package appengine:deploy 
 
 reach your appengine website
+

@@ -40,3 +40,4 @@ public class ClientAuthenticationFilter implements Filter {
     @Override
     public void destroy() {}
 }
+
