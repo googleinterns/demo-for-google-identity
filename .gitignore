@@ -1,2 +1,6 @@
 /.idea/
 /target/
+/main/java/com/google/googleidentity/oauth2/client/ClientDetails.java
+/main/java/com/google/googleidentity/user/UserDetails.java
+*OrBuilder.java
+*OrOuterClass.java
