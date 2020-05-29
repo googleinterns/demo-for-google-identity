@@ -16,6 +16,10 @@
 
 package com.google.googleidentity.oauth2.util;
 
+
+/**
+ * OAuth2 Util Library
+ */
 public class OAuth2Utils {
     /**
      *  Constants in OAuth2 Request

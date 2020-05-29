@@ -21,7 +21,6 @@ import java.util.List;
  * UserDetailsService Interface.
  * Support basic user information access and modification
  */
-
 public interface UserDetailsService {
 
     /**

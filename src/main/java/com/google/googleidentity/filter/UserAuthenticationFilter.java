@@ -20,6 +20,7 @@ import com.google.googleidentity.security.UserSession;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import com.google.inject.Singleton;
+import jdk.internal.jline.internal.Preconditions;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterConfig;
@@ -30,22 +31,23 @@ import javax.servlet.FilterChain;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.io.PrintWriter;
 
 /**
  * The filter to protect resources using username password authentication.
- * Once A user logged in, A UserDetails.User Object {@link com.google.googleidentity.user.UserDetails} will stored
+ * Once A user logged in, A UserDetails.User Object
+ * {@link com.google.googleidentity.user.UserDetails} will stored
  * in the session through class {@link com.google.googleidentity.security.UserSession}.
- * If the object in the session is null, then the request will be blocked and redirected to login page.
+ * If the object in the session is null, then the request will be blocked and
+ * redirected to login page.
  * The original request will be stored in the session through class
  * {@link com.google.googleidentity.security.UserSession}.
  */
-
 @Singleton
 public final class UserAuthenticationFilter implements Filter {
 
     private static final long serialVersionUID = 1L;
 
-    @Inject
     private final Provider<UserSession> session;
 
     @Inject
@@ -53,23 +55,20 @@ public final class UserAuthenticationFilter implements Filter {
         this.session = session;
     }
 
-    public void init(FilterConfig filterConfig) throws ServletException {
-
-    }
+    public void init(FilterConfig filterConfig) throws ServletException {}
 
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
             throws IOException, ServletException {
 
         HttpServletResponse httpResponse = (HttpServletResponse) response;
-
         HttpServletRequest httpRequest = (HttpServletRequest) request;
 
         UserSession userSession = session.get();
-
         userSession.setOlduri(null);
 
         if (httpRequest.getQueryString() != null) {
-            userSession.setOlduri(httpRequest.getRequestURI() + "?" + httpRequest.getQueryString());
+            userSession.setOlduri(httpRequest.getRequestURI() + "?"
+                    + httpRequest.getQueryString());
         } else {
             userSession.setOlduri(httpRequest.getRequestURI());
         }

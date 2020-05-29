@@ -23,7 +23,6 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * Default InMemory UserDetailsService for user information Store.
  */
-
 public class InMemoryUserDetailsService implements UserDetailsService {
 
     private ConcurrentHashMap<String, UserDetails.User> userStore = new ConcurrentHashMap<String, UserDetails.User>();

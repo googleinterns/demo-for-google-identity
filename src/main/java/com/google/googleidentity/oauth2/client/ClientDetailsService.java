@@ -18,12 +18,10 @@ package com.google.googleidentity.oauth2.client;
 
 import java.util.List;
 
-
 /**
  * ClientDetailsService Interface.
  * Support basic client information access and modification
  */
-
 public interface ClientDetailsService {
 
     /**

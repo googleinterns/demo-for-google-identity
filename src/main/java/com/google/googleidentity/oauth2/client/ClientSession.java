@@ -26,7 +26,6 @@ import java.io.Serializable;
  * Store client information for a client pass filter
  *
  */
-
 @SessionScoped
 public class ClientSession implements Serializable {
 
