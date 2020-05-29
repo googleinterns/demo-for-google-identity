@@ -49,7 +49,7 @@ public class OAuth2Utils {
      */
     public static Set<String> parseScope(String scope){
         if(scope == null){
-            return Collections.emptySet();
+            return new HashSet<String>();
         }
 
         String[] scopes = scope.split("\\s+");
