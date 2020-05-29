@@ -33,7 +33,7 @@ public class InMemoryClientDetailsService implements ClientDetailsService{
             = new ConcurrentHashMap<>();
 
     @Override
-    public ClientDetails.Client getUserByID(String clientID) {
+    public ClientDetails.Client getClientByID(String clientID) {
         return clientStore.getOrDefault(clientID, null);
     }
 

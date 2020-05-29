@@ -28,7 +28,7 @@ public interface ClientDetailsService {
      * @param clientID the clientID
      * @return the client information with the clientID
      */
-    ClientDetails.Client getUserByID(String clientID);
+    ClientDetails.Client getClientByID(String clientID);
 
     /**
      * @param client new Client Information

@@ -16,6 +16,8 @@
 
 package com.google.googleidentity.user;
 
+import com.google.common.base.Preconditions;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
@@ -25,7 +27,8 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class InMemoryUserDetailsService implements UserDetailsService {
 
-    private ConcurrentHashMap<String, UserDetails.User> userStore = new ConcurrentHashMap<String, UserDetails.User>();
+    private ConcurrentHashMap<String, UserDetails.User> userStore
+            = new ConcurrentHashMap<>();
 
     public UserDetails.User getUserByName(String username) {
 
@@ -33,9 +36,9 @@ public class InMemoryUserDetailsService implements UserDetailsService {
     }
 
     public boolean updateUser(UserDetails.User user) {
-        if (user == null) {
-            return false;
-        }
+
+        Preconditions.checkNotNull(user);
+
         String username = user.getUsername();
         if (username == null) {
             return false;
@@ -49,9 +52,9 @@ public class InMemoryUserDetailsService implements UserDetailsService {
 
     @Override
     public boolean addUser(UserDetails.User user) {
-        if (user == null) {
-            return false;
-        }
+
+        Preconditions.checkNotNull(user);
+
         String username = user.getUsername();
         if (username == null) {
             return false;
