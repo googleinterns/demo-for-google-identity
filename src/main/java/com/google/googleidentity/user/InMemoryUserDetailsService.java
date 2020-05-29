@@ -27,15 +27,15 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class InMemoryUserDetailsService implements UserDetailsService {
 
-    private ConcurrentHashMap<String, UserDetails.User> userStore
+    private ConcurrentHashMap<String, UserDetails> userStore
             = new ConcurrentHashMap<>();
 
-    public UserDetails.User getUserByName(String username) {
+    public UserDetails getUserByName(String username) {
 
         return userStore.getOrDefault(username, null);
     }
 
-    public boolean updateUser(UserDetails.User user) {
+    public boolean updateUser(UserDetails user) {
 
         Preconditions.checkNotNull(user);
 
@@ -51,7 +51,7 @@ public class InMemoryUserDetailsService implements UserDetailsService {
     }
 
     @Override
-    public boolean addUser(UserDetails.User user) {
+    public boolean addUser(UserDetails user) {
 
         Preconditions.checkNotNull(user);
 
@@ -66,7 +66,7 @@ public class InMemoryUserDetailsService implements UserDetailsService {
         return true;
     }
 
-    public List<UserDetails.User> listUser() {
-        return new ArrayList<UserDetails.User>(userStore.values());
+    public List<UserDetails> listUser() {
+        return new ArrayList<UserDetails>(userStore.values());
     }
 }

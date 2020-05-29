@@ -30,13 +30,13 @@ public class ClientSession implements Serializable {
 
     private static final long serialVersionUID = 6L;
 
-    private ClientDetails.Client client = null;
+    private ClientDetails client = null;
 
-    public ClientDetails.Client getClient() {
+    public ClientDetails getClient() {
         return client;
     }
 
-    public void setClient(ClientDetails.Client client) {
+    public void setClient(ClientDetails client) {
         this.client = client;
     }
 

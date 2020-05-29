@@ -16,6 +16,9 @@
 
 package com.google.googleidentity.config;
 
+import com.google.common.base.Charsets;
+import com.google.common.hash.HashFunction;
+import com.google.common.hash.Hashing;
 import com.google.googleidentity.filter.UserAuthenticationFilter;
 import com.google.googleidentity.oauth2.endpoint.AuthorizationEndpoint;
 import com.google.googleidentity.oauth2.filter.ClientAuthenticationFilter;
@@ -25,36 +28,38 @@ import com.google.googleidentity.security.LoginServlet;
 import com.google.googleidentity.user.InMemoryUserDetailsService;
 import com.google.googleidentity.user.UserDetails;
 import com.google.googleidentity.user.UserDetailsService;
-import com.google.googleidentity.util.GeneralUtils;
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 import com.google.inject.Singleton;
 import com.google.inject.servlet.ServletModule;
+import sun.nio.cs.UTF_8;
 
 final class OAuth2Module extends AbstractModule {
 
-    static final String TESTUSERNAME0 = "user";
-    static final String TESTUSERPASSWORD0 = "123456";
-    static final String TESTUSERNAME1 = "user1";
-    static final String TESTUSERPASSWORD1 = "12345678";
+    private static final String TESTUSERNAME0 = "user";
+    private static final String TESTUSERPASSWORD0 = "123456";
+    private static final String TESTUSERNAME1 = "user1";
+    private static final String TESTUSERPASSWORD1 = "12345678";
 
     @Override
     protected void configure() {
         install(new ServletModule() {
             @Override
             protected void configureServlets() {
-                serve("/resource/user",
+                serve(
+                        "/resource/user",
                         "resource/user;jsessionid.*")
                         .with(UserServlet.class);
-                // Support urlRewrite(with jsessionid)
-                serveRegex("/login",
+                serveRegex(
+                        "/login",
                         "/login;jsessionid.*")
                         .with(LoginServlet.class);
                 serve("/login_check")
                         .with(LoginCheckServlet.class);
                 serve("/oauth2/authorize")
                         .with(AuthorizationEndpoint.class);
-                filterRegex("/oauth2/authorize",
+                filterRegex(
+                        "/oauth2/authorize",
                         "/resource/.*")
                         .through(UserAuthenticationFilter.class);
                 filter("/oauth2/authorize")
@@ -68,18 +73,22 @@ final class OAuth2Module extends AbstractModule {
     UserDetailsService getUserDetailsService() {
         UserDetailsService userDetails = new InMemoryUserDetailsService();
 
-        UserDetails.User user =
-                UserDetails.User.newBuilder()
+
+
+        UserDetails user =
+                UserDetails.newBuilder()
                         .setUsername(TESTUSERNAME0)
-                        .setPassword(GeneralUtils.toHex(GeneralUtils.MD5(TESTUSERPASSWORD0)))
+                        .setPassword(Hashing.sha256()
+                                .hashString(TESTUSERPASSWORD0, Charsets.UTF_8).toString())
                         .build();
 
         userDetails.addUser(user);
 
-        UserDetails.User user1 =
-                UserDetails.User.newBuilder()
+        UserDetails user1 =
+                UserDetails.newBuilder()
                         .setUsername(TESTUSERNAME1)
-                        .setPassword(GeneralUtils.toHex(GeneralUtils.MD5(TESTUSERPASSWORD1)))
+                        .setPassword(Hashing.sha256()
+                                .hashString(TESTUSERPASSWORD1, Charsets.UTF_8).toString())
                         .build();
 
         userDetails.addUser(user1);

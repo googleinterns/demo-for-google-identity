@@ -67,8 +67,8 @@ public final class LoginCheckServlet extends HttpServlet {
         if (check(username, password)) {
             UserSession usersession = session.get();
 
-            UserDetails.User user =
-                    UserDetails.User.newBuilder()
+            UserDetails user =
+                    UserDetails.newBuilder()
                             .setUsername(username)
                             .setPassword(password)
                             .build();
@@ -97,7 +97,7 @@ public final class LoginCheckServlet extends HttpServlet {
     }
 
     private boolean check(String username, String password) {
-        UserDetails.User user = userDetailsService.getUserByName(username);
+        UserDetails user = userDetailsService.getUserByName(username);
 
         if (user == null) {
             return false;

@@ -95,7 +95,7 @@ public final class UserServlet extends HttpServlet {
             throws ServletException, IOException, TemplateException {
 
         UserSession userSession = session.get();
-        UserDetails.User user = userSession.getUser();
+        UserDetails user = userSession.getUser();
 
         Map<String, Object> information = new HashMap<String, Object>();
         information.put("username", user.getUsername());

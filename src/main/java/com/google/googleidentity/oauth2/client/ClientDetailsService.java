@@ -28,23 +28,23 @@ public interface ClientDetailsService {
      * @param clientID the clientID
      * @return the client information with the clientID
      */
-    ClientDetails.Client getClientByID(String clientID);
+    ClientDetails getClientByID(String clientID);
 
     /**
      * @param client new Client Information
      * @return update success or not
      */
-    boolean updateClient(ClientDetails.Client client);
+    boolean updateClient(ClientDetails client);
 
     /**
      * @param client new Client Information
      * @return add success or not
      */
-    boolean addClient(ClientDetails.Client client);
+    boolean addClient(ClientDetails client);
 
     /**
      * @return all clients
      */
-    List<ClientDetails.Client> listClient();
+    List<ClientDetails> listClient();
 
 }

@@ -24,26 +24,31 @@ import java.util.List;
 public interface UserDetailsService {
 
     /**
-     * @param username usernmae
+     * @param username
      * @return the user with the same username
      */
-    UserDetails.User getUserByName(String username);
+    UserDetails getUserByName(String username);
 
     /**
-     * @param user new user information
+     * Update the user with the same username,
+     * if the user does not exist, it will fail
+     *
+     * @param user
      * @return update success or not
      */
-    boolean updateUser(UserDetails.User user);
+    boolean updateUser(UserDetails user);
 
     /**
-     * @param user new user information
+     * Add user, if a user with same name exists, it will fail
+     *
+     * @param user
      * @return add success or not
      */
-    boolean addUser(UserDetails.User user);
+    boolean addUser(UserDetails user);
 
     /**
      * @return all users
      */
-    List<UserDetails.User> listUser();
+    List<UserDetails> listUser();
 
 }

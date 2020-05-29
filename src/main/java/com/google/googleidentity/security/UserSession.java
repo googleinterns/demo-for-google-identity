@@ -34,11 +34,11 @@ public class UserSession implements Serializable {
 
     private static final long serialVersionUID = 3L;
 
-    private UserDetails.User user = null;
+    private UserDetails user = null;
 
     private String olduri = null;
 
-    public UserDetails.User getUser() {
+    public UserDetails getUser() {
         return user;
     }
 
@@ -46,7 +46,7 @@ public class UserSession implements Serializable {
         return olduri;
     }
 
-    public void setUser(UserDetails.User user) {
+    public void setUser(UserDetails user) {
         this.user = user;
     }
 

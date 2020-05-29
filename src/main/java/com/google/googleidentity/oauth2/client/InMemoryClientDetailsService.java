@@ -29,20 +29,20 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class InMemoryClientDetailsService implements ClientDetailsService{
 
-    private ConcurrentHashMap<String, ClientDetails.Client> clientStore
+    private ConcurrentHashMap<String, ClientDetails> clientStore
             = new ConcurrentHashMap<>();
 
     @Override
-    public ClientDetails.Client getClientByID(String clientID) {
+    public ClientDetails getClientByID(String clientID) {
         return clientStore.getOrDefault(clientID, null);
     }
 
     @Override
-    public boolean updateClient(ClientDetails.Client client) {
+    public boolean updateClient(ClientDetails client) {
 
         Preconditions.checkNotNull(client);
 
-        String clientID = client.getClientID();
+        String clientID = client.getClientId();
         if (clientID.isEmpty()) {
             return false;
         }
@@ -54,11 +54,11 @@ public class InMemoryClientDetailsService implements ClientDetailsService{
     }
 
     @Override
-    public boolean addClient(ClientDetails.Client client) {
+    public boolean addClient(ClientDetails client) {
 
         Preconditions.checkNotNull(client);
 
-        String clientID = client.getClientID();
+        String clientID = client.getClientId();
         if (clientID.isEmpty()) {
             return false;
         }
@@ -70,7 +70,7 @@ public class InMemoryClientDetailsService implements ClientDetailsService{
     }
 
     @Override
-    public List<ClientDetails.Client> listClient() {
-        return new ArrayList<ClientDetails.Client>(clientStore.values());
+    public List<ClientDetails> listClient() {
+        return new ArrayList<ClientDetails>(clientStore.values());
     }
 }

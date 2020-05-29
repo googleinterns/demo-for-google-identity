@@ -64,13 +64,13 @@ limitations under the License.
 </div>
 </body>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.2/rollups/md5.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.2/rollups/sha256.js"></script>
 <script type="text/javascript" >
     $(function(){
     $("#login").click(function(){
         var username = $("#username").val();
         var password = $("#password").val();
-        password = CryptoJS.MD5(password);
+        password = CryptoJS.SHA256(password);
         var url = '/login_check';
         $.ajax({
             url : "/login_check",

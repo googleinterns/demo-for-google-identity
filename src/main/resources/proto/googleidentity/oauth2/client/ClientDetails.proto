@@ -14,27 +14,27 @@
 
 syntax = "proto3";
 
+package googleidentity.oauth2.client;
+
 option java_package = "com.google.googleidentity.oauth2.client";
-option java_outer_classname = "ClientDetails";
+option java_multiple_files = true;
 
-// Client information for a registered client
-message Client {
+// Metadata about an OAuth client registered with this server.
+message ClientDetails {
 
-    // ClientID
-    string clientID = 1;
+    string client_id = 1;
 
-    // Client secret
     string secret = 2;
 
-    // Allowed grant types
-    repeated string grantTypes = 3;
+    // The OAuth 2.0 grant types that are permitted by this client.
+    repeated string grant_types = 3;
 
-    // Whether scope is limited
-    bool isScoped = 4;
+    // Whether scopes for this client is limited
+    bool is_scoped = 4;
 
-    // Allowed scopes
+    // The OAuth 2.0 scopes that are permitted by this client.
     repeated string scope = 5;
 
     // Redirect uri for authorization endpoint
-    string redirectUri = 6;
+    string redirect_uri = 6;
 }
