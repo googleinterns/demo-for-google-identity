@@ -46,7 +46,7 @@ final class OAuth2Module extends AbstractModule {
                 serve("/resource/user",
                         "resource/user;jsessionid.*")
                         .with(UserServlet.class);
-                //support urlRewrite(with jsessionid)
+                // Support urlRewrite(with jsessionid)
                 serveRegex("/login",
                         "/login;jsessionid.*")
                         .with(LoginServlet.class);

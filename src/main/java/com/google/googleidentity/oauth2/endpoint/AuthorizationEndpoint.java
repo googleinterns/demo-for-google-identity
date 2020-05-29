@@ -33,7 +33,6 @@ import java.util.logging.Logger;
 
 /**
  * Demo AuthorizationEndpoint for OAuth2 Server
- *
  */
 @Singleton
 public final class AuthorizationEndpoint extends HttpServlet {
