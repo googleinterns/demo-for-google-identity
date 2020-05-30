@@ -16,11 +16,10 @@
 
 package com.google.googleidentity.oauth2.client;
 
-
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
+import com.google.inject.Singleton;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
@@ -29,6 +28,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * Default InMemory ClientDetailsService for client information Store
  * An Implementation for {@link ClientDetailsService}
  */
+@Singleton
 public final class InMemoryClientDetailsService implements ClientDetailsService{
 
     private ConcurrentHashMap<String, ClientDetails> clientStore

@@ -16,30 +16,21 @@
 
 package com.google.googleidentity.config;
 
-import com.google.common.base.Charsets;
-import com.google.common.hash.HashFunction;
-import com.google.common.hash.Hashing;
+
 import com.google.googleidentity.filter.UserAuthenticationFilter;
 import com.google.googleidentity.oauth2.endpoint.AuthorizationEndpoint;
 import com.google.googleidentity.oauth2.filter.ClientAuthenticationFilter;
 import com.google.googleidentity.resource.UserServlet;
 import com.google.googleidentity.security.LoginCheckServlet;
 import com.google.googleidentity.security.LoginServlet;
-import com.google.googleidentity.user.InMemoryUserDetailsService;
-import com.google.googleidentity.user.UserDetails;
+import com.google.googleidentity.test.TestInMemoryUserDetailsServiceProvider;
 import com.google.googleidentity.user.UserDetailsService;
+import com.google.googleidentity.user.UserModule;
 import com.google.inject.AbstractModule;
-import com.google.inject.Provides;
-import com.google.inject.Singleton;
 import com.google.inject.servlet.ServletModule;
-import sun.nio.cs.UTF_8;
+
 
 final class OAuth2Module extends AbstractModule {
-
-    private static final String TESTUSERNAME0 = "user";
-    private static final String TESTUSERPASSWORD0 = "123456";
-    private static final String TESTUSERNAME1 = "user1";
-    private static final String TESTUSERPASSWORD1 = "12345678";
 
     @Override
     protected void configure() {
@@ -62,37 +53,18 @@ final class OAuth2Module extends AbstractModule {
                         "/oauth2/authorize",
                         "/resource/.*")
                         .through(UserAuthenticationFilter.class);
-                filter("/oauth2/authorize")
+                filter("/oauth2/token")
                         .through(ClientAuthenticationFilter.class);
+            }
+        });
+    install(
+        new UserModule() {
+            @Override
+            protected void configure() {
+                bind(UserDetailsService.class)
+                        .toProvider(TestInMemoryUserDetailsServiceProvider.class);
             }
         });
     }
 
-    @Provides
-    @Singleton
-    UserDetailsService getUserDetailsService() {
-        UserDetailsService userDetails = new InMemoryUserDetailsService();
-
-
-
-        UserDetails user =
-                UserDetails.newBuilder()
-                        .setUsername(TESTUSERNAME0)
-                        .setPassword(Hashing.sha256()
-                                .hashString(TESTUSERPASSWORD0, Charsets.UTF_8).toString())
-                        .build();
-
-        userDetails.addUser(user);
-
-        UserDetails user1 =
-                UserDetails.newBuilder()
-                        .setUsername(TESTUSERNAME1)
-                        .setPassword(Hashing.sha256()
-                                .hashString(TESTUSERPASSWORD1, Charsets.UTF_8).toString())
-                        .build();
-
-        userDetails.addUser(user1);
-
-        return userDetails;
-    }
 }

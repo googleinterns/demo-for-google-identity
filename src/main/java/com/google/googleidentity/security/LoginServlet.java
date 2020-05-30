@@ -30,6 +30,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Logger;
 
 /**
  * Demo Login Servlet
@@ -39,6 +40,8 @@ import java.util.Map;
 public final class LoginServlet extends HttpServlet {
 
     private static final long serialVersionUID = 1L;
+
+    private static final Logger log = Logger.getLogger("LoginServlet");
 
     private Configuration configuration;
 
@@ -56,7 +59,7 @@ public final class LoginServlet extends HttpServlet {
         try {
             displayLoginPage(request, response);
         } catch (TemplateException e) {
-            e.printStackTrace();
+            log.info("Error when display login page!");
         }
 
     }
@@ -67,7 +70,7 @@ public final class LoginServlet extends HttpServlet {
         try {
             displayLoginPage(request, response);
         } catch (TemplateException e) {
-            e.printStackTrace();
+            log.info("Error when display login page!");
         }
 
     }

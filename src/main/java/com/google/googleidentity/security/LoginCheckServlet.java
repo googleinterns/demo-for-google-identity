@@ -76,20 +76,17 @@ public final class LoginCheckServlet extends HttpServlet {
 
             usersession.setUser(user);
 
-            if (usersession.getOlduri() == null) {
+            if (!usersession.getOlduri().isPresent()) {
                 response.setStatus(HttpStatusCodes.STATUS_CODE_OK);
-                response.getWriter().println("http://" + request.getServerName() + ":"
-                        + request.getServerPort() + "/resource/user");
+                response.getWriter().println("/resource/user");
             } else {
                 response.setStatus(HttpStatusCodes.STATUS_CODE_OK);
-                response.getWriter().println("http://" + request.getServerName() + ":"
-                        + request.getServerPort() + usersession.getOlduri());
+                response.getWriter().println(usersession.getOlduri().get());
             }
 
         } else {
             response.setStatus(HttpStatusCodes.STATUS_CODE_UNAUTHORIZED);
-            response.getWriter().println("http://" + request.getServerName() + ":"
-                    + request.getServerPort() + "/login");
+            response.getWriter().println("/login");
         }
 
         response.getWriter().flush();

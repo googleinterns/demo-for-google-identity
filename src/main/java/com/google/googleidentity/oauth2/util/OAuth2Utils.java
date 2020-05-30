@@ -16,9 +16,9 @@
 
 package com.google.googleidentity.oauth2.util;
 
+import com.google.common.collect.ImmutableSet;
+import com.google.googleidentity.oauth2.client.ClientDetails;
 
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -26,21 +26,6 @@ import java.util.Set;
  * OAuth2 Util Library
  */
 public class OAuth2Utils {
-
-    /**
-     *  Constants in OAuth2 Request
-     */
-    public static final String CLIENT_ID = "client_id";
-
-    public static final String CLIENT_SECRET = "client_secret";
-
-    public static final String REDIRECT_URI = "redirect_uri";
-
-    public static final String STATE = "state";
-
-    public static final String RESPONSE_TYPE = "response_type";
-
-    public static final String SCOPE = "scope";
 
     /**
      *
@@ -54,17 +39,24 @@ public class OAuth2Utils {
 
         String[] scopes = scope.split("\\s+");
 
-        return new HashSet<String>(Arrays.asList(scopes));
+        return ImmutableSet.copyOf(scopes);
 
     }
 
     /**
      *
-     * @param allowedScopes
+     * @param client
      * @param requestScopes
      * @return whether requestScopes are all in allowedScopes
      */
-    public static boolean checkScope(Set<String> allowedScopes, Set<String> requestScopes){
+    public static boolean checkScope(ClientDetails client, Set<String> requestScopes){
+
+        if(client.getIsScoped() == false){
+            return true;
+        }
+
+        Set<String> allowedScopes = ImmutableSet.copyOf(client.getScopeList());
+
         for(String scope : requestScopes){
             if(!allowedScopes.contains(scope)){
                 return false;

@@ -16,7 +16,6 @@
 
 package com.google.googleidentity.resource;
 
-
 import com.google.googleidentity.security.UserSession;
 import com.google.googleidentity.user.UserDetails;
 import com.google.inject.Inject;
@@ -35,9 +34,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.logging.Level;
 import java.util.logging.Logger;
-
 
 /**
  * Demo UserServlet

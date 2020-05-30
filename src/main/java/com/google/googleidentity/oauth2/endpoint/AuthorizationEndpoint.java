@@ -16,10 +16,8 @@
 
 package com.google.googleidentity.oauth2.endpoint;
 
-
 import com.google.googleidentity.oauth2.client.ClientSession;
 import com.google.googleidentity.security.UserSession;
-import com.google.googleidentity.user.UserDetails;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import com.google.inject.Singleton;
