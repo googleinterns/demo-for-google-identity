@@ -73,7 +73,7 @@ public final class UserServlet extends HttpServlet {
             throws ServletException, IOException {
 
         try {
-            mainPage(request, response);
+            displayMainPage(request, response);
         } catch (TemplateException e) {
             log.info("MainPage Error!");
         }
@@ -84,18 +84,18 @@ public final class UserServlet extends HttpServlet {
             throws ServletException, IOException {
 
         try {
-            mainPage(request, response);
+            displayMainPage(request, response);
         } catch (TemplateException e) {
             log.info("MainPage Error!");
         }
 
     }
 
-    private void mainPage(HttpServletRequest request, HttpServletResponse response)
+    private void displayMainPage(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException, TemplateException {
 
         UserSession userSession = session.get();
-        UserDetails user = userSession.getUser();
+        UserDetails user = userSession.getUser().get();
 
         Map<String, Object> information = new HashMap<String, Object>();
         information.put("username", user.getUsername());

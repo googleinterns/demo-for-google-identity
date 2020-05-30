@@ -80,7 +80,7 @@ public final class UserAuthenticationFilter implements Filter {
         } catch (URISyntaxException e) {
             e.printStackTrace();
         }
-        if (userSession.getUser() == null) {
+        if (!userSession.getUser().isPresent()) {
             httpResponse.sendRedirect("/login");
         } else {
             chain.doFilter(request, response);

@@ -21,6 +21,7 @@ import com.google.inject.servlet.SessionScoped;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.Serializable;
+import java.util.Optional;
 
 /**
  * UserSession Object
@@ -38,12 +39,12 @@ public class UserSession implements Serializable {
 
     private String olduri = null;
 
-    public UserDetails getUser() {
-        return user;
+    public Optional<UserDetails> getUser() {
+        return Optional.ofNullable(user);
     }
 
-    public String getOlduri() {
-        return olduri;
+    public Optional<String> getOlduri() {
+        return Optional.ofNullable(olduri);
     }
 
     public void setUser(UserDetails user) {

@@ -20,6 +20,7 @@ import com.google.googleidentity.user.UserDetails;
 import com.google.inject.servlet.SessionScoped;
 
 import java.io.Serializable;
+import java.util.Optional;
 
 /**
  * ClientSession Object
@@ -32,8 +33,8 @@ public class ClientSession implements Serializable {
 
     private ClientDetails client = null;
 
-    public ClientDetails getClient() {
-        return client;
+    public Optional<ClientDetails> getClient() {
+        return Optional.ofNullable(client);
     }
 
     public void setClient(ClientDetails client) {
