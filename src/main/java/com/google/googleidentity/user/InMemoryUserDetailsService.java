@@ -17,22 +17,26 @@
 package com.google.googleidentity.user;
 
 import com.google.common.base.Preconditions;
+import com.google.common.collect.ImmutableList;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Default InMemory UserDetailsService for user information Store.
  */
-public class InMemoryUserDetailsService implements UserDetailsService {
+public final class InMemoryUserDetailsService implements UserDetailsService {
 
-    private ConcurrentHashMap<String, UserDetails> userStore
-            = new ConcurrentHashMap<>();
+    private ConcurrentHashMap<String, UserDetails> userStore =
+            new ConcurrentHashMap<>();
 
-    public UserDetails getUserByName(String username) {
+    public Optional<UserDetails> getUserByName(String username) {
+        Optional<UserDetails> user =
+                Optional.ofNullable(userStore.getOrDefault(username, null));
 
-        return userStore.getOrDefault(username, null);
+        return user;
     }
 
     public boolean updateUser(UserDetails user) {
@@ -40,8 +44,8 @@ public class InMemoryUserDetailsService implements UserDetailsService {
         Preconditions.checkNotNull(user);
 
         String username = user.getUsername();
-        if (username == null) {
-            return false;
+        if (username.isEmpty()) {
+            throw new UnsupportedOperationException("Empty username");
         }
         if (!userStore.containsKey(username)) {
             return false;
@@ -56,8 +60,8 @@ public class InMemoryUserDetailsService implements UserDetailsService {
         Preconditions.checkNotNull(user);
 
         String username = user.getUsername();
-        if (username == null) {
-            return false;
+        if (username.isEmpty()) {
+            throw new UnsupportedOperationException("Empty username");
         }
         if (userStore.containsKey(username)) {
             return false;
@@ -67,6 +71,6 @@ public class InMemoryUserDetailsService implements UserDetailsService {
     }
 
     public List<UserDetails> listUser() {
-        return new ArrayList<UserDetails>(userStore.values());
+        return ImmutableList.copyOf(userStore.values());
     }
 }

@@ -16,6 +16,7 @@
 package com.google.googleidentity.user;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * UserDetailsService Interface.
@@ -27,7 +28,7 @@ public interface UserDetailsService {
      * @param username
      * @return the user with the same username
      */
-    UserDetails getUserByName(String username);
+    Optional<UserDetails> getUserByName(String username);
 
     /**
      * Update the user with the same username,

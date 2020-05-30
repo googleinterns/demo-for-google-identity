@@ -17,6 +17,7 @@
 package com.google.googleidentity.oauth2.client;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * ClientDetailsService Interface.
@@ -28,7 +29,7 @@ public interface ClientDetailsService {
      * @param clientID the clientID
      * @return the client information with the clientID
      */
-    ClientDetails getClientByID(String clientID);
+    Optional<ClientDetails> getClientByID(String clientID);
 
     /**
      * @param client new Client Information

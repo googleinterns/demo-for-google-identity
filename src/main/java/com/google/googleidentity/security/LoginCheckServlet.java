@@ -29,6 +29,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Objects;
+import java.util.Optional;
 
 /**
  * Demo Login Check Servlet
@@ -97,13 +98,13 @@ public final class LoginCheckServlet extends HttpServlet {
     }
 
     private boolean check(String username, String password) {
-        UserDetails user = userDetailsService.getUserByName(username);
+        Optional<UserDetails> user = userDetailsService.getUserByName(username);
 
-        if (user == null) {
+        if (!user.isPresent()) {
             return false;
         }
 
-        return Objects.equals(password, user.getPassword());
+        return Objects.equals(password, user.get().getPassword());
     }
 
 

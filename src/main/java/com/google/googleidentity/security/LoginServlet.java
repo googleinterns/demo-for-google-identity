@@ -54,7 +54,7 @@ public final class LoginServlet extends HttpServlet {
             throws ServletException, IOException {
 
         try {
-            loginPage(request, response);
+            displayloginPage(request, response);
         } catch (TemplateException e) {
             e.printStackTrace();
         }
@@ -65,14 +65,14 @@ public final class LoginServlet extends HttpServlet {
             throws ServletException, IOException {
 
         try {
-            loginPage(request, response);
+            displayloginPage(request, response);
         } catch (TemplateException e) {
             e.printStackTrace();
         }
 
     }
 
-    private void loginPage(HttpServletRequest request, HttpServletResponse response)
+    private void displayloginPage(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException, TemplateException {
 
         Template template = configuration.getTemplate("Login.ftl");

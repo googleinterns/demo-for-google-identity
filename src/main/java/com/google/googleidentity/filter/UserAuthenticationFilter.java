@@ -32,6 +32,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.net.URI;
+import java.net.URISyntaxException;
 
 /**
  * The filter to protect resources using username password authentication.
@@ -66,13 +68,18 @@ public final class UserAuthenticationFilter implements Filter {
         UserSession userSession = session.get();
         userSession.setOlduri(null);
 
-        if (httpRequest.getQueryString() != null) {
-            userSession.setOlduri(httpRequest.getRequestURI() + "?"
-                    + httpRequest.getQueryString());
-        } else {
-            userSession.setOlduri(httpRequest.getRequestURI());
+        try {
+            URI uri = new URI(
+                    null,
+                    null,
+                    ((HttpServletRequest) request).getRequestURI(),
+                    httpRequest.getQueryString(),
+                    null
+                    );
+            userSession.setOlduri(uri.toString());
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
         }
-
         if (userSession.getUser() == null) {
             httpResponse.sendRedirect("/login");
         } else {

@@ -18,23 +18,27 @@ package com.google.googleidentity.oauth2.client;
 
 
 import com.google.common.base.Preconditions;
+import com.google.common.collect.ImmutableList;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Default InMemory ClientDetailsService for client information Store
  * An Implementation for {@link ClientDetailsService}
  */
-public class InMemoryClientDetailsService implements ClientDetailsService{
+public final class InMemoryClientDetailsService implements ClientDetailsService{
 
     private ConcurrentHashMap<String, ClientDetails> clientStore
             = new ConcurrentHashMap<>();
 
     @Override
-    public ClientDetails getClientByID(String clientID) {
-        return clientStore.getOrDefault(clientID, null);
+    public Optional<ClientDetails> getClientByID(String clientID) {
+        Optional<ClientDetails> client =
+                Optional.ofNullable(clientStore.getOrDefault(clientID, null));
+        return client;
     }
 
     @Override
@@ -44,7 +48,7 @@ public class InMemoryClientDetailsService implements ClientDetailsService{
 
         String clientID = client.getClientId();
         if (clientID.isEmpty()) {
-            return false;
+            throw new UnsupportedOperationException("Empty clientid");
         }
         if (!clientStore.containsKey(clientID)) {
             return false;
@@ -60,7 +64,7 @@ public class InMemoryClientDetailsService implements ClientDetailsService{
 
         String clientID = client.getClientId();
         if (clientID.isEmpty()) {
-            return false;
+            throw new UnsupportedOperationException("Empty clientid");
         }
         if (clientStore.containsKey(clientID)) {
             return false;
@@ -71,6 +75,6 @@ public class InMemoryClientDetailsService implements ClientDetailsService{
 
     @Override
     public List<ClientDetails> listClient() {
-        return new ArrayList<ClientDetails>(clientStore.values());
+        return ImmutableList.copyOf(clientStore.values());
     }
 }
