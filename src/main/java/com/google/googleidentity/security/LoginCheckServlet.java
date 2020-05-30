@@ -58,7 +58,7 @@ public final class LoginCheckServlet extends HttpServlet {
         this.userDetailsService = userDetailsService;
     }
 
-    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+    public void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         String username = request.getParameter("username");
         String password = request.getParameter("password");

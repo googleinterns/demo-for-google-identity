@@ -16,13 +16,22 @@
 
 package com.google.googleidentity.user;
 
+import com.google.googleidentity.security.UserSession;
 import com.google.inject.AbstractModule;
+import com.google.inject.Provides;
+import com.google.inject.servlet.SessionScoped;
 
 public class UserModule extends AbstractModule {
 
     @Override
     protected void configure(){
         bind(UserDetailsService.class).to(InMemoryUserDetailsService.class);
+    }
+
+    @Provides
+    @SessionScoped
+    public UserSession getUserSession(){
+        return new UserSession();
     }
 
 }

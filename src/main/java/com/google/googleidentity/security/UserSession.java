@@ -29,7 +29,6 @@ import java.util.Optional;
  * Store an original request that filtered by
  * {@link com.google.googleidentity.filter.UserAuthenticationFilter}.
  */
-@SessionScoped
 public class UserSession implements Serializable {
 
     private static final long serialVersionUID = 3L;

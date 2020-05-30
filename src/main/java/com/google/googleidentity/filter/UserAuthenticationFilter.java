@@ -20,7 +20,6 @@ import com.google.googleidentity.security.UserSession;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import com.google.inject.Singleton;
-import jdk.internal.jline.internal.Preconditions;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterConfig;
@@ -31,9 +30,9 @@ import javax.servlet.FilterChain;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.logging.Logger;
 
 /**
  * The filter to protect resources using username password authentication.
@@ -49,6 +48,8 @@ import java.net.URISyntaxException;
 public final class UserAuthenticationFilter implements Filter {
 
     private static final long serialVersionUID = 1L;
+
+    private static final Logger log = Logger.getLogger("UserAuthenticationFilter");
 
     private final Provider<UserSession> session;
 
@@ -68,19 +69,19 @@ public final class UserAuthenticationFilter implements Filter {
         UserSession userSession = session.get();
         userSession.setOlduri(null);
 
-        try {
-            URI uri = new URI(
-                    null,
-                    null,
-                    ((HttpServletRequest) request).getRequestURI(),
-                    httpRequest.getQueryString(),
-                    null
-                    );
-            userSession.setOlduri(uri.toString());
-        } catch (URISyntaxException e) {
-            e.printStackTrace();
-        }
         if (!userSession.getUser().isPresent()) {
+            try {
+                URI uri = new URI(
+                        null,
+                        null,
+                        ((HttpServletRequest) request).getRequestURI(),
+                        httpRequest.getQueryString(),
+                        null
+                );
+                userSession.setOlduri(uri.toString());
+            } catch (URISyntaxException e) {
+                e.printStackTrace();
+            }
             httpResponse.sendRedirect("/login");
         } else {
             chain.doFilter(request, response);
