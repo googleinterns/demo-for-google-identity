@@ -31,7 +31,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  */
 public class InMemoryUserServiceTest {
 
-    UserDetails user =
+    private static final UserDetails user =
             UserDetails.newBuilder()
                     .setUsername("111")
                     .setPassword(Hashing.sha256()
