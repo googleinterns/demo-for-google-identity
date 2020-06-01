@@ -14,12 +14,14 @@
     limitations under the License.
 */
 
+package main.java.com.google.googleidentity.filter;
+
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.util.logging.Logger;
-import javax.servlet.*;
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -44,26 +46,7 @@ import org.junit.Test;
 
 import static org.mockito.Mockito.*;
 
-public class ServletTest  {
-
-    private Injector injector;
-
-    @Before
-    public void setUp(){
-    }
-
-    public class UserSessionProvider implements Provider<UserSession> {
-        @Override
-        public UserSession get() {
-            UserSession userSession = new UserSession();
-            userSession.setUser(UserDetails.newBuilder()
-                    .setUsername("user")
-                    .setPassword(Hashing.sha256()
-                            .hashString("123456", Charsets.UTF_8).toString())
-                    .build());
-            return userSession;
-        }
-    }
+public class UserAuthenticationFilterTest {
 
     private UserSession session= new UserSession();
 
@@ -72,54 +55,6 @@ public class ServletTest  {
         public UserSession get() {
             return session;
         }
-    }
-
-    /**
-     * Test logincheckservelet's logic
-     *
-     * @throws ServletException
-     * @throws IOException
-     */
-    @Test
-    public void testLoginCheckServlet() throws ServletException, IOException {
-
-        UserDetailsService userDetailsService = new InMemoryUserDetailsService();
-
-        userDetailsService.addUser(UserDetails.newBuilder()
-                .setUsername("user")
-                .setPassword(Hashing.sha256()
-                        .hashString("123456", Charsets.UTF_8).toString())
-                .build());
-
-        LoginCheckServlet loginCheckServlet = new LoginCheckServlet(
-                new UserSessionProvider(), userDetailsService);
-
-        HttpServletRequest request = mock(HttpServletRequest.class);
-        HttpServletResponse response = mock(HttpServletResponse.class);
-
-        when(request.getParameter("username")).thenReturn("user");
-        when(request.getParameter("password")).thenReturn(Hashing.sha256()
-                .hashString("12345", Charsets.UTF_8).toString());
-
-        StringWriter stringWriter = new StringWriter();
-        PrintWriter writer = new PrintWriter(stringWriter);
-        when(response.getWriter()).thenReturn(writer);
-
-        loginCheckServlet.doPost(request, response);
-
-        assertTrue(stringWriter.toString().startsWith("/login"));
-
-        when(request.getParameter("password")).thenReturn(Hashing.sha256()
-                .hashString("123456", Charsets.UTF_8).toString());
-
-        stringWriter = new StringWriter();
-        writer = new PrintWriter(stringWriter);
-        when(response.getWriter()).thenReturn(writer);
-
-        loginCheckServlet.doPost(request, response);
-
-        assertTrue(stringWriter.toString().startsWith("/resource/user"));
-
     }
 
     /**
@@ -148,9 +83,6 @@ public class ServletTest  {
         assertTrue(userSessionProvider.get().getOlduri().isPresent());
 
     }
-
-
-
 
 }
 
