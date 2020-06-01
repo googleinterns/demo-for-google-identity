@@ -45,7 +45,8 @@ import org.junit.Before;
 import org.junit.Test;
 
 
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 /**
  * Test logincheckservelet's logic
@@ -94,7 +95,9 @@ public class LoginCheckServletTest  {
 
         loginCheckServlet.doPost(request, response);
 
-        assertTrue(stringWriter.toString().startsWith("/resource/user"));
+        System.out.println(stringWriter.toString());
+
+        assertTrue(stringWriter.toString().equals("/resource/user\r\n"));
 
     }
 
@@ -126,7 +129,7 @@ public class LoginCheckServletTest  {
 
         loginCheckServlet.doPost(request, response);
 
-        assertTrue(stringWriter.toString().startsWith("/login"));
+        assertTrue(stringWriter.toString().startsWith("/login\r\n"));
 
     }
 

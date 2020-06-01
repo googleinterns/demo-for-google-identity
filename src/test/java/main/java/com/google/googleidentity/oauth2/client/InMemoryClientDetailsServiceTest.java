@@ -31,7 +31,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  */
 public class InMemoryClientDetailsServiceTest {
 
-    ClientDetails client =
+    private static final ClientDetails client =
             ClientDetails.newBuilder()
                     .setClientId("111")
                     .setSecret(Hashing.sha256()

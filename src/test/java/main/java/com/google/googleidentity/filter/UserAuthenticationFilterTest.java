@@ -37,6 +37,7 @@ import com.google.inject.Injector;
 
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertEquals;
 
 import com.google.inject.Provider;
 
@@ -44,7 +45,9 @@ import org.junit.Before;
 import org.junit.Test;
 
 
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.verify;
 
 public class UserAuthenticationFilterTest {
 
@@ -64,7 +67,8 @@ public class UserAuthenticationFilterTest {
      * @throws IOException
      */
     @Test
-    public void testUserAuthenticationFilter() throws ServletException, IOException {
+    public void testFilter_noUserPresent_redirectAndSetOldUrl()
+            throws ServletException, IOException {
 
         Provider<UserSession> userSessionProvider = new UserSessionProvider1();
 
@@ -79,8 +83,9 @@ public class UserAuthenticationFilterTest {
 
         userAuthenticationFilter.doFilter(request, response, null);
 
+        verify(response).sendRedirect("/login");
 
-        assertTrue(userSessionProvider.get().getOlduri().isPresent());
+        assertEquals(userSessionProvider.get().getOlduri().get(), "/resource/user");
 
     }
 
