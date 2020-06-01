@@ -42,26 +42,4 @@ public class OAuth2Utils {
         return ImmutableSet.copyOf(scopes);
 
     }
-
-    /**
-     *
-     * @param client
-     * @param requestScopes
-     * @return whether requestScopes are all in allowedScopes
-     */
-    public static boolean checkScope(ClientDetails client, Set<String> requestScopes){
-
-        if(client.getIsScoped() == false){
-            return true;
-        }
-
-        Set<String> allowedScopes = ImmutableSet.copyOf(client.getScopeList());
-
-        for(String scope : requestScopes){
-            if(!allowedScopes.contains(scope)){
-                return false;
-            }
-        }
-        return true;
-    }
 }

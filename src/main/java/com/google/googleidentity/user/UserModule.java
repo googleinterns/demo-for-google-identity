@@ -28,10 +28,4 @@ public class UserModule extends AbstractModule {
         bind(UserDetailsService.class).to(InMemoryUserDetailsService.class);
     }
 
-    @Provides
-    @SessionScoped
-    public UserSession getUserSession(){
-        return new UserSession();
-    }
-
 }
