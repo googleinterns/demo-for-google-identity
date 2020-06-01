@@ -49,6 +49,9 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.verify;
 
+/**
+ * Test {@link UserAuthenticationFilter}'s logic
+ */
 public class UserAuthenticationFilterTest {
 
     private UserSession session= new UserSession();
@@ -60,12 +63,7 @@ public class UserAuthenticationFilterTest {
         }
     }
 
-    /**
-     * Test UserAuthenticationFilter's logic
-     *
-     * @throws ServletException
-     * @throws IOException
-     */
+
     @Test
     public void testFilter_noUserPresent_redirectAndSetOldUrl()
             throws ServletException, IOException {

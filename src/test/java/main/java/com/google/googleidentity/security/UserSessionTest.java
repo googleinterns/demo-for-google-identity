@@ -26,7 +26,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
- * Test UserSession
+ * Test {@link UserSession}
  */
 public class UserSessionTest {
 

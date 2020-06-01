@@ -49,8 +49,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 /**
- * Test logincheckservelet's logic
- *
+ * Test {@link LoginCheckServlet}'s logic
  */
 public class LoginCheckServletTest  {
 
