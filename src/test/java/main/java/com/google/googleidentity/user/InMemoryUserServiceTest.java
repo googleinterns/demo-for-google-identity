@@ -88,7 +88,7 @@ public class InMemoryUserServiceTest {
 
         assertTrue(userDetailsService.addUser(user));
 
-        assertFalse(userDetailsService.getUserByName("111").isPresent());
+        assertTrue(userDetailsService.getUserByName("111").isPresent());
 
     }
 

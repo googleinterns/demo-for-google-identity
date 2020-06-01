@@ -90,7 +90,7 @@ public class InMemoryClientDetailsServiceTest {
 
         assertTrue(clientDetailsService.addClient(client));
 
-        assertFalse(clientDetailsService.getClientByID("111").isPresent());
+        assertTrue(clientDetailsService.getClientByID("111").isPresent());
 
     }
 
