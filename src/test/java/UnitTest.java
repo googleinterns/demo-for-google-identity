@@ -28,11 +28,11 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
 
-/**
- * Test InMemoryUserDetailsService and InMemoryClientDetailsService
- */
 public class UnitTest {
 
+    /**
+     * Test InMemoryUserDetailsService
+     */
     @Test
     void testUserDetailsService() {
         UserDetailsService userDetailsService= new InMemoryUserDetailsService();
@@ -56,6 +56,9 @@ public class UnitTest {
 
     }
 
+    /**
+     * Test InMemoryClientDetailsService
+     */
     @Test
     void testClientDetailsService() {
         ClientDetailsService clientDetailsService= new InMemoryClientDetailsService();
@@ -83,6 +86,9 @@ public class UnitTest {
 
     }
 
+    /**
+     * Test UserSession
+     */
     @Test
     void testUserSession() {
         UserSession userSession= new UserSession();
@@ -103,6 +109,10 @@ public class UnitTest {
 
     }
 
+
+    /**
+     * Test ClientSession
+     */
     @Test
     void testClientSession() {
         ClientSession clientSession= new ClientSession();

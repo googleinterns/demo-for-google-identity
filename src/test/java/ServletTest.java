@@ -74,6 +74,12 @@ public class ServletTest  {
         }
     }
 
+    /**
+     * Test logincheckservelet's logic
+     *
+     * @throws ServletException
+     * @throws IOException
+     */
     @Test
     public void testLoginCheckServlet() throws ServletException, IOException {
 
@@ -116,6 +122,12 @@ public class ServletTest  {
 
     }
 
+    /**
+     * Test UserAuthenticationFilter's logic
+     *
+     * @throws ServletException
+     * @throws IOException
+     */
     @Test
     public void testUserAuthenticationFilter() throws ServletException, IOException {
 
