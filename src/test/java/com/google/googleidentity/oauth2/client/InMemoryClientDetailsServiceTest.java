@@ -31,7 +31,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  */
 public class InMemoryClientDetailsServiceTest {
 
-    private static final ClientDetails client =
+    private static final ClientDetails CLIENT =
             ClientDetails.newBuilder()
                     .setClientId("111")
                     .setSecret(Hashing.sha256()
@@ -47,7 +47,7 @@ public class InMemoryClientDetailsServiceTest {
     void testClientDetailsService_updateNonExistUser_fail() {
         ClientDetailsService clientDetailsService= new InMemoryClientDetailsService();
 
-        assertFalse(clientDetailsService.updateClient(client));
+        assertFalse(clientDetailsService.updateClient(CLIENT));
 
     }
 
@@ -62,25 +62,25 @@ public class InMemoryClientDetailsServiceTest {
     void testClientDetailsService_addNonExistUser_success() {
         ClientDetailsService clientDetailsService= new InMemoryClientDetailsService();
 
-        assertTrue(clientDetailsService.addClient(client));
+        assertTrue(clientDetailsService.addClient(CLIENT));
     }
 
     @Test
     void testClientDetailsService_updateExistUser_success() {
         ClientDetailsService clientDetailsService= new InMemoryClientDetailsService();
 
-        assertTrue(clientDetailsService.addClient(client));
+        assertTrue(clientDetailsService.addClient(CLIENT));
 
-        assertTrue(clientDetailsService.updateClient(client));
+        assertTrue(clientDetailsService.updateClient(CLIENT));
     }
 
     @Test
     void testClientDetailsService_addExistUser_fail() {
         ClientDetailsService clientDetailsService= new InMemoryClientDetailsService();
 
-        assertTrue(clientDetailsService.addClient(client));
+        assertTrue(clientDetailsService.addClient(CLIENT));
 
-        assertFalse(clientDetailsService.addClient(client));
+        assertFalse(clientDetailsService.addClient(CLIENT));
 
     }
 
@@ -88,7 +88,7 @@ public class InMemoryClientDetailsServiceTest {
     void testClientDetailsService_getExistUser_success() {
         ClientDetailsService clientDetailsService= new InMemoryClientDetailsService();
 
-        assertTrue(clientDetailsService.addClient(client));
+        assertTrue(clientDetailsService.addClient(CLIENT));
 
         assertTrue(clientDetailsService.getClientByID("111").isPresent());
 

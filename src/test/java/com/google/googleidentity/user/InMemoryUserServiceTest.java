@@ -28,7 +28,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  */
 public class InMemoryUserServiceTest {
 
-    private static final UserDetails user =
+    private static final UserDetails USER =
             UserDetails.newBuilder()
                     .setUsername("111")
                     .setPassword(Hashing.sha256()
@@ -39,7 +39,7 @@ public class InMemoryUserServiceTest {
     void testUserDetailsService_updateNonExistedUser_fail() {
         UserDetailsService userDetailsService= new InMemoryUserDetailsService();
 
-        assertFalse(userDetailsService.updateUser(user));
+        assertFalse(userDetailsService.updateUser(USER));
 
     }
 
@@ -55,7 +55,7 @@ public class InMemoryUserServiceTest {
     void testUserDetailsService_addNonExistedUser_success() {
         UserDetailsService userDetailsService= new InMemoryUserDetailsService();
 
-        assertTrue(userDetailsService.addUser(user));
+        assertTrue(userDetailsService.addUser(USER));
 
     }
 
@@ -63,9 +63,9 @@ public class InMemoryUserServiceTest {
     void testUserDetailsService_updateExistedUser_success() {
         UserDetailsService userDetailsService= new InMemoryUserDetailsService();
 
-        assertTrue(userDetailsService.addUser(user));
+        assertTrue(userDetailsService.addUser(USER));
 
-        assertTrue(userDetailsService.updateUser(user));
+        assertTrue(userDetailsService.updateUser(USER));
 
     }
 
@@ -73,9 +73,9 @@ public class InMemoryUserServiceTest {
     void testUserDetailsService_addExistedUser_fail() {
         UserDetailsService userDetailsService= new InMemoryUserDetailsService();
 
-        assertTrue(userDetailsService.addUser(user));
+        assertTrue(userDetailsService.addUser(USER));
 
-        assertFalse(userDetailsService.addUser(user));
+        assertFalse(userDetailsService.addUser(USER));
 
     }
 
@@ -83,7 +83,7 @@ public class InMemoryUserServiceTest {
     void testUserDetailsService_getExistedUser_success() {
         UserDetailsService userDetailsService= new InMemoryUserDetailsService();
 
-        assertTrue(userDetailsService.addUser(user));
+        assertTrue(userDetailsService.addUser(USER));
 
         assertTrue(userDetailsService.getUserByName("111").isPresent());
 
