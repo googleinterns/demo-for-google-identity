@@ -14,11 +14,10 @@
     limitations under the License.
 */
 
-package main.java.com.google.googleidentity.security;
+package com.google.googleidentity.security;
 
 import com.google.common.base.Charsets;
 import com.google.common.hash.Hashing;
-import com.google.googleidentity.security.UserSession;
 import com.google.googleidentity.user.UserDetails;
 import org.junit.jupiter.api.Test;
 

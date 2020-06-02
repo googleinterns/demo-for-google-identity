@@ -14,26 +14,14 @@
     limitations under the License.
 */
 
-package main.java.com.google.googleidentity.filter;
+package com.google.googleidentity.filter;
 
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.io.Writer;
-import java.util.logging.Logger;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.google.common.base.Charsets;
-import com.google.common.hash.Hashing;
-import com.google.googleidentity.filter.UserAuthenticationFilter;
-import com.google.googleidentity.security.LoginCheckServlet;
 import com.google.googleidentity.security.UserSession;
-import com.google.googleidentity.user.InMemoryUserDetailsService;
-import com.google.googleidentity.user.UserDetails;
-import com.google.googleidentity.user.UserDetailsService;
-import com.google.inject.Injector;
 
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertFalse;
@@ -41,7 +29,6 @@ import static org.junit.Assert.assertEquals;
 
 import com.google.inject.Provider;
 
-import org.junit.Before;
 import org.junit.Test;
 
 

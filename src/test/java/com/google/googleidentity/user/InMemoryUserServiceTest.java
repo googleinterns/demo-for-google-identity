@@ -14,13 +14,10 @@
     limitations under the License.
 */
 
-package main.java.com.google.googleidentity.user;
+package com.google.googleidentity.user;
 
 import com.google.common.base.Charsets;
 import com.google.common.hash.Hashing;
-import com.google.googleidentity.user.InMemoryUserDetailsService;
-import com.google.googleidentity.user.UserDetails;
-import com.google.googleidentity.user.UserDetailsService;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;

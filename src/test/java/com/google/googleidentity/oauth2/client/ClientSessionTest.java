@@ -14,7 +14,7 @@
     limitations under the License.
 */
 
-package main.java.com.google.googleidentity.oauth2.client;
+package com.google.googleidentity.oauth2.client;
 
 import com.google.common.base.Charsets;
 import com.google.common.hash.Hashing;
