@@ -72,7 +72,7 @@ public final class UserServlet extends HttpServlet {
         try {
             displayMainPage(request, response);
         } catch (TemplateException e) {
-            log.info("MainPage Error!");
+            log.info("MainPage Error due to TemplateException!");
         }
 
     }
