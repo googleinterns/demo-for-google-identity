@@ -14,16 +14,18 @@
     limitations under the License.
 */
 
-package com.google.googleidentity.test;
+package com.google.googleidentity.user.test;
 
 import com.google.common.base.Charsets;
 import com.google.common.hash.Hashing;
 import com.google.googleidentity.user.InMemoryUserDetailsService;
 import com.google.googleidentity.user.UserDetails;
 import com.google.googleidentity.user.UserDetailsService;
-import com.google.inject.Provider;
+import com.google.inject.AbstractModule;
+import com.google.inject.Provides;
+import com.google.inject.Singleton;
 
-public class TestInMemoryUserDetailsServiceProvider implements Provider<UserDetailsService> {
+public class TestUserModule extends AbstractModule {
 
     private static final String TESTUSERNAME0 = "user";
     private static final String TESTUSERPASSWORD0 = "123456";
@@ -31,7 +33,12 @@ public class TestInMemoryUserDetailsServiceProvider implements Provider<UserDeta
     private static final String TESTUSERPASSWORD1 = "12345678";
 
     @Override
-    public UserDetailsService get() {
+    protected void configure(){
+    }
+
+    @Provides
+    @Singleton
+    public UserDetailsService getUserDetailsService() {
         UserDetailsService userDetailsService = new InMemoryUserDetailsService();
         UserDetails user =
                 UserDetails.newBuilder()
@@ -48,6 +55,6 @@ public class TestInMemoryUserDetailsServiceProvider implements Provider<UserDeta
                         .setPassword(Hashing.sha256()
                                 .hashString(TESTUSERPASSWORD1, Charsets.UTF_8).toString())
                         .build();
-            return userDetailsService;
+        return userDetailsService;
     }
 }

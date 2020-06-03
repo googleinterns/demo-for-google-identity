@@ -21,7 +21,7 @@ import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 import com.google.inject.servlet.SessionScoped;
 
-public class UserModule extends AbstractModule {
+public final class UserModule extends AbstractModule {
 
     @Override
     protected void configure(){

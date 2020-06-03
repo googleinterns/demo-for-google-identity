@@ -26,7 +26,7 @@ import java.io.IOException;
  * The filter to protect oauth2 resources using clientid and secret
  */
 @Singleton
-public class ClientAuthenticationFilter implements Filter {
+public final class ClientAuthenticationFilter implements Filter {
 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {}

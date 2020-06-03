@@ -17,9 +17,9 @@
 package com.google.googleidentity.oauth2.util;
 
 /**
- *  Constants in OAuth2 Request
+ *  OAuth2 Parameter Names in OAuth2 Request
  */
-public final class OAuth2Constants {
+public final class OAuth2ParameterNames {
 
     public static final String CLIENT_ID = "client_id";
 
@@ -32,4 +32,6 @@ public final class OAuth2Constants {
     public static final String RESPONSE_TYPE = "response_type";
 
     public static final String SCOPE = "scope";
+
+    private OAuth2ParameterNames() {}
 }

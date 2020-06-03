@@ -66,23 +66,17 @@ public final class LoginCheckServlet extends HttpServlet {
         response.setContentType("text/html;charset=utf-8");
 
         if (check(username, password)) {
-            UserSession usersession = session.get();
+            UserSession userSession = session.get();
 
-            UserDetails user =
+            userSession.setUser(
                     UserDetails.newBuilder()
                             .setUsername(username)
                             .setPassword(password)
-                            .build();
+                            .build());
 
-            usersession.setUser(user);
-
-            if (!usersession.getOlduri().isPresent()) {
-                response.setStatus(HttpStatusCodes.STATUS_CODE_OK);
-                response.getWriter().println("/resource/user");
-            } else {
-                response.setStatus(HttpStatusCodes.STATUS_CODE_OK);
-                response.getWriter().println(usersession.getOlduri().get());
-            }
+            response.setStatus(HttpStatusCodes.STATUS_CODE_OK);
+            response.getWriter().println(
+                    userSession.getOlduri().orElse("/resource/user"));
 
         } else {
             response.setStatus(HttpStatusCodes.STATUS_CODE_UNAUTHORIZED);

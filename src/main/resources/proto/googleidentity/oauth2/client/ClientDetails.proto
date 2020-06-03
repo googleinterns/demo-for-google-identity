@@ -36,5 +36,5 @@ message ClientDetails {
     repeated string scope = 5;
 
     // Redirect uri for authorization endpoint
-    string redirect_uri = 6;
+    repeated string redirect_uri = 6;
 }

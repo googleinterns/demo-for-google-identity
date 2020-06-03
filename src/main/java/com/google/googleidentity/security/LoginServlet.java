@@ -59,7 +59,7 @@ public final class LoginServlet extends HttpServlet {
         try {
             displayLoginPage(request, response);
         } catch (TemplateException e) {
-            log.info("Error when display login page!");
+            log.info("Error when display login page due to TemplateException!");
         }
 
     }
@@ -70,7 +70,7 @@ public final class LoginServlet extends HttpServlet {
         try {
             displayLoginPage(request, response);
         } catch (TemplateException e) {
-            log.info("Error when display login page!");
+            log.info("Error when display login page due to TemplateException!");
         }
 
     }

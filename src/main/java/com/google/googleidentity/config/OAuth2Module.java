@@ -23,14 +23,8 @@ import com.google.googleidentity.oauth2.filter.ClientAuthenticationFilter;
 import com.google.googleidentity.resource.UserServlet;
 import com.google.googleidentity.security.LoginCheckServlet;
 import com.google.googleidentity.security.LoginServlet;
-import com.google.googleidentity.security.UserSession;
-import com.google.googleidentity.test.TestInMemoryUserDetailsServiceProvider;
-import com.google.googleidentity.user.UserDetailsService;
-import com.google.googleidentity.user.UserModule;
 import com.google.inject.AbstractModule;
-import com.google.inject.Provides;
 import com.google.inject.servlet.ServletModule;
-import com.google.inject.servlet.SessionScoped;
 
 
 public final class OAuth2Module extends AbstractModule {
@@ -58,14 +52,6 @@ public final class OAuth2Module extends AbstractModule {
                         .through(UserAuthenticationFilter.class);
                 filter("/oauth2/token")
                         .through(ClientAuthenticationFilter.class);
-            }
-        });
-    install(
-        new UserModule() {
-            @Override
-            protected void configure() {
-                bind(UserDetailsService.class)
-                        .toProvider(TestInMemoryUserDetailsServiceProvider.class);
             }
         });
     }

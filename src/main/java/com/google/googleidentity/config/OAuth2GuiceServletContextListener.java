@@ -16,6 +16,7 @@
 
 package com.google.googleidentity.config;
 
+import com.google.googleidentity.user.test.TestUserModule;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.google.inject.servlet.GuiceServletContextListener;
@@ -26,7 +27,7 @@ import com.google.inject.servlet.GuiceServletContextListener;
 public final class OAuth2GuiceServletContextListener extends GuiceServletContextListener {
     @Override
     protected Injector getInjector() {
-        return Guice.createInjector(new OAuth2Module());
+        return Guice.createInjector(new OAuth2Module(), new TestUserModule());
     }
 
 }

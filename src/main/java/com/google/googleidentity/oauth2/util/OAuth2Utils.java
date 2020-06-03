@@ -17,9 +17,8 @@
 package com.google.googleidentity.oauth2.util;
 
 import com.google.common.collect.ImmutableSet;
-import com.google.googleidentity.oauth2.client.ClientDetails;
 
-import java.util.HashSet;
+import java.util.Collections;
 import java.util.Set;
 
 /**
@@ -34,7 +33,7 @@ public class OAuth2Utils {
      */
     public static Set<String> parseScope(String scope){
         if(scope == null){
-            return new HashSet<String>();
+            return ImmutableSet.of();
         }
 
         String[] scopes = scope.split("\\s+");

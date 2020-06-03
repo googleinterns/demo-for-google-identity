@@ -30,7 +30,7 @@ import java.util.Optional;
  * {@link com.google.googleidentity.filter.UserAuthenticationFilter}.
  */
 @SessionScoped
-public class UserSession implements Serializable {
+public final class UserSession implements Serializable {
 
     private static final long serialVersionUID = 3L;
 

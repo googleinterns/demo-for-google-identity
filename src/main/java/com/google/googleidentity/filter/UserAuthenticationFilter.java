@@ -16,10 +16,12 @@
 
 package com.google.googleidentity.filter;
 
+import com.google.googleidentity.oauth2.util.OAuth2Constants;
 import com.google.googleidentity.security.UserSession;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import com.google.inject.Singleton;
+import org.apache.http.client.utils.URIBuilder;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterConfig;
@@ -30,8 +32,9 @@ import javax.servlet.FilterChain;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.net.URI;
+
 import java.net.URISyntaxException;
+import java.util.Map;
 import java.util.logging.Logger;
 
 /**
@@ -69,23 +72,25 @@ public final class UserAuthenticationFilter implements Filter {
         UserSession userSession = session.get();
         userSession.setOlduri(null);
 
-        if (!userSession.getUser().isPresent()) {
-            try {
-                URI uri = new URI(
-                        null,
-                        null,
-                        ((HttpServletRequest) request).getRequestURI(),
-                        httpRequest.getQueryString(),
-                        null
-                );
-                userSession.setOlduri(uri.toString());
-            } catch (URISyntaxException e) {
-                e.printStackTrace();
-            }
-            httpResponse.sendRedirect("/login");
-        } else {
+        if (userSession.getUser().isPresent()) {
             chain.doFilter(request, response);
         }
+        else {
+            try {
+                userSession.setOlduri(fetchOldUri(httpRequest));
+            } catch (URISyntaxException e) {
+                log.info("URI Error!");
+            }
+            httpResponse.sendRedirect("/login");
+        }
+    }
+
+    private String fetchOldUri(HttpServletRequest httpRequest) throws URISyntaxException {
+        URIBuilder uriBuilder = new URIBuilder(httpRequest.getRequestURI());
+        for(Map.Entry<String, String[]> entry : httpRequest.getParameterMap().entrySet()){
+            uriBuilder.addParameter(entry.getKey(), entry.getValue()[0]);
+        }
+        return uriBuilder.build().toString();
     }
 
     public void destroy() {

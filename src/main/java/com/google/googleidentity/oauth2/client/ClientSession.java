@@ -26,7 +26,7 @@ import java.util.Optional;
  * Store client information for a client pass filter
  */
 @SessionScoped
-public class ClientSession implements Serializable {
+public final class ClientSession implements Serializable {
 
     private static final long serialVersionUID = 6L;
 

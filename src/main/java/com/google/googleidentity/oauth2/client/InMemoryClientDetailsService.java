@@ -37,7 +37,7 @@ public final class InMemoryClientDetailsService implements ClientDetailsService{
     @Override
     public Optional<ClientDetails> getClientByID(String clientID) {
         Optional<ClientDetails> client =
-                Optional.ofNullable(clientStore.getOrDefault(clientID, null));
+                Optional.ofNullable(clientStore.get(clientID));
         return client;
     }
 
@@ -48,7 +48,7 @@ public final class InMemoryClientDetailsService implements ClientDetailsService{
 
         String clientID = client.getClientId();
         if (clientID.isEmpty()) {
-            throw new UnsupportedOperationException("Empty clientid");
+            throw new IllegalArgumentException("Empty clientid");
         }
         if (!clientStore.containsKey(clientID)) {
             return false;
@@ -64,7 +64,7 @@ public final class InMemoryClientDetailsService implements ClientDetailsService{
 
         String clientID = client.getClientId();
         if (clientID.isEmpty()) {
-            throw new UnsupportedOperationException("Empty clientid");
+            throw new IllegalArgumentException("Empty clientid");
         }
         if (clientStore.containsKey(clientID)) {
             return false;

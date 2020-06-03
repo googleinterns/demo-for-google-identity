@@ -35,7 +35,7 @@ public final class InMemoryUserDetailsService implements UserDetailsService {
 
     public Optional<UserDetails> getUserByName(String username) {
         Optional<UserDetails> user =
-                Optional.ofNullable(userStore.getOrDefault(username, null));
+                Optional.ofNullable(userStore.get(username));
 
         return user;
     }
@@ -46,7 +46,7 @@ public final class InMemoryUserDetailsService implements UserDetailsService {
 
         String username = user.getUsername();
         if (username.isEmpty()) {
-            throw new UnsupportedOperationException("Empty username");
+            throw new IllegalArgumentException("Empty username");
         }
         if (!userStore.containsKey(username)) {
             return false;
@@ -62,7 +62,7 @@ public final class InMemoryUserDetailsService implements UserDetailsService {
 
         String username = user.getUsername();
         if (username.isEmpty()) {
-            throw new UnsupportedOperationException("Empty username");
+            throw new IllegalArgumentException("Empty username");
         }
         if (userStore.containsKey(username)) {
             return false;
