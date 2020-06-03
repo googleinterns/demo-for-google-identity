@@ -35,6 +35,6 @@ message ClientDetails {
     // The OAuth 2.0 scopes that are permitted by this client.
     repeated string scope = 5;
 
-    // Redirect uri for authorization endpoint
+    // Redirect uri set for authorization endpoint
     repeated string redirect_uri = 6;
 }
