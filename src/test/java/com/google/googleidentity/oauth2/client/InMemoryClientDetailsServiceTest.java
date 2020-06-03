@@ -39,7 +39,7 @@ public class InMemoryClientDetailsServiceTest {
                     .addScope("read")
                     .setIsScoped(true)
                     .addGrantTypes("authorization")
-                    .setRedirectUri("http://localhost:8080/redirect")
+                    .addRedirectUri("http://localhost:8080/redirect")
                     .build();
 
 

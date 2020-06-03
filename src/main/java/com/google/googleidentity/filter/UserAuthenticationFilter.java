@@ -16,7 +16,7 @@
 
 package com.google.googleidentity.filter;
 
-import com.google.googleidentity.oauth2.util.OAuth2Constants;
+
 import com.google.googleidentity.security.UserSession;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
