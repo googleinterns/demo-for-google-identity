@@ -1,7 +1,7 @@
 /.idea/
 /target/
 # follows are all files generated from protos
-/main/java/com/google/googleidentity/oauth2/client/ClientDetails.java
-/main/java/com/google/googleidentity/user/UserDetails.java
+/src/main/java/com/google/googleidentity/oauth2/client/ClientDetails.java
+/src/main/java/com/google/googleidentity/user/UserDetails.java
 *OrBuilder.java
-*OrOuterClass.java
+*OuterClass.java
