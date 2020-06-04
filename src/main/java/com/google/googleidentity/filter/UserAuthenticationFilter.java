@@ -35,6 +35,7 @@ import java.io.IOException;
 
 import java.net.URISyntaxException;
 import java.util.Map;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -79,7 +80,7 @@ public final class UserAuthenticationFilter implements Filter {
             try {
                 userSession.setOlduri(fetchOldUri(httpRequest));
             } catch (URISyntaxException e) {
-                log.info("URI Error!");
+                log.log(Level.INFO, "URI Error!", e);
             }
             httpResponse.sendRedirect("/login");
         }

@@ -16,15 +16,11 @@
 
 package com.google.googleidentity.oauth2.util;
 
-import com.google.common.base.Charsets;
-import com.google.common.hash.Hashing;
-import com.google.googleidentity.oauth2.client.ClientDetails;
-import com.google.googleidentity.oauth2.client.ClientSession;
+import static com.google.common.truth.Truth.assertThat;
+import static com.google.common.truth.Truth.assertWithMessage;
 import org.junit.jupiter.api.Test;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -52,9 +48,8 @@ public class OAuth2UtilsTest {
 
         Set<String> scopes = OAuth2Utils.parseScope("read write  modify");
 
-        assertEquals(scopes.size(), 3);
-
-        assertTrue(scopes.containsAll(Arrays.asList("read","write","modify")));
+        assertThat(scopes)
+                .containsExactly("read", "write", "modify");
 
     }
 }

@@ -22,17 +22,21 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * Test {@link InMemoryUserDetailsService}
  */
-public class InMemoryUserServiceTest {
+public class InMemoryUserDetailsServiceTest {
+
+    private static final String USERNAME = "111";
+    private static final String PASSWORD = "111";
 
     private static final UserDetails USER =
             UserDetails.newBuilder()
-                    .setUsername("111")
+                    .setUsername(USERNAME)
                     .setPassword(Hashing.sha256()
-                            .hashString("111", Charsets.UTF_8).toString())
+                            .hashString(PASSWORD, Charsets.UTF_8).toString())
                     .build();
 
     @Test
@@ -60,12 +64,18 @@ public class InMemoryUserServiceTest {
     }
 
     @Test
-    void testUserDetailsService_updateExistedUser_success() {
+    void testUserDetailsService_updateExistedUser_CorrectUpdate() {
         UserDetailsService userDetailsService= new InMemoryUserDetailsService();
 
         assertTrue(userDetailsService.addUser(USER));
 
-        assertTrue(userDetailsService.updateUser(USER));
+        UserDetails newUser = UserDetails.newBuilder(USER).setEmail("x@x.com").build();
+
+        assertTrue(userDetailsService.updateUser(newUser));
+
+        assertEquals(
+                userDetailsService.getUserByName(USERNAME).get()
+                        .getEmail(),"x@x.com");
 
     }
 

@@ -26,12 +26,16 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.google.common.base.Charsets;
 import com.google.common.hash.Hashing;
+import static com.google.common.truth.Truth.assertThat;
 import com.google.googleidentity.user.InMemoryUserDetailsService;
 import com.google.googleidentity.user.UserDetails;
 import com.google.googleidentity.user.UserDetailsService;
 
+
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertFalse;
+
+
 
 import com.google.inject.Provider;
 
@@ -68,7 +72,7 @@ public class LoginCheckServletTest  {
         userDetailsService.addUser(UserDetails.newBuilder()
                 .setUsername("user")
                 .setPassword(Hashing.sha256()
-                        .hashString("123456", Charsets.UTF_8).toString())
+                        .hashString("correct password", Charsets.UTF_8).toString())
                 .build());
 
         LoginCheckServlet loginCheckServlet = new LoginCheckServlet(
@@ -79,7 +83,7 @@ public class LoginCheckServletTest  {
 
         when(request.getParameter("username")).thenReturn("user");
         when(request.getParameter("password")).thenReturn(Hashing.sha256()
-                .hashString("123456", Charsets.UTF_8).toString());
+                .hashString("correct password", Charsets.UTF_8).toString());
 
         StringWriter stringWriter = new StringWriter();
         PrintWriter writer = new PrintWriter(stringWriter);
@@ -87,9 +91,7 @@ public class LoginCheckServletTest  {
 
         loginCheckServlet.doPost(request, response);
 
-        System.out.println(stringWriter.toString());
-
-        assertTrue(stringWriter.toString().equals("/resource/user\r\n"));
+        assertThat(stringWriter.toString()).isEqualTo("/resource/user\r\n");
 
     }
 
@@ -102,7 +104,7 @@ public class LoginCheckServletTest  {
         userDetailsService.addUser(UserDetails.newBuilder()
                 .setUsername("user")
                 .setPassword(Hashing.sha256()
-                        .hashString("123456", Charsets.UTF_8).toString())
+                        .hashString("correct password", Charsets.UTF_8).toString())
                 .build());
 
         LoginCheckServlet loginCheckServlet = new LoginCheckServlet(
@@ -113,7 +115,7 @@ public class LoginCheckServletTest  {
 
         when(request.getParameter("username")).thenReturn("user");
         when(request.getParameter("password")).thenReturn(Hashing.sha256()
-                .hashString("12345", Charsets.UTF_8).toString());
+                .hashString("wrong password", Charsets.UTF_8).toString());
 
         StringWriter stringWriter = new StringWriter();
         PrintWriter writer = new PrintWriter(stringWriter);
@@ -121,7 +123,7 @@ public class LoginCheckServletTest  {
 
         loginCheckServlet.doPost(request, response);
 
-        assertTrue(stringWriter.toString().startsWith("/login\r\n"));
+        assertThat(stringWriter.toString()).isEqualTo("/login\r\n");
 
     }
 

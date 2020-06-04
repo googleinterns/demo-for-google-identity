@@ -52,8 +52,8 @@ public final class LoginCheckServlet extends HttpServlet {
     private final UserDetailsService userDetailsService;
 
     @Inject
-    public LoginCheckServlet(Provider<UserSession> session,
-                             UserDetailsService userDetailsService) {
+    public LoginCheckServlet(
+            Provider<UserSession> session, UserDetailsService userDetailsService) {
         this.session = session;
         this.userDetailsService = userDetailsService;
     }

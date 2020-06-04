@@ -30,6 +30,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -59,7 +60,7 @@ public final class LoginServlet extends HttpServlet {
         try {
             displayLoginPage(request, response);
         } catch (TemplateException e) {
-            log.info("Error when display login page due to TemplateException!");
+            log.log(Level.INFO, "Error when display login page", e);
         }
 
     }
@@ -70,7 +71,7 @@ public final class LoginServlet extends HttpServlet {
         try {
             displayLoginPage(request, response);
         } catch (TemplateException e) {
-            log.info("Error when display login page due to TemplateException!");
+            log.log(Level.INFO, "Error when display login page", e);
         }
 
     }

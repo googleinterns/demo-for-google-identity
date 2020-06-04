@@ -29,6 +29,7 @@ import static org.junit.Assert.assertEquals;
 
 import com.google.inject.Provider;
 
+import com.google.inject.util.Providers;
 import org.junit.Test;
 
 
@@ -43,22 +44,13 @@ public class UserAuthenticationFilterTest {
 
     private UserSession session= new UserSession();
 
-    public class UserSessionProvider1 implements Provider<UserSession> {
-        @Override
-        public UserSession get() {
-            return session;
-        }
-    }
-
-
     @Test
     public void testFilter_noUserPresent_redirectAndSetOldUrl()
             throws ServletException, IOException {
 
-        Provider<UserSession> userSessionProvider = new UserSessionProvider1();
 
         UserAuthenticationFilter userAuthenticationFilter = new UserAuthenticationFilter(
-                userSessionProvider);
+                Providers.of(session));
 
         HttpServletRequest request = mock(HttpServletRequest.class);
         HttpServletResponse response = mock(HttpServletResponse.class);
@@ -70,7 +62,7 @@ public class UserAuthenticationFilterTest {
 
         verify(response).sendRedirect("/login");
 
-        assertEquals(userSessionProvider.get().getOlduri().get(), "/resource/user");
+        assertEquals(session.getOlduri().get(), "/resource/user");
 
     }
 

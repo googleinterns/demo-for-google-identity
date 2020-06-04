@@ -38,8 +38,8 @@ public class TestUserModule extends AbstractModule {
 
     @Provides
     @Singleton
-    public UserDetailsService getUserDetailsService() {
-        UserDetailsService userDetailsService = new InMemoryUserDetailsService();
+    public UserDetailsService getUserDetailsService(
+            InMemoryUserDetailsService userDetailsService) {
         UserDetails user =
                 UserDetails.newBuilder()
                         .setUsername(TESTUSERNAME0)

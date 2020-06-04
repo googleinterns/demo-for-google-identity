@@ -31,20 +31,21 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  */
 public class InMemoryClientDetailsServiceTest {
 
+    private static final String CLIENTID = "111";
+    private static final String SECRET = "111";
+
     private static final ClientDetails CLIENT =
             ClientDetails.newBuilder()
-                    .setClientId("111")
+                    .setClientId(CLIENTID)
                     .setSecret(Hashing.sha256()
-                            .hashString("111", Charsets.UTF_8).toString())
+                            .hashString(SECRET, Charsets.UTF_8).toString())
                     .addScope("read")
                     .setIsScoped(true)
-                    .addGrantTypes("authorization")
-                    .addRedirectUri("http://localhost:8080/redirect")
                     .build();
 
 
     @Test
-    void testClientDetailsService_updateNonExistUser_fail() {
+    void testClientDetailsService_updateNonExistClient_fail() {
         ClientDetailsService clientDetailsService= new InMemoryClientDetailsService();
 
         assertFalse(clientDetailsService.updateClient(CLIENT));
@@ -66,12 +67,16 @@ public class InMemoryClientDetailsServiceTest {
     }
 
     @Test
-    void testClientDetailsService_updateExistUser_success() {
+    void testClientDetailsService_updateExistUser_CorrectUpdate() {
         ClientDetailsService clientDetailsService= new InMemoryClientDetailsService();
 
         assertTrue(clientDetailsService.addClient(CLIENT));
 
-        assertTrue(clientDetailsService.updateClient(CLIENT));
+        ClientDetails newClient = ClientDetails.newBuilder(CLIENT).setIsScoped(false).build();
+
+        assertTrue(clientDetailsService.updateClient(newClient));
+
+        assertFalse(clientDetailsService.getClientByID("111").get().getIsScoped());
     }
 
     @Test

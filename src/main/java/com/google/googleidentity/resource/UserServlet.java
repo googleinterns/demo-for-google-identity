@@ -34,6 +34,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -72,7 +73,7 @@ public final class UserServlet extends HttpServlet {
         try {
             displayMainPage(request, response);
         } catch (TemplateException e) {
-            log.info("MainPage Error due to TemplateException!");
+            log.log(Level.INFO, "MainPage Error!", e);
         }
 
     }
@@ -83,7 +84,7 @@ public final class UserServlet extends HttpServlet {
         try {
             displayMainPage(request, response);
         } catch (TemplateException e) {
-            log.info("MainPage Error due to TemplateException!");
+            log.log(Level.INFO, "MainPage Error!", e);
         }
 
     }
