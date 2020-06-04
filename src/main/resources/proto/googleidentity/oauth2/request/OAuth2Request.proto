@@ -49,10 +49,10 @@ message OAuth2Request {
     // Request state
     string state = 9;
 
-    // code for authorization code flow
+    // Code for authorization code flow
     string code = 10;
 
-    // refresh token for refresh token request
+    // Refresh token for refresh token request
     string refresh_token = 11;
 
 }
