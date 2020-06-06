@@ -37,12 +37,23 @@ public class InMemoryCodeStoreTest {
 
     private static final String TEST_CODE = "123";
 
+    private OAuth2Request oauth2Request =
+            OAuth2Request.newBuilder()
+                    .setRequestAuth(
+                            OAuth2Request.RequestAuth.newBuilder()
+                                    .setClientId("123"))
+                    .setRequestBody(
+                            OAuth2Request.RequestBody.newBuilder()
+                                    .setResponseType("code"))
+                    .setMessageToReturn(
+                            OAuth2Request.MessageToReturn.newBuilder()
+                                    .setState("123"))
+                    .build();
+
     @Test
     void testInMemoryCodeStore_duplicateCode_canNotStore() {
 
         InMemoryCodeStore codeStore = new InMemoryCodeStore();
-
-        OAuth2Request oauth2Request = OAuth2Request.newBuilder().build();
 
         assertTrue(codeStore.setCode(TEST_CODE, oauth2Request));
 
@@ -53,8 +64,6 @@ public class InMemoryCodeStoreTest {
     void testInMemoryCodeStore_correctStore_correctConsume() {
 
         InMemoryCodeStore codeStore = new InMemoryCodeStore();
-
-        OAuth2Request oauth2Request = OAuth2Request.newBuilder().build();
 
         assertTrue(codeStore.setCode(TEST_CODE, oauth2Request));
 
@@ -75,8 +84,6 @@ public class InMemoryCodeStoreTest {
     void testInMemoryCodeStore_CorrectConsume_codeDeleted() {
 
         InMemoryCodeStore codeStore = new InMemoryCodeStore();
-
-        OAuth2Request oauth2Request = OAuth2Request.newBuilder().build();
 
         assertTrue(codeStore.setCode(TEST_CODE, oauth2Request));
 

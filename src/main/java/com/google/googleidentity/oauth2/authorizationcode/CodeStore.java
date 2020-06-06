@@ -23,7 +23,7 @@ import java.util.Optional;
 /**
  * AuthorizationCode store interface
  */
-public interface CodeStore {
+interface CodeStore {
 
     /**
      *
@@ -33,7 +33,9 @@ public interface CodeStore {
     Optional<OAuth2Request> consumeCode(String code);
 
     /**
-     * set the code for the request
+     * Set the code for the request,
+     * failed when a code is already exist, the code Service
+     * should generate a new code and try again
      *
      * @param code
      * @param request

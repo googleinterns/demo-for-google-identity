@@ -19,40 +19,57 @@ package googleidentity.oauth2.request;
 option java_package = "com.google.googleidentity.oauth2.request";
 option java_multiple_files = true;
 
-// Store oauth2 request related parameters for processing
+// Store oauth2 related parameters parsed from the request. Client and user
+// authentication information will not be stored. This class is used after authentication.
+// Will be use as an input in auth code generation, token generation, token refresh.
+// Do not need to fetch it from http request when dealing with specific stuffs.
+// May consider to split it into different sub messages for different usage.
 message OAuth2Request {
 
-    // Request clientID
-    string client_id = 1;
+    message RequestAuth{
+        // Request clientID
+        string client_id = 1;
 
-    // Request username
-    string username = 2;
+        // Request username
+        string username = 2;
 
-    // Whether request scoped is limited
-    bool is_scoped = 3;
+        // Code for authorization code flow
+        string code = 3;
+    }
 
-    // Request scopes
-    repeated string scope = 4;
+    RequestAuth request_auth = 1;
 
-    // Whether support a refresh token
-    bool refreshable = 5;
+    message RequestBody{
+        // Request response type
+        string response_type = 1;
 
-    // Request redirect uri
-    string redirect_uri = 6;
+        // Request grant type
+        string grant_type = 2;
 
-    // Request response type
-    string response_type = 7;
+        // Whether request scoped is limited
+        bool is_scoped = 3;
 
-    // Request grant type
-    string grant_type = 8;
+        // Request scopes
+        repeated string scope = 4;
 
-    // Request state
-    string state = 9;
+        // Whether support a refresh token
+        bool refreshable = 5;
 
-    // Code for authorization code flow
-    string code = 10;
+        // Refresh token for refresh token request
+        string refresh_token = 6;
+    }
 
-    // Refresh token for refresh token request
-    string refresh_token = 11;
+    RequestBody request_body = 2;
+
+    message MessageToReturn{
+
+        // Request redirect uri
+        string redirect_uri = 1;
+
+        // Request state
+        string state = 2;
+    }
+
+    MessageToReturn message_to_return = 3;
 
 }

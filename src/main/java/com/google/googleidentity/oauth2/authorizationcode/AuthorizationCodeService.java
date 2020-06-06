@@ -16,6 +16,7 @@
 
 package com.google.googleidentity.oauth2.authorizationcode;
 
+import com.google.common.io.BaseEncoding;
 import com.google.googleidentity.oauth2.request.OAuth2Request;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
@@ -23,20 +24,21 @@ import com.google.inject.Singleton;
 import java.util.Optional;
 import java.util.Random;
 
+import static com.google.common.io.BaseEncoding.base64Url;
+
 /**
  * AuthorizationCodeService, generate Authorization Code and Store it
  */
 @Singleton
 public final class AuthorizationCodeService {
 
-    private static final String CHARACTERSET =
-            "0123456789ZXCVBNMASDFGHJKLQWERTYUIOPzxcvbnmasdfghjklqwertyuiop";
-
-    private Random random = new Random();;
+    private Random random = new Random();
 
     private CodeStore codeStore;
 
     private int codeLength = 10;
+
+    private int byteLength = 7;
 
     @Inject
     public AuthorizationCodeService(CodeStore codeStore){
@@ -45,10 +47,12 @@ public final class AuthorizationCodeService {
 
     public void setCodeLength(int codeLength) {
         this.codeLength = codeLength;
+        this.byteLength = ((codeLength-1)/4+1)*3-2;
     }
 
     /**
-     *Generate a authorization code for the request
+     * Generate a authorization code for the request, always success.
+     * Because once a duplicate code generated, we will try another one.
      *
      * @param request
      * @return the generated code
@@ -74,19 +78,13 @@ public final class AuthorizationCodeService {
 
     private String generateCode(){
 
-        byte[] bytes = new byte[codeLength];
+        byte[] bytes = new byte[byteLength];
+
         random.nextBytes(bytes);
 
-        StringBuilder sb = new StringBuilder();
+        BaseEncoding hex = BaseEncoding.base64Url();
 
-        for(byte b : bytes){
-            int index = ((int) b % CHARACTERSET.length()
-                    + CHARACTERSET.length()) % CHARACTERSET.length();
-
-            sb.append(CHARACTERSET.charAt(index));
-        }
-
-        return sb.toString();
+        return hex.encode(bytes).substring(0, codeLength);
     }
 
 }

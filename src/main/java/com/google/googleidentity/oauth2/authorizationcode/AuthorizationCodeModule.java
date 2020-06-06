@@ -14,27 +14,24 @@
     limitations under the License.
 */
 
-package com.google.googleidentity.oauth2.config;
+package com.google.googleidentity.oauth2.authorizationcode;
 
-import com.google.common.base.Charsets;
-import com.google.common.hash.Hashing;
-import com.google.googleidentity.oauth2.authorizationcode.AuthorizationCodeModule;
-import com.google.googleidentity.oauth2.authorizationcode.AuthorizationCodeService;
-import com.google.googleidentity.user.InMemoryUserDetailsService;
-import com.google.googleidentity.user.UserDetails;
-import com.google.googleidentity.user.UserDetailsService;
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 import com.google.inject.Singleton;
 
-/**
- * Module for OAuth2Server
- */
-public class OAuth2ServerModule extends AbstractModule {
+public class AuthorizationCodeModule extends AbstractModule {
 
     @Override
     protected void configure(){
-        install(new AuthorizationCodeModule());
+        bind(CodeStore.class).to(InMemoryCodeStore.class);
     }
 
+    @Provides
+    @Singleton
+    public AuthorizationCodeService getAuthorizationCodeService(
+            AuthorizationCodeService authorizationCodeService) {
+        authorizationCodeService.setCodeLength(10);
+        return authorizationCodeService;
+    }
 }
