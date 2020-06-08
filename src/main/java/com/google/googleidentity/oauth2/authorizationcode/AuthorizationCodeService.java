@@ -36,7 +36,7 @@ public final class AuthorizationCodeService {
 
     private Random random = new Random();
 
-    private CodeStore codeStore;
+    private final CodeStore codeStore;
 
     private int codeLength = 10;
 
@@ -103,11 +103,11 @@ public final class AuthorizationCodeService {
 
         byte[] bytes = new byte[byteLength];
 
-        int mixLength = Math.min(3, byteLength/2);
+        int fixLength = Math.min(3, byteLength/2);
 
         random.nextBytes(bytes);
 
-        System.arraycopy(fixInfo, 0, bytes, 0 , mixLength);
+        System.arraycopy(fixInfo, 0, bytes, 0 , fixLength);
 
         BaseEncoding hex = BaseEncoding.base64Url();
 
