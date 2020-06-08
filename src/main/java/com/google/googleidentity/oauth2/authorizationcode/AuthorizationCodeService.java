@@ -99,7 +99,7 @@ public final class AuthorizationCodeService {
     private String generateCode(String clientID, String username){
         byte[] fixInfo =
                 Hashing.sha256()
-                        .hashString(clientID+username, Charsets.UTF_8).asBytes();
+                        .hashString(clientID + username, Charsets.UTF_8).asBytes();
 
         byte[] bytes = new byte[byteLength];
 
