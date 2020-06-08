@@ -2,6 +2,9 @@
     <threadsafe>true</threadsafe>
     <runtime>java8</runtime>
     <sessions-enabled>true</sessions-enabled>
+    <env-variables>
+        <env-var name="AUTH_CODE_LENGTH" value="10" />
+    </env-variables>
     <system-properties>
         <property name="java.util.logging.config.file" value="WEB-INF/logging.properties"/>
     </system-properties>

@@ -37,7 +37,7 @@ public class InMemoryCodeStoreTest {
 
     private static final String TEST_CODE = "123";
 
-    private OAuth2Request oauth2Request =
+    private static final OAuth2Request oauth2Request =
             OAuth2Request.newBuilder()
                     .setRequestAuth(
                             OAuth2Request.RequestAuth.newBuilder()

@@ -47,6 +47,13 @@ final class InMemoryCodeStore implements CodeStore {
         }
     }
 
+    /**
+     * The synchronize here is just for demo when using in memory storage.
+     *
+     * @param code
+     * @param request
+     * @return
+     */
     @Override
     public synchronized boolean setCode(String code, OAuth2Request request) {
         if(codeStore.containsKey(code)){

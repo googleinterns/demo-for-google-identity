@@ -16,6 +16,8 @@
 
 package com.google.googleidentity.oauth2.authorizationcode;
 
+import com.google.common.base.Charsets;
+import com.google.common.hash.Hashing;
 import com.google.common.io.BaseEncoding;
 import com.google.googleidentity.oauth2.request.OAuth2Request;
 import com.google.inject.Inject;
@@ -45,6 +47,12 @@ public final class AuthorizationCodeService {
         this.codeStore = codeStore;
     }
 
+    /**
+     * Set the byteLength as the minimum one we need for
+     * BaseEncoding.base64Url to generate a string with length of codeLength.
+     *
+     * @param codeLength
+     */
     public void setCodeLength(int codeLength) {
         this.codeLength = codeLength;
         this.byteLength = ((codeLength-1)/4+1)*3-2;
@@ -59,10 +67,15 @@ public final class AuthorizationCodeService {
      */
     public String getCodeForRequest(OAuth2Request request){
 
-        String code = generateCode();
+        String code =
+                generateCode(
+                        request.getRequestAuth().getClientId(),
+                        request.getRequestAuth().getUsername());
 
         while(!codeStore.setCode(code, request)){
-            code = generateCode();
+            code = generateCode(
+                            request.getRequestAuth().getClientId(),
+                            request.getRequestAuth().getUsername());
         }
         return code;
     }
@@ -76,11 +89,25 @@ public final class AuthorizationCodeService {
         return codeStore.consumeCode(code);
     }
 
-    private String generateCode(){
+    /**
+     * Associate with client and username to reduce collisions.
+     *
+     * @param clientID
+     * @param username
+     * @return
+     */
+    private String generateCode(String clientID, String username){
+        byte[] fixInfo =
+                Hashing.sha256()
+                        .hashString(clientID+username, Charsets.UTF_8).asBytes();
 
         byte[] bytes = new byte[byteLength];
 
+        int mixLength = Math.min(3, byteLength/2);
+
         random.nextBytes(bytes);
+
+        System.arraycopy(fixInfo, 0, bytes, 0 , mixLength);
 
         BaseEncoding hex = BaseEncoding.base64Url();
 
