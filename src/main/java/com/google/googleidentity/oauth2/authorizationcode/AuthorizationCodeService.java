@@ -38,9 +38,20 @@ public final class AuthorizationCodeService {
 
     private final CodeStore codeStore;
 
-    private int codeLength = 10;
+    /**
+     * The value is set in appengine-web.xml
+     */
+    private static final String AUTH_CODE_LENGTH = System.getenv("AUTH_CODE_LENGTH");
 
-    private int byteLength = 7;
+    private int codeLength = Integer.valueOf(AUTH_CODE_LENGTH);
+
+    /**
+     * Set the byteLength as the minimum one we need for
+     * BaseEncoding.base64Url to generate a string with length of codeLength.
+     * A char in base64Url need 6 bits (2^6 = 64) and a byte has 8 bits.
+     * So byteLength = (codeLength * 6 - 1) / 8 + 1;
+     */
+    private int byteLength = (codeLength * 6 - 1) / 8 + 1;
 
     @Inject
     public AuthorizationCodeService(CodeStore codeStore){
@@ -93,29 +104,29 @@ public final class AuthorizationCodeService {
 
   /**
    * Associate with client and username to reduce collisions.
-   * When generating random bytes, set first x bytes as the first x bytes
-   * of sha256(clientID + username). To get enough randomness, x = min(3, byteLength/2).
+   * When generating random bytes, set first numPrefixBytesToCopy bytes
+   * as the first numPrefixBytesToCopy bytes of sha256(clientID + username).
+   * To get enough randomness, numPrefixBytesToCopy = min(3, byteLength/2).
    *
    * @param clientID
    * @param username
    * @return
    */
   private String generateCode(String clientID, String username) {
-        byte[] fixInfo =
-                Hashing.sha256()
-                        .hashString(clientID + username, Charsets.UTF_8).asBytes();
 
-        byte[] bytes = new byte[byteLength];
+      byte[] authCodeBytes = new byte[byteLength];
 
-        int fixLength = Math.min(3, byteLength/2);
+      random.nextBytes(authCodeBytes);
 
-        random.nextBytes(bytes);
+      int numPrefixBytesToCopy = Math.min(3, byteLength/2);
+      byte[] prefixBytes =
+              Hashing.sha256()
+                      .hashString(clientID + username, Charsets.UTF_8).asBytes();
 
-        System.arraycopy(fixInfo, 0, bytes, 0 , fixLength);
+      System.arraycopy(prefixBytes, 0, authCodeBytes, 0 , numPrefixBytesToCopy);
 
-        BaseEncoding hex = BaseEncoding.base64Url();
-
-        return hex.encode(bytes).substring(0, codeLength);
+      // Here we truncate the result since the encode hex may be longer the codeLength.
+      return BaseEncoding.base64Url().encode(authCodeBytes).substring(0, codeLength);
     }
 
 }

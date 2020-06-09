@@ -22,21 +22,9 @@ import com.google.inject.Singleton;
 
 public class AuthorizationCodeModule extends AbstractModule {
 
-    /**
-     * The value is set in appengine-web.xml
-     */
-    private static final String AUTH_CODE_LENGTH = System.getenv("AUTH_CODE_LENGTH");
-
     @Override
     protected void configure(){
         bind(CodeStore.class).to(InMemoryCodeStore.class);
     }
 
-    @Provides
-    @Singleton
-    public AuthorizationCodeService getAuthorizationCodeService(
-            AuthorizationCodeService authorizationCodeService) {
-        authorizationCodeService.setCodeLength(Integer.valueOf(AUTH_CODE_LENGTH));
-        return authorizationCodeService;
-    }
 }

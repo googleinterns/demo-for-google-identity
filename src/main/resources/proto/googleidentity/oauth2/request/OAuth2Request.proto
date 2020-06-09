@@ -61,7 +61,7 @@ message OAuth2Request {
 
     RequestBody request_body = 2;
 
-    message MessageToReturn{
+    message AuthorizationResponse{
 
         // Request redirect uri
         string redirect_uri = 1;
@@ -70,6 +70,6 @@ message OAuth2Request {
         string state = 2;
     }
 
-    MessageToReturn message_to_return = 3;
+    AuthorizationResponse authorization_response = 3;
 
 }

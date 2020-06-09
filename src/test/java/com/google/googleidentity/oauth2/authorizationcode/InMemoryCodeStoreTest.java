@@ -45,8 +45,8 @@ public class InMemoryCodeStoreTest {
                     .setRequestBody(
                             OAuth2Request.RequestBody.newBuilder()
                                     .setResponseType("code"))
-                    .setMessageToReturn(
-                            OAuth2Request.MessageToReturn.newBuilder()
+                    .setAuthorizationResponse(
+                            OAuth2Request.AuthorizationResponse.newBuilder()
                                     .setState("123"))
                     .build();
 
