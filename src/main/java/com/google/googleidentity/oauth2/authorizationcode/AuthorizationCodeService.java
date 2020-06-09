@@ -50,12 +50,14 @@ public final class AuthorizationCodeService {
     /**
      * Set the byteLength as the minimum one we need for
      * BaseEncoding.base64Url to generate a string with length of codeLength.
+     * A char in base64Url need 6 bits (2^6 = 64) and a byte has 8 bits.
+     * So byteLength = (codeLength * 6 - 1) / 8 + 1;
      *
      * @param codeLength
      */
     public void setCodeLength(int codeLength) {
         this.codeLength = codeLength;
-        this.byteLength = ((codeLength-1)/4+1)*3-2;
+        this.byteLength = (codeLength * 6 - 1) / 8 + 1;
     }
 
     /**
@@ -89,14 +91,16 @@ public final class AuthorizationCodeService {
         return codeStore.consumeCode(code);
     }
 
-    /**
-     * Associate with client and username to reduce collisions.
-     *
-     * @param clientID
-     * @param username
-     * @return
-     */
-    private String generateCode(String clientID, String username){
+  /**
+   * Associate with client and username to reduce collisions.
+   * When generating random bytes, set first x bytes as the first x bytes
+   * of sha256(clientID + username). To get enough randomness, x = min(3, byteLength/2).
+   *
+   * @param clientID
+   * @param username
+   * @return
+   */
+  private String generateCode(String clientID, String username) {
         byte[] fixInfo =
                 Hashing.sha256()
                         .hashString(clientID + username, Charsets.UTF_8).asBytes();
