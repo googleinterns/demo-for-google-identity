@@ -1,0 +1,75 @@
+//   Copyright 2020 Google LLC
+//
+//   Licensed under the Apache License, Version 2.0 (the "License");
+//   you may not use this file except in compliance with the License.
+//   You may obtain a copy of the License at
+//
+//   https://www.apache.org/licenses/LICENSE-2.0
+//
+//   Unless required by applicable law or agreed to in writing, software
+//   distributed under the License is distributed on an "AS IS" BASIS,
+//   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+//   See the License for the specific language governing permissions and
+//   limitations under the License.
+
+syntax = "proto3";
+
+package googleidentity.oauth2.request;
+
+option java_package = "com.google.googleidentity.oauth2.request";
+option java_multiple_files = true;
+
+// Store oauth2 related parameters parsed from the request. Client and user
+// authentication information will not be stored. This class is used after authentication.
+// Will be use as an input in auth code generation, token generation, token refresh.
+// Do not need to fetch it from http request when dealing with specific stuffs.
+// May consider to split it into different sub messages for different usage.
+message OAuth2Request {
+
+    message RequestAuth{
+        // Request clientID
+        string client_id = 1;
+
+        // Request username
+        string username = 2;
+
+        // Code for authorization code flow
+        string code = 3;
+    }
+
+    RequestAuth request_auth = 1;
+
+    message RequestBody{
+        // Request response type
+        string response_type = 1;
+
+        // Request grant type
+        string grant_type = 2;
+
+        // Whether request scoped is limited
+        bool is_scoped = 3;
+
+        // Request scopes
+        repeated string scope = 4;
+
+        // Whether support a refresh token
+        bool refreshable = 5;
+
+        // Refresh token for refresh token request
+        string refresh_token = 6;
+    }
+
+    RequestBody request_body = 2;
+
+    message AuthorizationResponse{
+
+        // Request redirect uri
+        string redirect_uri = 1;
+
+        // Request state
+        string state = 2;
+    }
+
+    AuthorizationResponse authorization_response = 3;
+
+}
