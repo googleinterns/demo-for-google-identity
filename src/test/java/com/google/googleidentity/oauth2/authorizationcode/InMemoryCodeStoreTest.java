@@ -41,13 +41,13 @@ public class InMemoryCodeStoreTest {
             OAuth2Request.newBuilder()
                     .setRequestAuth(
                             OAuth2Request.RequestAuth.newBuilder()
-                                    .setClientId("123"))
+                                    .setClientId(TEST_CODE))
                     .setRequestBody(
                             OAuth2Request.RequestBody.newBuilder()
                                     .setResponseType("code"))
                     .setAuthorizationResponse(
                             OAuth2Request.AuthorizationResponse.newBuilder()
-                                    .setState("123"))
+                                    .setState(TEST_CODE))
                     .build();
 
     @Test
