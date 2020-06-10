@@ -64,7 +64,9 @@ public final class LoginCheckServlet extends HttpServlet {
         if (check(username, password)) {
             UserSession userSession =
                     (UserSession) request.getSession().getAttribute("user_session");
-
+            if(userSession == null){
+                userSession = new UserSession();
+            }
             userSession.setUser(
                     UserDetails.newBuilder()
                             .setUsername(username)
