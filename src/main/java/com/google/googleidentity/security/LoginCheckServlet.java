@@ -47,14 +47,10 @@ public final class LoginCheckServlet extends HttpServlet {
 
     private static final long serialVersionUID = 4L;
 
-    private final Provider<UserSession> session;
-
     private final UserDetailsService userDetailsService;
 
     @Inject
-    public LoginCheckServlet(
-            Provider<UserSession> session, UserDetailsService userDetailsService) {
-        this.session = session;
+    public LoginCheckServlet(UserDetailsService userDetailsService) {
         this.userDetailsService = userDetailsService;
     }
 
@@ -66,7 +62,8 @@ public final class LoginCheckServlet extends HttpServlet {
         response.setContentType("text/html;charset=utf-8");
 
         if (check(username, password)) {
-            UserSession userSession = session.get();
+            UserSession userSession =
+                    (UserSession) request.getSession().getAttribute("user_session");
 
             userSession.setUser(
                     UserDetails.newBuilder()
@@ -74,9 +71,10 @@ public final class LoginCheckServlet extends HttpServlet {
                             .setPassword(password)
                             .build());
 
+            request.getSession().setAttribute("user_session", userSession);
             response.setStatus(HttpStatusCodes.STATUS_CODE_OK);
             response.getWriter().println(
-                    userSession.getOlduri().orElse("/resource/user"));
+                   userSession.getOlduri().orElse("/resource/user"));
 
         } else {
             response.setStatus(HttpStatusCodes.STATUS_CODE_UNAUTHORIZED);

@@ -18,12 +18,15 @@ package com.google.googleidentity.oauth2.client;
 
 import com.google.common.base.Charsets;
 import com.google.common.hash.Hashing;
+import static com.google.common.truth.Truth.assertThat;
 import com.google.googleidentity.oauth2.client.ClientDetails;
 import com.google.googleidentity.oauth2.client.ClientSession;
+import com.google.googleidentity.oauth2.request.OAuth2Request;
 import org.junit.jupiter.api.Test;
 
+import java.util.Optional;
+
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Test {@link ClientSession}
@@ -42,15 +45,20 @@ public class ClientSessionTest {
                         .setClientId("111")
                         .setSecret(Hashing.sha256()
                                 .hashString("111", Charsets.UTF_8).toString())
-                        .addScope("read")
+                        .addScopes("read")
                         .setIsScoped(true)
                         .addGrantTypes("authorization")
-                        .addRedirectUri("http://localhost:8080/redirect")
+                        .addRedirectUris("http://localhost:8080/redirect")
                         .build();
 
         clientSession.setClient(client);
 
-        assertTrue(clientSession.getClient().isPresent());
+        OAuth2Request oauth2Request = OAuth2Request.newBuilder().build();
 
+        clientSession.setRequest(oauth2Request);
+
+        assertThat(clientSession.getClient()).isEqualTo(Optional.ofNullable(client));
+
+        assertThat(clientSession.getRequest()).isEqualTo(Optional.ofNullable(oauth2Request));
     }
 }

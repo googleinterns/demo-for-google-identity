@@ -33,8 +33,8 @@ message ClientDetails {
     bool is_scoped = 4;
 
     // The OAuth 2.0 scopes that are permitted by this client.
-    repeated string scope = 5;
+    repeated string scopes = 5;
 
     // Redirect uri set for authorization endpoint
-    repeated string redirect_uri = 6;
+    repeated string redirect_uris = 6;
 }

@@ -91,6 +91,11 @@
             <artifactId>truth</artifactId>
             <version>1.0.1</version>
         </dependency>
+        <dependency>
+            <groupId>net.minidev</groupId>
+            <artifactId>json-smart</artifactId>
+            <version>2.3</version>
+        </dependency>
     </dependencies>
 
     <build>

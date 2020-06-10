@@ -47,7 +47,7 @@ limitations under the License.
     <div class="row row-centered">
         <div class="well col-md-6 col-centered">
             <div style="text-align:center">
-            <h2>Login</h2>
+                <h2>Login</h2>
             </div>
             <form action="/login_check" method="post" role="form">
                 <div class="input-group input-group-md">

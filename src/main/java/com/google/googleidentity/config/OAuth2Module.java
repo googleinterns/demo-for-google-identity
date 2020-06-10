@@ -18,6 +18,7 @@ package com.google.googleidentity.config;
 
 
 import com.google.googleidentity.filter.UserAuthenticationFilter;
+import com.google.googleidentity.oauth2.endpoint.ApprovalEndpoint;
 import com.google.googleidentity.oauth2.endpoint.AuthorizationEndpoint;
 import com.google.googleidentity.oauth2.filter.ClientAuthenticationFilter;
 import com.google.googleidentity.resource.UserServlet;
@@ -39,6 +40,7 @@ public final class OAuth2Module extends AbstractModule {
                         "resource/user;jsessionid.*")
                         .with(UserServlet.class);
                 serveRegex(
+                        "/",
                         "/login",
                         "/login;jsessionid.*")
                         .with(LoginServlet.class);
@@ -46,6 +48,8 @@ public final class OAuth2Module extends AbstractModule {
                         .with(LoginCheckServlet.class);
                 serve("/oauth2/authorize")
                         .with(AuthorizationEndpoint.class);
+                serve("/oauth2/approval")
+                        .with(ApprovalEndpoint.class);
                 filterRegex(
                         "/oauth2/authorize",
                         "/resource/.*")

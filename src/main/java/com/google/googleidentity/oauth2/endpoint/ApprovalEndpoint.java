@@ -14,10 +14,11 @@
     limitations under the License.
 */
 
-package com.google.googleidentity.resource;
+package com.google.googleidentity.oauth2.endpoint;
 
+import com.google.googleidentity.oauth2.client.ClientSession;
+import com.google.googleidentity.oauth2.request.OAuth2Request;
 import com.google.googleidentity.security.UserSession;
-import com.google.googleidentity.user.UserDetails;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import com.google.inject.Singleton;
@@ -33,22 +34,20 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * Demo UserServlet
- * Read UserDetails.User Object {@link com.google.googleidentity.user.UserDetails}  stored in
- * in the session through class {@link com.google.googleidentity.security.UserSession} and
- * display the username.
+ * Approval endpoint, display request client and request scopes.
+ * Used for getting user's approval.
  */
 @Singleton
-public final class UserServlet extends HttpServlet {
+public class ApprovalEndpoint extends HttpServlet {
 
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 7L;
 
-    private static final Logger log = Logger.getLogger("UserServlet");
+    private static final Logger log = Logger.getLogger("ApprovalEndpoint");
 
     private Configuration configuration;
 
@@ -60,39 +59,49 @@ public final class UserServlet extends HttpServlet {
 
     }
 
-    public void doGet(HttpServletRequest request, HttpServletResponse response)
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-
         try {
-            displayMainPage(request, response);
+            approval(request, response);
         } catch (TemplateException e) {
-            log.log(Level.INFO, "MainPage Error!", e);
+            log.info("Approval Page Error!");
         }
-
     }
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-
         try {
-            displayMainPage(request, response);
+            approval(request, response);
         } catch (TemplateException e) {
-            log.log(Level.INFO, "MainPage Error!", e);
+            log.info("Approval Page Error!");
         }
-
     }
 
-    private void displayMainPage(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException, TemplateException {
+    private void approval(HttpServletRequest request, HttpServletResponse response)
+            throws IOException, TemplateException {
 
-        UserSession userSession =
-                (UserSession) request.getSession().getAttribute("user_session");
-        UserDetails user = userSession.getUser().get();
+        OAuth2Request oauth2Request =
+                ((ClientSession) request.getSession().getAttribute("client_session"))
+                        .getRequest().get();
 
         Map<String, Object> information = new HashMap<String, Object>();
-        information.put("username", user.getUsername());
+        information.put("clientID", oauth2Request.getRequestAuth().getClientId());
 
-        Template template = configuration.getTemplate("MainPage.ftl");
+        List<String> scopes = oauth2Request.getRequestBody().getScopesList();
+
+        StringBuilder sb = new StringBuilder();
+        if(scopes.isEmpty()){
+            sb.append("All");
+        }
+        else{
+            for(String scope : scopes){
+                sb.append(scope + " ");
+            }
+        }
+
+        information.put("scopes", sb.toString());
+
+        Template template = configuration.getTemplate("ApprovalPage.ftl");
 
         response.setCharacterEncoding("utf-8");
         PrintWriter printWriter = response.getWriter();
@@ -100,7 +109,6 @@ public final class UserServlet extends HttpServlet {
         template.process(information, printWriter);
 
         printWriter.flush();
-
     }
 
 }

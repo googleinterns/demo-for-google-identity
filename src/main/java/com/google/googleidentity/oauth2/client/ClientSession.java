@@ -16,6 +16,7 @@
 
 package com.google.googleidentity.oauth2.client;
 
+import com.google.googleidentity.oauth2.request.OAuth2Request;
 import com.google.inject.servlet.SessionScoped;
 
 import java.io.Serializable;
@@ -23,21 +24,32 @@ import java.util.Optional;
 
 /**
  * ClientSession Object
- * Store client information for a client pass filter
+ * Store client information for a client passed filter
+ * Store request information
+ * Stored in HttpSession named client_session
  */
-@SessionScoped
-public final class ClientSession implements Serializable {
+public class ClientSession implements Serializable {
 
     private static final long serialVersionUID = 6L;
 
     private ClientDetails client = null;
 
+    private OAuth2Request request = null;
+
     public Optional<ClientDetails> getClient() {
         return Optional.ofNullable(client);
     }
 
+    public Optional<OAuth2Request> getRequest(){
+        return Optional.ofNullable(request);
+    }
+
     public void setClient(ClientDetails client) {
         this.client = client;
+    }
+
+    public void setRequest(OAuth2Request request){
+        this.request = request;
     }
 
     @Override
@@ -46,6 +58,9 @@ public final class ClientSession implements Serializable {
         StringBuilder sb = new StringBuilder();
         if (client != null) {
             sb.append("client:" + client.toString() + "\t");
+        }
+        if (request != null){
+            sb.append("request:" + request.toString() + "\t" );
         }
         return sb.toString();
     }

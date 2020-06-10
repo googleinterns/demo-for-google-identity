@@ -39,7 +39,7 @@ public class InMemoryClientDetailsServiceTest {
                     .setClientId(CLIENTID)
                     .setSecret(Hashing.sha256()
                             .hashString(SECRET, Charsets.UTF_8).toString())
-                    .addScope("read")
+                    .addScopes("read")
                     .setIsScoped(true)
                     .build();
 
@@ -56,7 +56,7 @@ public class InMemoryClientDetailsServiceTest {
     void testClientDetailsService_getNonExistUser_notPresent() {
         ClientDetailsService clientDetailsService= new InMemoryClientDetailsService();
 
-        assertFalse(clientDetailsService.getClientByID("111").isPresent());
+        assertFalse(clientDetailsService.getClientByID(CLIENTID).isPresent());
     }
 
     @Test
@@ -76,7 +76,7 @@ public class InMemoryClientDetailsServiceTest {
 
         assertTrue(clientDetailsService.updateClient(newClient));
 
-        assertFalse(clientDetailsService.getClientByID("111").get().getIsScoped());
+        assertFalse(clientDetailsService.getClientByID(CLIENTID).get().getIsScoped());
     }
 
     @Test
@@ -95,7 +95,7 @@ public class InMemoryClientDetailsServiceTest {
 
         assertTrue(clientDetailsService.addClient(CLIENT));
 
-        assertTrue(clientDetailsService.getClientByID("111").isPresent());
+        assertTrue(clientDetailsService.getClientByID(CLIENTID).isPresent());
 
     }
 

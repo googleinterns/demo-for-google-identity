@@ -55,11 +55,7 @@ public final class UserAuthenticationFilter implements Filter {
 
     private static final Logger log = Logger.getLogger("UserAuthenticationFilter");
 
-    private final Provider<UserSession> session;
-
-    @Inject
-    public UserAuthenticationFilter(Provider<UserSession> session) {
-        this.session = session;
+    public UserAuthenticationFilter() {
     }
 
     public void init(FilterConfig filterConfig) throws ServletException {}
@@ -70,10 +66,16 @@ public final class UserAuthenticationFilter implements Filter {
         HttpServletResponse httpResponse = (HttpServletResponse) response;
         HttpServletRequest httpRequest = (HttpServletRequest) request;
 
-        UserSession userSession = session.get();
+        UserSession userSession =
+                (UserSession) httpRequest.getSession().getAttribute("user_session");
+
+        if(userSession == null){
+            userSession = new UserSession();
+        }
         userSession.setOlduri(null);
 
         if (userSession.getUser().isPresent()) {
+            httpRequest.getSession().setAttribute("user_session", userSession);
             chain.doFilter(request, response);
         }
         else {
@@ -82,6 +84,7 @@ public final class UserAuthenticationFilter implements Filter {
             } catch (URISyntaxException e) {
                 log.log(Level.INFO, "URI Error!", e);
             }
+            httpRequest.getSession().setAttribute("user_session", userSession);
             httpResponse.sendRedirect("/login");
         }
     }
