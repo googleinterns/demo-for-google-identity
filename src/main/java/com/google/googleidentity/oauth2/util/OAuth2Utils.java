@@ -31,7 +31,6 @@ import java.util.Set;
  */
 public class OAuth2Utils {
 
-
     /**
      * Return oauth2 exception error through response.
      * @param response

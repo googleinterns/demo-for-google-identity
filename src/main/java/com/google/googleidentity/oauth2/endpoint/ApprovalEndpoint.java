@@ -62,7 +62,7 @@ public class ApprovalEndpoint extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         try {
-            approval(request, response);
+            toApprovalPage(request, response);
         } catch (TemplateException e) {
             log.info("Approval Page Error!");
         }
@@ -71,13 +71,13 @@ public class ApprovalEndpoint extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         try {
-            approval(request, response);
+            toApprovalPage(request, response);
         } catch (TemplateException e) {
             log.info("Approval Page Error!");
         }
     }
 
-    private void approval(HttpServletRequest request, HttpServletResponse response)
+    private void toApprovalPage(HttpServletRequest request, HttpServletResponse response)
             throws IOException, TemplateException {
 
         OAuth2Request oauth2Request =

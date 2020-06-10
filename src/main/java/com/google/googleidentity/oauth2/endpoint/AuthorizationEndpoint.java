@@ -70,7 +70,8 @@ public final class AuthorizationEndpoint extends HttpServlet {
             if (responseType == null) {
                 throw new OAuth2Exception(HttpStatus.SC_BAD_REQUEST,
                         "invalid_request", "No Response Type!", null);
-            } else if (!responseType.equals("token") && !responseType.equals("code")) {
+            }
+            else if (!responseType.equals("token") && !responseType.equals("code")) {
                 throw new OAuth2Exception(HttpStatus.SC_BAD_REQUEST,
                         "invalid_request", "Invalid Response Type!", null);
             }
