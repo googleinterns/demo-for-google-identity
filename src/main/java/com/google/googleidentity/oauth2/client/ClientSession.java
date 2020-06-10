@@ -28,7 +28,7 @@ import java.util.Optional;
  * Store request information
  * Stored in HttpSession named client_session
  */
-public class ClientSession implements Serializable {
+public final class ClientSession implements Serializable {
 
     private static final long serialVersionUID = 6L;
 
