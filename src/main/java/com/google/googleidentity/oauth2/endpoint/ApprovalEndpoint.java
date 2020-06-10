@@ -46,70 +46,12 @@ import java.util.logging.Logger;
 @Singleton
 public class ApprovalEndpoint extends HttpServlet {
 
-    private static final long serialVersionUID = 7L;
-
-    private static final Logger log = Logger.getLogger("ApprovalEndpoint");
-
-    private Configuration configuration;
-
-    public void init() throws ServletException {
-
-        Version version = new Version("2.3.30");
-        configuration = new Configuration(version);
-        configuration.setServletContextForTemplateLoading(getServletContext(), "template");
-
-    }
-
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        try {
-            toApprovalPage(request, response);
-        } catch (TemplateException e) {
-            log.log(Level.INFO, "Error when display Approval page", e);
-        }
     }
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        try {
-            toApprovalPage(request, response);
-        } catch (TemplateException e) {
-            log.log(Level.INFO, "Error when display Approval page", e);
-        }
-    }
-
-    private void toApprovalPage(HttpServletRequest request, HttpServletResponse response)
-            throws IOException, TemplateException {
-
-        OAuth2Request oauth2Request =
-                ((ClientSession) request.getSession().getAttribute("client_session"))
-                        .getRequest().get();
-
-        Map<String, Object> information = new HashMap<String, Object>();
-        information.put("clientID", oauth2Request.getRequestAuth().getClientId());
-
-        List<String> scopes = oauth2Request.getRequestBody().getScopesList();
-
-        StringBuilder sb = new StringBuilder();
-        if(scopes.isEmpty()){
-            sb.append("All");
-        }
-        else{
-            for(String scope : scopes){
-                sb.append(scope + " ");
-            }
-        }
-
-        information.put("scopes", sb.toString());
-
-        Template template = configuration.getTemplate("ApprovalPage.ftl");
-
-        response.setCharacterEncoding("utf-8");
-        PrintWriter printWriter = response.getWriter();
-
-        template.process(information, printWriter);
-
-        printWriter.flush();
     }
 
 }
