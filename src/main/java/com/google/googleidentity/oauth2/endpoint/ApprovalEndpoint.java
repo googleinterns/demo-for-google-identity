@@ -36,6 +36,7 @@ import java.io.PrintWriter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -64,7 +65,7 @@ public class ApprovalEndpoint extends HttpServlet {
         try {
             toApprovalPage(request, response);
         } catch (TemplateException e) {
-            log.info("Approval Page Error!");
+            log.log(Level.INFO, "Error when display Approval page", e);
         }
     }
 
@@ -73,7 +74,7 @@ public class ApprovalEndpoint extends HttpServlet {
         try {
             toApprovalPage(request, response);
         } catch (TemplateException e) {
-            log.info("Approval Page Error!");
+            log.log(Level.INFO, "Error when display Approval page", e);
         }
     }
 
