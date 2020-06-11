@@ -17,7 +17,6 @@
 package com.google.googleidentity.security;
 
 import com.google.googleidentity.user.UserDetails;
-import com.google.inject.servlet.SessionScoped;
 
 import java.io.Serializable;
 import java.util.Optional;

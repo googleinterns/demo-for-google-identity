@@ -19,8 +19,6 @@ package com.google.googleidentity.oauth2.client;
 import com.google.common.base.Charsets;
 import com.google.common.hash.Hashing;
 import static com.google.common.truth.Truth.assertThat;
-import com.google.googleidentity.oauth2.client.ClientDetails;
-import com.google.googleidentity.oauth2.client.ClientSession;
 import com.google.googleidentity.oauth2.request.OAuth2Request;
 import org.junit.jupiter.api.Test;
 

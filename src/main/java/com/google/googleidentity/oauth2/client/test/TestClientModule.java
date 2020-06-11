@@ -17,6 +17,7 @@
 package com.google.googleidentity.oauth2.client.test;
 
 import com.google.common.base.Charsets;
+import com.google.common.collect.ImmutableList;
 import com.google.common.hash.Hashing;
 import com.google.googleidentity.oauth2.client.ClientDetails;
 import com.google.googleidentity.oauth2.client.ClientDetailsService;
@@ -25,16 +26,17 @@ import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 import com.google.inject.Singleton;
 
-import java.util.Arrays;
-import java.util.List;
 
 public class TestClientModule extends AbstractModule {
 
-    static final String TESTCLIENTID = "google";
-    static final String TESTSECRET = "secret";
-    static final List<String> TESTSCOPES = Arrays.asList("read");
-    static final List<String> TESTGRANTTYPES = Arrays.asList("authorization_code",
-            "implicit", "refresh_token", "urn:ietf:params:oauth:grant-type:jwt-bearer");
+    private static final String TESTCLIENTID = "google";
+    private static final String TESTSECRET = "secret";
+    private static final ImmutableList<String> TESTSCOPES = ImmutableList.of("read");
+    private static final ImmutableList<String> TESTGRANTTYPES = ImmutableList.of(
+            "authorization_code",
+            "implicit",
+            "refresh_token",
+            "urn:ietf:params:oauth:grant-type:jwt-bearer");
 
     static final String TESTREDIRECTURI = "http://www.google.com";
 

@@ -30,17 +30,11 @@ import javax.servlet.http.HttpSession;
 import com.google.common.base.Charsets;
 import com.google.common.hash.Hashing;
 import static com.google.common.truth.Truth.assertThat;
+
+import com.google.googleidentity.testtools.FakeHttpSession;
 import com.google.googleidentity.user.InMemoryUserDetailsService;
 import com.google.googleidentity.user.UserDetails;
 import com.google.googleidentity.user.UserDetailsService;
-
-
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertFalse;
-
-
-
-import com.google.inject.Provider;
 
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -131,28 +125,7 @@ public class LoginCheckServletTest  {
 
         HttpServletRequest request = mock(HttpServletRequest.class);
         HttpServletResponse response = mock(HttpServletResponse.class);
-        HttpSession httpSession = mock(HttpSession.class);
-        Map<String, Object> sessionMap = new HashMap<>();
-
-        sessionMap.put("user_session", new UserSession());
-
-        Mockito.doAnswer(new Answer() {
-            @Override
-            public Object answer(InvocationOnMock invocationOnMock) throws Throwable {
-                String key = (String) invocationOnMock.getArguments()[0];
-                return sessionMap.get(key);
-            }
-        }).when(httpSession).getAttribute(anyString());
-
-        Mockito.doAnswer(new Answer() {
-            @Override
-            public Object answer(InvocationOnMock invocationOnMock) throws Throwable {
-                String key = (String) invocationOnMock.getArguments()[0];
-                Object value = invocationOnMock.getArguments()[1];
-                sessionMap.put(key, value);
-                return null;
-            }
-        }).when(httpSession).setAttribute(anyString(), anyObject());
+        HttpSession httpSession = new FakeHttpSession();
 
         when(request.getSession()).thenReturn(httpSession);
 

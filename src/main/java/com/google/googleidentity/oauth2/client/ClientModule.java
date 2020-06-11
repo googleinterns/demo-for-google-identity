@@ -17,8 +17,6 @@
 package com.google.googleidentity.oauth2.client;
 
 import com.google.inject.AbstractModule;
-import com.google.inject.Provides;
-import com.google.inject.servlet.SessionScoped;
 
 public class ClientModule extends AbstractModule {
 

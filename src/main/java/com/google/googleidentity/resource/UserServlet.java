@@ -16,10 +16,10 @@
 
 package com.google.googleidentity.resource;
 
+import com.google.common.base.Preconditions;
+import com.google.googleidentity.oauth2.util.OAuth2Utils;
 import com.google.googleidentity.security.UserSession;
 import com.google.googleidentity.user.UserDetails;
-import com.google.inject.Inject;
-import com.google.inject.Provider;
 import com.google.inject.Singleton;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
@@ -85,11 +85,16 @@ public final class UserServlet extends HttpServlet {
     private void displayMainPage(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException, TemplateException {
 
-        UserSession userSession =
-                (UserSession) request.getSession().getAttribute("user_session");
+        UserSession userSession = OAuth2Utils.getUserSession(request);
+
+        Preconditions.checkArgument(
+                userSession.getUser().isPresent(),
+                "User should have been logged in already");
+
         UserDetails user = userSession.getUser().get();
 
         Map<String, Object> information = new HashMap<String, Object>();
+
         information.put("username", user.getUsername());
 
         Template template = configuration.getTemplate("MainPage.ftl");

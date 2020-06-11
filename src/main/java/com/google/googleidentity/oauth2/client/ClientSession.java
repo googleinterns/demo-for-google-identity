@@ -17,7 +17,6 @@
 package com.google.googleidentity.oauth2.client;
 
 import com.google.googleidentity.oauth2.request.OAuth2Request;
-import com.google.inject.servlet.SessionScoped;
 
 import java.io.Serializable;
 import java.util.Optional;

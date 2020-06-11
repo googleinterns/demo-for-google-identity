@@ -16,17 +16,12 @@
 
 package com.google.googleidentity.oauth2.authorizationcode;
 
-import com.google.common.base.Charsets;
-import com.google.common.hash.Hashing;
 import static com.google.common.truth.Truth.assertThat;
-import static com.google.common.truth.Truth.assertWithMessage;
-import com.google.googleidentity.oauth2.client.ClientDetails;
-import com.google.googleidentity.oauth2.client.ClientSession;
 import com.google.googleidentity.oauth2.request.OAuth2Request;
-import org.junit.jupiter.api.Test;
 
 import java.util.Optional;
 
+import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 

@@ -31,10 +31,10 @@ Apache header:
 ## Current Progress
 
 Finish Basic Login Filter using Guice-Servlet
-Finish Basic AuthorizationEndpoint and ApprovalEndpoint(currently no code or toke will return)
+Finish Basic AuthorizationEndpoint and ApprovalEndpoint(currently no code or token will return)
 
-In memory user information storage with sha256 based encryption on password.
-In memory client information storage with sha256 based encryption on secret.
+In memory user information storage with sha256 based hashing on password.
+In memory client information storage with sha256 based hashing on secret.
 
 Two test user added:
 username	password

@@ -17,7 +17,6 @@
 package com.google.googleidentity.oauth2.util;
 
 import static com.google.common.truth.Truth.assertThat;
-import static com.google.common.truth.Truth.assertWithMessage;
 import org.junit.jupiter.api.Test;
 
 

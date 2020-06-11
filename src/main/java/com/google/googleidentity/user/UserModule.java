@@ -16,10 +16,7 @@
 
 package com.google.googleidentity.user;
 
-import com.google.googleidentity.security.UserSession;
 import com.google.inject.AbstractModule;
-import com.google.inject.Provides;
-import com.google.inject.servlet.SessionScoped;
 
 public final class UserModule extends AbstractModule {
 

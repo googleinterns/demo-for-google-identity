@@ -17,8 +17,7 @@
 package com.google.googleidentity.filter;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Optional;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -26,21 +25,12 @@ import javax.servlet.http.HttpSession;
 
 import com.google.googleidentity.security.UserSession;
 
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertEquals;
+import static com.google.common.truth.Truth.assertThat;
 
-import com.google.inject.Provider;
+import com.google.googleidentity.testtools.FakeHttpSession;
 
-import com.google.inject.util.Providers;
 import org.junit.Test;
-import org.mockito.Mockito;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
 
-
-import static org.mockito.Matchers.anyObject;
-import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.verify;
@@ -61,26 +51,7 @@ public class UserAuthenticationFilterTest {
 
         HttpServletRequest request = mock(HttpServletRequest.class);
         HttpServletResponse response = mock(HttpServletResponse.class);
-        HttpSession httpSession = mock(HttpSession.class);
-        Map<String, Object> sessionMap = new HashMap<>();
-
-        Mockito.doAnswer(new Answer() {
-            @Override
-            public Object answer(InvocationOnMock invocationOnMock) throws Throwable {
-                String key = (String) invocationOnMock.getArguments()[0];
-                return sessionMap.get(key);
-            }
-        }).when(httpSession).getAttribute(anyString());
-
-        Mockito.doAnswer(new Answer() {
-            @Override
-            public Object answer(InvocationOnMock invocationOnMock) throws Throwable {
-                String key = (String) invocationOnMock.getArguments()[0];
-                Object value = invocationOnMock.getArguments()[1];
-                sessionMap.put(key, value);
-                return null;
-            }
-        }).when(httpSession).setAttribute(anyString(), anyObject());
+        HttpSession httpSession = new FakeHttpSession();
 
         when(request.getSession()).thenReturn(httpSession);
         when(request.getRequestURI()).thenReturn("/resource/user");
@@ -90,9 +61,8 @@ public class UserAuthenticationFilterTest {
 
         verify(response).sendRedirect("/login");
 
-        assertEquals(
-                ((UserSession)request.getSession().getAttribute("user_session")).getOlduri().get(),
-                "/resource/user");
+        assertThat(((FakeHttpSession)request.getSession()).getUserSession().getOlduri())
+                .isEqualTo(Optional.ofNullable("/resource/user"));
 
     }
 

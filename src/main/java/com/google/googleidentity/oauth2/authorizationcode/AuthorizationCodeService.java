@@ -26,8 +26,6 @@ import com.google.inject.Singleton;
 import java.util.Optional;
 import java.util.Random;
 
-import static com.google.common.io.BaseEncoding.base64Url;
-
 /**
  * AuthorizationCodeService, generate Authorization Code and Store it
  */
