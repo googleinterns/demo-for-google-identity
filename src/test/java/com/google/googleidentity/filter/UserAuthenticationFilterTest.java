@@ -21,11 +21,12 @@ import java.util.Optional;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
+
 
 import com.google.googleidentity.security.UserSession;
 
 import static com.google.common.truth.Truth.assertThat;
+import static com.google.common.truth.Truth8.assertThat;
 
 import com.google.googleidentity.testtools.FakeHttpSession;
 
@@ -51,7 +52,7 @@ public class UserAuthenticationFilterTest {
 
         HttpServletRequest request = mock(HttpServletRequest.class);
         HttpServletResponse response = mock(HttpServletResponse.class);
-        HttpSession httpSession = new FakeHttpSession();
+        FakeHttpSession httpSession = new FakeHttpSession();
 
         when(request.getSession()).thenReturn(httpSession);
         when(request.getRequestURI()).thenReturn("/resource/user");
@@ -61,8 +62,7 @@ public class UserAuthenticationFilterTest {
 
         verify(response).sendRedirect("/login");
 
-        assertThat(((FakeHttpSession)request.getSession()).getUserSession().getOlduri())
-                .isEqualTo(Optional.ofNullable("/resource/user"));
+        assertThat(httpSession.getUserSession().getOlduri()).hasValue("/resource/user");
 
     }
 

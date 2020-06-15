@@ -28,6 +28,9 @@ import java.util.Set;
  */
 public class OAuth2Utils {
 
+    private static final String USER_SESSION = "user_session";
+    private static final String CLIENT_SESSION = "client_session";
+
     /**
      *
      * @param scope string
@@ -52,7 +55,7 @@ public class OAuth2Utils {
      */
     public static UserSession getUserSession(HttpServletRequest request){
         UserSession userSession =
-                (UserSession) request.getSession().getAttribute("user_session");
+                (UserSession) request.getSession().getAttribute(USER_SESSION);
 
         return userSession == null ? new UserSession() : userSession;
 
@@ -65,7 +68,7 @@ public class OAuth2Utils {
      */
     public static void setUserSession(
             HttpServletRequest request, UserSession userSession){
-        request.getSession().setAttribute("user_session", userSession);
+        request.getSession().setAttribute(USER_SESSION, userSession);
     }
 
     /**
@@ -76,7 +79,7 @@ public class OAuth2Utils {
      */
     public static ClientSession getClientSession(HttpServletRequest request){
         ClientSession clientSession =
-                (ClientSession) request.getSession().getAttribute("client_session");
+                (ClientSession) request.getSession().getAttribute(CLIENT_SESSION);
 
         return clientSession == null ? new ClientSession() : clientSession;
     }
@@ -88,6 +91,6 @@ public class OAuth2Utils {
      */
     public static void setClientSession(
             HttpServletRequest request, ClientSession clientSession){
-        request.getSession().setAttribute("client_session", clientSession);
+        request.getSession().setAttribute(CLIENT_SESSION, clientSession);
     }
 }
