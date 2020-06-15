@@ -33,7 +33,7 @@ public class OAuth2Utils {
 
     /**
      *
-     * @param scope string
+     * @param scope string of scopes with space delimiter
      * @return parsed scope set
      */
     public static Set<String> parseScope(String scope){
@@ -49,9 +49,6 @@ public class OAuth2Utils {
 
     /**
      * Get UserSession from HttpSession
-     *
-     * @param request
-     * @return
      */
     public static UserSession getUserSession(HttpServletRequest request){
         UserSession userSession =
@@ -63,8 +60,6 @@ public class OAuth2Utils {
 
     /**
      * Set UserSession to HttpSession
-     *
-     * @param request
      */
     public static void setUserSession(
             HttpServletRequest request, UserSession userSession){
@@ -73,9 +68,6 @@ public class OAuth2Utils {
 
     /**
      * Get ClientSession from HttpSession
-     *
-     * @param request
-     * @return
      */
     public static ClientSession getClientSession(HttpServletRequest request){
         ClientSession clientSession =
@@ -86,8 +78,6 @@ public class OAuth2Utils {
 
     /**
      * Set ClientSession to HttpSession
-     *
-     * @param request
      */
     public static void setClientSession(
             HttpServletRequest request, ClientSession clientSession){

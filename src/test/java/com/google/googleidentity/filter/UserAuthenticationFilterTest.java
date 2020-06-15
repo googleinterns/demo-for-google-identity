@@ -17,7 +17,6 @@
 package com.google.googleidentity.filter;
 
 import java.io.IOException;
-import java.util.Optional;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -25,7 +24,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.google.googleidentity.security.UserSession;
 
-import static com.google.common.truth.Truth.assertThat;
 import static com.google.common.truth.Truth8.assertThat;
 
 import com.google.googleidentity.testtools.FakeHttpSession;

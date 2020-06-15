@@ -25,8 +25,7 @@ import java.util.Optional;
 public interface UserDetailsService {
 
     /**
-     * @param username
-     * @return the user with the same username
+     * @return the user with the username
      */
     Optional<UserDetails> getUserByName(String username);
 
@@ -34,7 +33,6 @@ public interface UserDetailsService {
      * Update the user with the same username,
      * if the user does not exist, it will fail
      *
-     * @param user
      * @return update success or not
      */
     boolean updateUser(UserDetails user);
@@ -42,7 +40,6 @@ public interface UserDetailsService {
     /**
      * Add user, if a user with same name exists, it will fail
      *
-     * @param user
      * @return add success or not
      */
     boolean addUser(UserDetails user);
