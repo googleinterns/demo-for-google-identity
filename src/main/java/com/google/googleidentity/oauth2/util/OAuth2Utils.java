@@ -18,9 +18,14 @@ package com.google.googleidentity.oauth2.util;
 
 import com.google.common.collect.ImmutableSet;
 import com.google.googleidentity.oauth2.client.ClientSession;
+import com.google.googleidentity.oauth2.exception.OAuth2Exception;
 import com.google.googleidentity.security.UserSession;
+import net.minidev.json.JSONObject;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -30,6 +35,32 @@ public class OAuth2Utils {
 
     private static final String USER_SESSION = "user_session";
     private static final String CLIENT_SESSION = "client_session";
+
+    /**
+     * Return oauth2 exception error through httpResponse.
+     */
+    public static void returnHttpError(
+            HttpServletResponse response, OAuth2Exception exception) throws IOException {
+        response.setStatus(exception.getCode());
+        response.setContentType("application/json");
+
+        JSONObject json =  new JSONObject();
+        json.appendField("error", exception.getErrorType().get());
+        if(exception.getErrorInfo().isPresent()){
+            json.appendField("info", exception.getErrorInfo().get());
+        }
+        if(exception.getInformation().isPresent()){
+            for(Map.Entry<String, String> entry : exception.getInformation().get().entrySet()){
+                json.appendField(entry.getKey(), entry.getValue());
+            }
+        }
+
+        response.getWriter().println(json.toJSONString());
+
+        response.getWriter().flush();
+    }
+
+
 
     /**
      *
