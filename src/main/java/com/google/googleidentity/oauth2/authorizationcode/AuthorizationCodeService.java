@@ -26,8 +26,6 @@ import com.google.inject.Singleton;
 import java.util.Optional;
 import java.util.Random;
 
-import static com.google.common.io.BaseEncoding.base64Url;
-
 /**
  * AuthorizationCodeService, generate Authorization Code and Store it
  */
@@ -64,7 +62,6 @@ public final class AuthorizationCodeService {
      * A char in base64Url need 6 bits (2^6 = 64) and a byte has 8 bits.
      * So byteLength = (codeLength * 6 - 1) / 8 + 1;
      *
-     * @param codeLength
      */
     public void setCodeLength(int codeLength) {
         this.codeLength = codeLength;
@@ -75,7 +72,6 @@ public final class AuthorizationCodeService {
      * Generate a authorization code for the request, always success.
      * Because once a duplicate code generated, we will try another one.
      *
-     * @param request
      * @return the generated code
      */
     public String getCodeForRequest(OAuth2Request request){
@@ -107,10 +103,6 @@ public final class AuthorizationCodeService {
    * When generating random bytes, set first numPrefixBytesToCopy bytes
    * as the first numPrefixBytesToCopy bytes of sha256(clientID + username).
    * To get enough randomness, numPrefixBytesToCopy = min(3, byteLength/2).
-   *
-   * @param clientID
-   * @param username
-   * @return
    */
   private String generateCode(String clientID, String username) {
 

@@ -50,7 +50,7 @@ message OAuth2Request {
         bool is_scoped = 3;
 
         // Request scopes
-        repeated string scope = 4;
+        repeated string scopes = 4;
 
         // Whether support a refresh token
         bool refreshable = 5;

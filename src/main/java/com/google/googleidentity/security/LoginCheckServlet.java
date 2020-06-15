@@ -17,10 +17,10 @@
 package com.google.googleidentity.security;
 
 import com.google.appengine.repackaged.com.google.api.client.http.HttpStatusCodes;
+import com.google.googleidentity.oauth2.util.OAuth2Utils;
 import com.google.googleidentity.user.UserDetails;
 import com.google.googleidentity.user.UserDetailsService;
 import com.google.inject.Inject;
-import com.google.inject.Provider;
 import com.google.inject.Singleton;
 
 import javax.servlet.ServletException;
@@ -47,14 +47,10 @@ public final class LoginCheckServlet extends HttpServlet {
 
     private static final long serialVersionUID = 4L;
 
-    private final Provider<UserSession> session;
-
     private final UserDetailsService userDetailsService;
 
     @Inject
-    public LoginCheckServlet(
-            Provider<UserSession> session, UserDetailsService userDetailsService) {
-        this.session = session;
+    public LoginCheckServlet(UserDetailsService userDetailsService) {
         this.userDetailsService = userDetailsService;
     }
 
@@ -66,7 +62,7 @@ public final class LoginCheckServlet extends HttpServlet {
         response.setContentType("text/html;charset=utf-8");
 
         if (check(username, password)) {
-            UserSession userSession = session.get();
+            UserSession userSession = OAuth2Utils.getUserSession(request);
 
             userSession.setUser(
                     UserDetails.newBuilder()
@@ -74,9 +70,10 @@ public final class LoginCheckServlet extends HttpServlet {
                             .setPassword(password)
                             .build());
 
+            OAuth2Utils.setUserSession(request, userSession);
             response.setStatus(HttpStatusCodes.STATUS_CODE_OK);
             response.getWriter().println(
-                    userSession.getOlduri().orElse("/resource/user"));
+                   userSession.getOlduri().orElse("/resource/user"));
 
         } else {
             response.setStatus(HttpStatusCodes.STATUS_CODE_UNAUTHORIZED);

@@ -27,7 +27,6 @@ interface CodeStore {
 
     /**
      *
-     * @param code
      * @return the related request and delete the code
      */
     Optional<OAuth2Request> consumeCode(String code);
@@ -37,8 +36,6 @@ interface CodeStore {
      * failed when a code is already exist, the code Service
      * should generate a new code and try again
      *
-     * @param code
-     * @param request
      * @return success or not
      */
     boolean setCode(String code, OAuth2Request request);

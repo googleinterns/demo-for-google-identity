@@ -17,9 +17,8 @@
 package com.google.googleidentity.filter;
 
 
+import com.google.googleidentity.oauth2.util.OAuth2Utils;
 import com.google.googleidentity.security.UserSession;
-import com.google.inject.Inject;
-import com.google.inject.Provider;
 import com.google.inject.Singleton;
 import org.apache.http.client.utils.URIBuilder;
 
@@ -55,11 +54,7 @@ public final class UserAuthenticationFilter implements Filter {
 
     private static final Logger log = Logger.getLogger("UserAuthenticationFilter");
 
-    private final Provider<UserSession> session;
-
-    @Inject
-    public UserAuthenticationFilter(Provider<UserSession> session) {
-        this.session = session;
+    public UserAuthenticationFilter() {
     }
 
     public void init(FilterConfig filterConfig) throws ServletException {}
@@ -70,10 +65,13 @@ public final class UserAuthenticationFilter implements Filter {
         HttpServletResponse httpResponse = (HttpServletResponse) response;
         HttpServletRequest httpRequest = (HttpServletRequest) request;
 
-        UserSession userSession = session.get();
+        UserSession userSession = OAuth2Utils.getUserSession(httpRequest);
+
+        //clear the olduri before since it will no longer be used
         userSession.setOlduri(null);
 
         if (userSession.getUser().isPresent()) {
+            OAuth2Utils.setUserSession(httpRequest, userSession);
             chain.doFilter(request, response);
         }
         else {
@@ -82,6 +80,7 @@ public final class UserAuthenticationFilter implements Filter {
             } catch (URISyntaxException e) {
                 log.log(Level.INFO, "URI Error!", e);
             }
+            OAuth2Utils.setUserSession(httpRequest, userSession);
             httpResponse.sendRedirect("/login");
         }
     }

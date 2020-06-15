@@ -20,28 +20,30 @@ package com.google.googleidentity.security;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.util.HashMap;
+import java.util.Map;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import com.google.common.base.Charsets;
 import com.google.common.hash.Hashing;
 import static com.google.common.truth.Truth.assertThat;
+
+import com.google.googleidentity.testtools.FakeHttpSession;
 import com.google.googleidentity.user.InMemoryUserDetailsService;
 import com.google.googleidentity.user.UserDetails;
 import com.google.googleidentity.user.UserDetailsService;
 
-
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertFalse;
-
-
-
-import com.google.inject.Provider;
-
 import org.junit.Test;
+import org.mockito.Mockito;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 
 
+import static org.mockito.Matchers.anyObject;
+import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -50,18 +52,7 @@ import static org.mockito.Mockito.when;
  */
 public class LoginCheckServletTest  {
 
-    public class UserSessionProvider implements Provider<UserSession> {
-        @Override
-        public UserSession get() {
-            UserSession userSession = new UserSession();
-            userSession.setUser(UserDetails.newBuilder()
-                    .setUsername("user")
-                    .setPassword(Hashing.sha256()
-                            .hashString("123456", Charsets.UTF_8).toString())
-                    .build());
-            return userSession;
-        }
-    }
+    private static final String LINE = System.lineSeparator();
 
     @Test
     public void testLoginCheckServlet_correctLoginRequest_redirectToResource()
@@ -75,11 +66,34 @@ public class LoginCheckServletTest  {
                         .hashString("correct password", Charsets.UTF_8).toString())
                 .build());
 
-        LoginCheckServlet loginCheckServlet = new LoginCheckServlet(
-                new UserSessionProvider(), userDetailsService);
+        LoginCheckServlet loginCheckServlet = new LoginCheckServlet(userDetailsService);
 
         HttpServletRequest request = mock(HttpServletRequest.class);
         HttpServletResponse response = mock(HttpServletResponse.class);
+        HttpSession httpSession = mock(HttpSession.class);
+        Map<String, Object> sessionMap = new HashMap<>();
+
+        sessionMap.put("user_session", new UserSession());
+
+        Mockito.doAnswer(new Answer() {
+            @Override
+            public Object answer(InvocationOnMock invocationOnMock) throws Throwable {
+                String key = (String) invocationOnMock.getArguments()[0];
+                return sessionMap.get(key);
+            }
+        }).when(httpSession).getAttribute(anyString());
+
+        Mockito.doAnswer(new Answer() {
+            @Override
+            public Object answer(InvocationOnMock invocationOnMock) throws Throwable {
+                String key = (String) invocationOnMock.getArguments()[0];
+                Object value = invocationOnMock.getArguments()[1];
+                sessionMap.put(key, value);
+                return null;
+            }
+        }).when(httpSession).setAttribute(anyString(), anyObject());
+
+        when(request.getSession()).thenReturn(httpSession);
 
         when(request.getParameter("username")).thenReturn("user");
         when(request.getParameter("password")).thenReturn(Hashing.sha256()
@@ -91,7 +105,7 @@ public class LoginCheckServletTest  {
 
         loginCheckServlet.doPost(request, response);
 
-        assertThat(stringWriter.toString()).isEqualTo("/resource/user\r\n");
+        assertThat(stringWriter.toString()).isEqualTo("/resource/user" + LINE);
 
     }
 
@@ -107,11 +121,13 @@ public class LoginCheckServletTest  {
                         .hashString("correct password", Charsets.UTF_8).toString())
                 .build());
 
-        LoginCheckServlet loginCheckServlet = new LoginCheckServlet(
-                new UserSessionProvider(), userDetailsService);
+        LoginCheckServlet loginCheckServlet = new LoginCheckServlet(userDetailsService);
 
         HttpServletRequest request = mock(HttpServletRequest.class);
         HttpServletResponse response = mock(HttpServletResponse.class);
+        HttpSession httpSession = new FakeHttpSession();
+
+        when(request.getSession()).thenReturn(httpSession);
 
         when(request.getParameter("username")).thenReturn("user");
         when(request.getParameter("password")).thenReturn(Hashing.sha256()
@@ -123,7 +139,7 @@ public class LoginCheckServletTest  {
 
         loginCheckServlet.doPost(request, response);
 
-        assertThat(stringWriter.toString()).isEqualTo("/login\r\n");
+        assertThat(stringWriter.toString()).isEqualTo("/login" + LINE);
 
     }
 

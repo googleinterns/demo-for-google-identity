@@ -18,7 +18,13 @@ package com.google.googleidentity.oauth2.filter;
 
 import com.google.inject.Singleton;
 
-import javax.servlet.*;
+import javax.servlet.Filter;
+import javax.servlet.FilterConfig;
+import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
+import javax.servlet.FilterChain;
+
 import java.io.IOException;
 
 

@@ -14,15 +14,15 @@
     limitations under the License.
 */
 
-package com.google.googleidentity.user;
+package com.google.googleidentity.oauth2.client;
 
 import com.google.inject.AbstractModule;
 
-public final class UserModule extends AbstractModule {
+public class ClientModule extends AbstractModule {
 
     @Override
     protected void configure(){
-        bind(UserDetailsService.class).to(InMemoryUserDetailsService.class);
+        bind(ClientDetailsService.class).to(InMemoryClientDetailsService.class);
     }
-
 }
+

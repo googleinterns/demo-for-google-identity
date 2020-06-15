@@ -17,8 +17,10 @@
 package com.google.googleidentity.oauth2.util;
 
 import com.google.common.collect.ImmutableSet;
+import com.google.googleidentity.oauth2.client.ClientSession;
+import com.google.googleidentity.security.UserSession;
 
-import java.util.Collections;
+import javax.servlet.http.HttpServletRequest;
 import java.util.Set;
 
 /**
@@ -26,9 +28,12 @@ import java.util.Set;
  */
 public class OAuth2Utils {
 
+    private static final String USER_SESSION = "user_session";
+    private static final String CLIENT_SESSION = "client_session";
+
     /**
      *
-     * @param scope string
+     * @param scope string of scopes with space delimiter
      * @return parsed scope set
      */
     public static Set<String> parseScope(String scope){
@@ -40,5 +45,42 @@ public class OAuth2Utils {
 
         return ImmutableSet.copyOf(scopes);
 
+    }
+
+    /**
+     * Get UserSession from HttpSession
+     */
+    public static UserSession getUserSession(HttpServletRequest request){
+        UserSession userSession =
+                (UserSession) request.getSession().getAttribute(USER_SESSION);
+
+        return userSession == null ? new UserSession() : userSession;
+
+    }
+
+    /**
+     * Set UserSession to HttpSession
+     */
+    public static void setUserSession(
+            HttpServletRequest request, UserSession userSession){
+        request.getSession().setAttribute(USER_SESSION, userSession);
+    }
+
+    /**
+     * Get ClientSession from HttpSession
+     */
+    public static ClientSession getClientSession(HttpServletRequest request){
+        ClientSession clientSession =
+                (ClientSession) request.getSession().getAttribute(CLIENT_SESSION);
+
+        return clientSession == null ? new ClientSession() : clientSession;
+    }
+
+    /**
+     * Set ClientSession to HttpSession
+     */
+    public static void setClientSession(
+            HttpServletRequest request, ClientSession clientSession){
+        request.getSession().setAttribute(CLIENT_SESSION, clientSession);
     }
 }

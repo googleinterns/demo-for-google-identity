@@ -21,17 +21,14 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+
 import com.google.googleidentity.security.UserSession;
 
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertEquals;
+import static com.google.common.truth.Truth8.assertThat;
 
-import com.google.inject.Provider;
+import com.google.googleidentity.testtools.FakeHttpSession;
 
-import com.google.inject.util.Providers;
 import org.junit.Test;
-
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -49,12 +46,13 @@ public class UserAuthenticationFilterTest {
             throws ServletException, IOException {
 
 
-        UserAuthenticationFilter userAuthenticationFilter = new UserAuthenticationFilter(
-                Providers.of(session));
+        UserAuthenticationFilter userAuthenticationFilter = new UserAuthenticationFilter();
 
         HttpServletRequest request = mock(HttpServletRequest.class);
         HttpServletResponse response = mock(HttpServletResponse.class);
+        FakeHttpSession httpSession = new FakeHttpSession();
 
+        when(request.getSession()).thenReturn(httpSession);
         when(request.getRequestURI()).thenReturn("/resource/user");
         when(request.getQueryString()).thenReturn(null);
 
@@ -62,7 +60,7 @@ public class UserAuthenticationFilterTest {
 
         verify(response).sendRedirect("/login");
 
-        assertEquals(session.getOlduri().get(), "/resource/user");
+        assertThat(httpSession.getUserSession().getOlduri()).hasValue("/resource/user");
 
     }
 

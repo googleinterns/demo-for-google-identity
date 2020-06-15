@@ -17,7 +17,6 @@
 package com.google.googleidentity.security;
 
 import com.google.googleidentity.user.UserDetails;
-import com.google.inject.servlet.SessionScoped;
 
 import java.io.Serializable;
 import java.util.Optional;
@@ -28,8 +27,8 @@ import java.util.Optional;
  * {@link com.google.googleidentity.user.UserDetails} Object.
  * Store an original request that filtered by
  * {@link com.google.googleidentity.filter.UserAuthenticationFilter}.
+ * Stored in HttpSession named user_session
  */
-@SessionScoped
 public final class UserSession implements Serializable {
 
     private static final long serialVersionUID = 3L;
