@@ -25,7 +25,6 @@ import net.minidev.json.JSONObject;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.Map;
 import java.util.Set;
 
 /**
@@ -41,7 +40,7 @@ public class OAuth2Utils {
      */
     public static void returnHttpError(
             HttpServletResponse response, OAuth2Exception exception) throws IOException {
-        response.setStatus(exception.getCode());
+        response.setStatus(exception.getHttpCode());
         response.setContentType("application/json");
 
         JSONObject json =  new JSONObject();
@@ -49,12 +48,6 @@ public class OAuth2Utils {
         if(exception.getErrorInfo().isPresent()){
             json.appendField("info", exception.getErrorInfo().get());
         }
-        if(exception.getInformation().isPresent()){
-            for(Map.Entry<String, String> entry : exception.getInformation().get().entrySet()){
-                json.appendField(entry.getKey(), entry.getValue());
-            }
-        }
-
         response.getWriter().println(json.toJSONString());
 
         response.getWriter().flush();

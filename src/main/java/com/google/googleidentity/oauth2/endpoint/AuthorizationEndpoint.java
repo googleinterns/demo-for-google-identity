@@ -66,12 +66,12 @@ public final class AuthorizationEndpoint extends HttpServlet {
             String responseType = request.getParameter(OAuth2ParameterNames.RESPONSE_TYPE);
 
             if (responseType == null) {
-                throw new OAuth2Exception(HttpStatus.SC_BAD_REQUEST,
-                        "invalid_request", "No Response Type!", null);
+                throw new OAuth2Exception(
+                        HttpStatus.SC_BAD_REQUEST, "invalid_request", "No Response Type!");
             }
             else if (!responseType.equals("token") && !responseType.equals("code")) {
-                throw new OAuth2Exception(HttpStatus.SC_BAD_REQUEST,
-                        "invalid_request", "Invalid Response Type!", null);
+                throw new OAuth2Exception(
+                        HttpStatus.SC_BAD_REQUEST, "invalid_request", "Invalid Response Type!");
             }
         }
         catch(OAuth2Exception exception){

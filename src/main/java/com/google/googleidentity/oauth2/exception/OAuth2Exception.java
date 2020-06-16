@@ -31,27 +31,23 @@ public class OAuth2Exception extends Exception{
 
     private String errorType;
 
-    private int code;
+    private int httpCode;
 
     private String errorInfo = null;
-
-    private Map<String, String> information = null;
 
     public OAuth2Exception(){
         super();
     }
 
-    public OAuth2Exception(int code, String errorType, String errorInfo,
-                           Map<String, String> information){
+    public OAuth2Exception(int httpCode, String errorType, String errorInfo){
         super();
-        this.code = code;
+        this.httpCode = httpCode;
         this.errorType = errorType;
         this.errorInfo = errorInfo;
-        this.information = information;
     }
 
-    public int getCode() {
-        return code;
+    public int getHttpCode() {
+        return httpCode;
     }
 
     public Optional<String> getErrorType(){
@@ -60,9 +56,5 @@ public class OAuth2Exception extends Exception{
 
     public Optional<String> getErrorInfo(){
         return Optional.ofNullable(errorInfo);
-    }
-
-    public Optional<Map<String, String>> getInformation(){
-        return Optional.ofNullable(information);
     }
 }
