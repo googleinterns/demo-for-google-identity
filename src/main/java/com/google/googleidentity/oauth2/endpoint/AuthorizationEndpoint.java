@@ -16,15 +16,10 @@
 
 package com.google.googleidentity.oauth2.endpoint;
 
-import com.google.common.collect.ImmutableSet;
-import com.google.googleidentity.oauth2.client.ClientDetails;
 import com.google.googleidentity.oauth2.client.ClientDetailsService;
-import com.google.googleidentity.oauth2.client.ClientSession;
+import com.google.googleidentity.oauth2.exception.OAuth2ExceptionHandler;
 import com.google.googleidentity.oauth2.exception.OAuth2Exception;
-import com.google.googleidentity.oauth2.request.OAuth2Request;
 import com.google.googleidentity.oauth2.util.OAuth2ParameterNames;
-import com.google.googleidentity.oauth2.util.OAuth2Utils;
-import com.google.googleidentity.security.UserSession;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import org.apache.http.HttpStatus;
@@ -34,11 +29,9 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.net.URLDecoder;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
 import java.util.logging.Logger;
+
+import static com.google.googleidentity.oauth2.exception.OAuth2ExceptionHandler.ErrorCode;
 
 /**
  * Demo AuthorizationEndpoint for OAuth2 Server
@@ -48,7 +41,7 @@ public final class AuthorizationEndpoint extends HttpServlet {
 
     private static final long serialVersionUID = 5L;
 
-    private static final Logger log = Logger.getLogger("AuthorizationCodeEndpoint");
+    private static final Logger log = Logger.getLogger("AuthorizationEndpoint");
 
     private final ClientDetailsService clientDetailsService;
 
@@ -66,17 +59,27 @@ public final class AuthorizationEndpoint extends HttpServlet {
             String responseType = request.getParameter(OAuth2ParameterNames.RESPONSE_TYPE);
 
             if (responseType == null) {
-                throw new OAuth2Exception(
-                        HttpStatus.SC_BAD_REQUEST, "invalid_request", "No Response Type!");
+                throw new OAuth2Exception(ErrorCode.NO_RESPONSE_TYPE);
             }
             else if (!responseType.equals("token") && !responseType.equals("code")) {
-                throw new OAuth2Exception(
-                        HttpStatus.SC_BAD_REQUEST, "invalid_request", "Invalid Response Type!");
+                throw new OAuth2Exception(ErrorCode.UNSUPPORTED_RESPONSE_TYPE);
             }
         }
         catch(OAuth2Exception exception){
-            log.info(exception.getErrorInfo().orElse(""));
-            OAuth2Utils.returnHttpError(response, exception);
+            log.info(OAuth2ExceptionHandler.getErrorDescription(exception.getErrorCode()));
+            if(OAuth2ExceptionHandler.isRedirectable(exception.getErrorCode())){
+                response.sendRedirect(
+                        OAuth2ExceptionHandler.getFullRedirectUrl(
+                                exception,
+                                request.getRequestURI(),
+                                request.getParameter(OAuth2ParameterNames.STATE)));
+            } else {
+                response.setStatus(HttpStatus.SC_BAD_REQUEST);
+                response.setContentType("application/json;charset=UTF-8");
+                response.getWriter().println(
+                        OAuth2ExceptionHandler.getResponseBody(exception).toJSONString());
+                response.getWriter().flush();
+            }
         }
     }
 

@@ -16,45 +16,22 @@
 
 package com.google.googleidentity.oauth2.exception;
 
-import java.util.Map;
-import java.util.Optional;
+import static com.google.googleidentity.oauth2.exception.OAuth2ExceptionHandler.ErrorCode;
 
 /**
- * OAuth2 Exceptions. Will be deal in try catch clause using
- * a function in {@link com.google.googleidentity.oauth2.util.OAuth2Utils} named returnHttpError.
- * code: Http Error Code
- * errorType: OAuth2 Error Type(example:"invalid grant")
- * errorInfo: Detail error cause.
- *
+ * OAuth2 Exceptions. Will be deal in try catch clause
+ * errorCode: error Code Defined in {@link OAuth2ExceptionHandler}
  */
 public class OAuth2Exception extends Exception{
 
-    private String errorType;
+    private OAuth2ExceptionHandler.ErrorCode errorCode;
 
-    private int httpCode;
-
-    private String errorInfo = null;
-
-    public OAuth2Exception(){
+    public OAuth2Exception(ErrorCode errorCode){
         super();
+        this.errorCode = errorCode;
     }
 
-    public OAuth2Exception(int httpCode, String errorType, String errorInfo){
-        super();
-        this.httpCode = httpCode;
-        this.errorType = errorType;
-        this.errorInfo = errorInfo;
-    }
-
-    public int getHttpCode() {
-        return httpCode;
-    }
-
-    public Optional<String> getErrorType(){
-        return Optional.ofNullable(errorType);
-    }
-
-    public Optional<String> getErrorInfo(){
-        return Optional.ofNullable(errorInfo);
+    public OAuth2ExceptionHandler.ErrorCode getErrorCode() {
+        return errorCode;
     }
 }

@@ -36,26 +36,6 @@ public class OAuth2Utils {
     private static final String CLIENT_SESSION = "client_session";
 
     /**
-     * Return oauth2 exception error through httpResponse.
-     */
-    public static void returnHttpError(
-            HttpServletResponse response, OAuth2Exception exception) throws IOException {
-        response.setStatus(exception.getHttpCode());
-        response.setContentType("application/json");
-
-        JSONObject json =  new JSONObject();
-        json.appendField("error", exception.getErrorType().get());
-        if(exception.getErrorInfo().isPresent()){
-            json.appendField("info", exception.getErrorInfo().get());
-        }
-        response.getWriter().println(json.toJSONString());
-
-        response.getWriter().flush();
-    }
-
-
-
-    /**
      *
      * @param scope string of scopes with space delimiter
      * @return parsed scope set
