@@ -56,7 +56,9 @@ public final class OAuth2ExceptionHandler {
         NONEXISTENT_CODE,
         CODE_CLIENT_MISMATCH,
         CODE_REDIRECT_URI_MISMATCH,
-        INVALID_CLIENT
+        INVALID_CLIENT,
+        NONEXISTENT_REFRESH_TOKEN,
+        REFRESH_TOKEN_CLIENT_MISMATCH
     }
 
     public static int getHttpCode(ErrorCode code){
@@ -82,6 +84,8 @@ public final class OAuth2ExceptionHandler {
             case NONEXISTENT_CODE:
             case CODE_CLIENT_MISMATCH:
             case CODE_REDIRECT_URI_MISMATCH:
+            case NONEXISTENT_REFRESH_TOKEN:
+            case REFRESH_TOKEN_CLIENT_MISMATCH:
             case NO_GRANT_TYPE: return INVALID_GRANT;
             case UNSUPPORTED_GRANT_TYPE:    return UNSUPPORTED_GRANT_TYPE;
             case INVALID_CLIENT:    return INVALID_CLIENT;
@@ -107,6 +111,8 @@ public final class OAuth2ExceptionHandler {
             case CODE_REDIRECT_URI_MISMATCH:    return "Redirect uri mismatches the grant!";
             case UNSUPPORTED_GRANT_TYPE:    return "Unsupported grant type!";
             case INVALID_CLIENT:    return "Client Authentication Failed!";
+            case NONEXISTENT_REFRESH_TOKEN: return "Refresh token does not exist!";
+            case REFRESH_TOKEN_CLIENT_MISMATCH: return "Refresh token and client mismatch!";
             default: throw new IllegalArgumentException();
         }
     }

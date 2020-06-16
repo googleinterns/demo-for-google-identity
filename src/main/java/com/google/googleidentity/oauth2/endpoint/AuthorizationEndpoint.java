@@ -74,7 +74,7 @@ public final class AuthorizationEndpoint extends HttpServlet {
                                 request.getRequestURI(),
                                 request.getParameter(OAuth2ParameterNames.STATE)));
             } else {
-                response.setStatus(HttpStatus.SC_BAD_REQUEST);
+                response.setStatus(OAuth2ExceptionHandler.getHttpCode(exception.getErrorCode()));
                 response.setContentType("application/json;charset=UTF-8");
                 response.getWriter().println(
                         OAuth2ExceptionHandler.getResponseBody(exception).toJSONString());
