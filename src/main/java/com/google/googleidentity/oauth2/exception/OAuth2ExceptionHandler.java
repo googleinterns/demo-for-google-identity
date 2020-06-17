@@ -73,8 +73,11 @@ public final class OAuth2ExceptionHandler {
     public static String getErrorType(ErrorCode code){
         switch(code){
             case NO_RESPONSE_TYPE:
+                // fall through
             case NO_CLIENT_ID:
+                // fall through
             case NONEXISTENT_CLIENT_ID:
+                // fall through
             case NO_REDIRECT_URI:
                 // fall through
             case REDIRECT_URI_MISMATCH:
@@ -88,9 +91,13 @@ public final class OAuth2ExceptionHandler {
             case ACCESS_DENIED:
                 return ACCESS_DENIED;
             case NONEXISTENT_CODE:
+                // fall through
             case CODE_CLIENT_MISMATCH:
+                // fall through
             case CODE_REDIRECT_URI_MISMATCH:
+                // fall through
             case NONEXISTENT_REFRESH_TOKEN:
+                // fall through
             case REFRESH_TOKEN_CLIENT_MISMATCH:
                 // fall through
             case NO_GRANT_TYPE:
@@ -167,14 +174,19 @@ public final class OAuth2ExceptionHandler {
     public static boolean isRedirectable(ErrorCode code) {
         switch(code){
             case NO_REDIRECT_URI:
+                // fall through
             case REDIRECT_URI_MISMATCH:
+                // fall through
             case NO_CLIENT_ID:
+                // fall through
             case NONEXISTENT_CLIENT_ID:
                 // fall through
             case UNAUTHORIZED_CLIENT:
                 return false;
             case NO_RESPONSE_TYPE:
+                // fall through
             case INVALID_SCOPE:
+                // fall through
             case UNSUPPORTED_RESPONSE_TYPE:
                 // fall through
             case ACCESS_DENIED:
