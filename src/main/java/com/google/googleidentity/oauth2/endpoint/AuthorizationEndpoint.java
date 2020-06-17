@@ -71,7 +71,7 @@ public final class AuthorizationEndpoint extends HttpServlet {
                 response.sendRedirect(
                         OAuth2ExceptionHandler.getFullRedirectUrl(
                                 exception,
-                                request.getRequestURI(),
+                                request.getParameter(OAuth2ParameterNames.REDIRECT_URI),
                                 request.getParameter(OAuth2ParameterNames.STATE)));
             } else {
                 response.setStatus(OAuth2ExceptionHandler.getHttpCode(exception.getErrorCode()));
