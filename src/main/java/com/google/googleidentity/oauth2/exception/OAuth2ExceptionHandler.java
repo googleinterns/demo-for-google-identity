@@ -76,44 +76,73 @@ public final class OAuth2ExceptionHandler {
             case NO_CLIENT_ID:
             case NONEXISTENT_CLIENT_ID:
             case NO_REDIRECT_URI:
-            case REDIRECT_URI_MISMATCH: return INVALID_REQUEST;
-            case INVALID_SCOPE:    return INVALID_SCOPE;
-            case UNSUPPORTED_RESPONSE_TYPE: return UNSUPPORTED_RESPONSE_TYPE;
-            case UNAUTHORIZED_CLIENT:   return UNAUTHORIZED_CLIENT;
-            case ACCESS_DENIED: return ACCESS_DENIED;
+                // fall through
+            case REDIRECT_URI_MISMATCH:
+                return INVALID_REQUEST;
+            case INVALID_SCOPE:
+                return INVALID_SCOPE;
+            case UNSUPPORTED_RESPONSE_TYPE:
+                return UNSUPPORTED_RESPONSE_TYPE;
+            case UNAUTHORIZED_CLIENT:
+                return UNAUTHORIZED_CLIENT;
+            case ACCESS_DENIED:
+                return ACCESS_DENIED;
             case NONEXISTENT_CODE:
             case CODE_CLIENT_MISMATCH:
             case CODE_REDIRECT_URI_MISMATCH:
             case NONEXISTENT_REFRESH_TOKEN:
             case REFRESH_TOKEN_CLIENT_MISMATCH:
-            case NO_GRANT_TYPE: return INVALID_GRANT;
-            case UNSUPPORTED_GRANT_TYPE:    return UNSUPPORTED_GRANT_TYPE;
-            case INVALID_CLIENT:    return INVALID_CLIENT;
-            default: throw new IllegalArgumentException();
+                // fall through
+            case NO_GRANT_TYPE:
+                return INVALID_GRANT;
+            case UNSUPPORTED_GRANT_TYPE:
+                return UNSUPPORTED_GRANT_TYPE;
+            case INVALID_CLIENT:
+                return INVALID_CLIENT;
+            default:
+                throw new IllegalArgumentException();
         }
     }
 
 
     public static String getErrorDescription(ErrorCode code){
         switch(code){
-            case NO_RESPONSE_TYPE:    return "No Response Type!";
-            case UNSUPPORTED_RESPONSE_TYPE:   return "Unsupported Response Type!";
-            case NO_CLIENT_ID:  return "No Client ID!";
-            case NONEXISTENT_CLIENT_ID: return "Client ID does not exist!";
-            case UNAUTHORIZED_CLIENT: return "The client is not allowed to use this method!";
-            case NO_REDIRECT_URI:   return "No Redirect Uri!";
-            case REDIRECT_URI_MISMATCH: return "Redirect Uri Mismatch!";
-            case ACCESS_DENIED: return "User denied the access!";
-            case INVALID_SCOPE:    return "Invalid scopes!";
-            case NONEXISTENT_CODE:  return "Non existing code!";
-            case CODE_CLIENT_MISMATCH:  return "Code client mismatch!";
-            case NO_GRANT_TYPE: return "No grant type!";
-            case CODE_REDIRECT_URI_MISMATCH:    return "Redirect uri mismatches the grant!";
-            case UNSUPPORTED_GRANT_TYPE:    return "Unsupported grant type!";
-            case INVALID_CLIENT:    return "Client Authentication Failed!";
-            case NONEXISTENT_REFRESH_TOKEN: return "Refresh token does not exist!";
-            case REFRESH_TOKEN_CLIENT_MISMATCH: return "Refresh token and client mismatch!";
-            default: throw new IllegalArgumentException();
+            case NO_RESPONSE_TYPE:
+                return "No Response Type!";
+            case UNSUPPORTED_RESPONSE_TYPE:
+                return "Unsupported Response Type!";
+            case NO_CLIENT_ID:
+                return "No Client ID!";
+            case NONEXISTENT_CLIENT_ID:
+                return "Client ID does not exist!";
+            case UNAUTHORIZED_CLIENT:
+                return "The client is not allowed to use this method!";
+            case NO_REDIRECT_URI:
+                return "No Redirect Uri!";
+            case REDIRECT_URI_MISMATCH:
+                return "Redirect Uri Mismatch!";
+            case ACCESS_DENIED:
+                return "User denied the access!";
+            case INVALID_SCOPE:
+                return "Invalid scopes!";
+            case NONEXISTENT_CODE:
+                return "Non existing code!";
+            case CODE_CLIENT_MISMATCH:
+                return "Code client mismatch!";
+            case NO_GRANT_TYPE:
+                return "No grant type!";
+            case CODE_REDIRECT_URI_MISMATCH:
+                return "Redirect uri mismatches the grant!";
+            case UNSUPPORTED_GRANT_TYPE:
+                return "Unsupported grant type!";
+            case INVALID_CLIENT:
+                return "Client Authentication Failed!";
+            case NONEXISTENT_REFRESH_TOKEN:
+                return "Refresh token does not exist!";
+            case REFRESH_TOKEN_CLIENT_MISMATCH:
+                return "Refresh token and client mismatch!";
+            default:
+                throw new IllegalArgumentException();
         }
     }
 
@@ -141,12 +170,17 @@ public final class OAuth2ExceptionHandler {
             case REDIRECT_URI_MISMATCH:
             case NO_CLIENT_ID:
             case NONEXISTENT_CLIENT_ID:
-            case UNAUTHORIZED_CLIENT:   return false;
+                // fall through
+            case UNAUTHORIZED_CLIENT:
+                return false;
             case NO_RESPONSE_TYPE:
             case INVALID_SCOPE:
             case UNSUPPORTED_RESPONSE_TYPE:
-            case ACCESS_DENIED: return true;
-            default: throw new IllegalArgumentException();
+                // fall through
+            case ACCESS_DENIED:
+                return true;
+            default:
+                throw new IllegalArgumentException();
         }
     }
 

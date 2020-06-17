@@ -24,14 +24,14 @@ import static com.google.googleidentity.oauth2.exception.OAuth2ExceptionHandler.
  */
 public class OAuth2Exception extends Exception{
 
-    private OAuth2ExceptionHandler.ErrorCode errorCode;
+    private ErrorCode errorCode;
 
     public OAuth2Exception(ErrorCode errorCode){
         super();
         this.errorCode = errorCode;
     }
 
-    public OAuth2ExceptionHandler.ErrorCode getErrorCode() {
+    public ErrorCode getErrorCode() {
         return errorCode;
     }
 }
