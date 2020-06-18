@@ -16,20 +16,18 @@
 
 package com.google.googleidentity.oauth2.exception;
 
-public class AccessDeniedException extends OAuth2Exception{
+public class AccessDeniedException extends OAuth2Exception {
 
     private static final String ACCESS_DENIED = "access_denied";
 
     public AccessDeniedException() {
-        super(ErrorCode.ACCESS_DENIED);
+        super();
     }
 
-    @Override
     public String getErrorType(){
         return ACCESS_DENIED;
     }
 
-    @Override
     public String getErrorDescription(){
         return "The client is not allowed to use this method!";
     }

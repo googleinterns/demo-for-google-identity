@@ -55,8 +55,7 @@ public final class AuthorizationEndpoint extends HttpServlet {
 
         try {
             AuthorizationEndpointRequestValidator.validateGET(request, clientDetailsService);
-        }
-        catch(OAuth2Exception exception){
+        } catch(OAuth2Exception exception){
             log.info(exception.getErrorType() + exception.getErrorDescription());
             if(exception.isRedirectable()){
                 response.sendRedirect(
@@ -71,6 +70,7 @@ public final class AuthorizationEndpoint extends HttpServlet {
                         OAuth2ExceptionHandler.getResponseBody(exception).toJSONString());
                 response.getWriter().flush();
             }
+            return;
         }
     }
 
@@ -81,18 +81,16 @@ public final class AuthorizationEndpoint extends HttpServlet {
             throws ServletException, IOException, UnsupportedOperationException{
         try{
             AuthorizationEndpointRequestValidator.validatePOST(request);
-        }
-        catch(OAuth2Exception exception){
+        } catch(OAuth2Exception exception){
             log.info(exception.getErrorType() + exception.getErrorDescription());
             response.sendRedirect(
                     OAuth2ExceptionHandler.getFullRedirectUrl(
                             exception,
                             request.getParameter(OAuth2ParameterNames.REDIRECT_URI),
                             request.getParameter(OAuth2ParameterNames.STATE)));
+            return;
         }
     }
-
-
 
 }
 

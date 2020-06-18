@@ -21,31 +21,11 @@ import org.apache.http.HttpStatus;
 /**
  * OAuth2 Exceptions. Will be deal in try catch clause
  */
-public class OAuth2Exception extends Exception{
+public abstract class OAuth2Exception extends Exception {
 
-    public enum ErrorCode{
-        NO_RESPONSE_TYPE,
-        UNSUPPORTED_RESPONSE_TYPE,
-        NO_CLIENT_ID,
-        NONEXISTENT_CLIENT_ID,
-        UNAUTHORIZED_CLIENT,
-        NO_REDIRECT_URI,
-        REDIRECT_URI_MISMATCH,
-        INVALID_SCOPE,
-        ACCESS_DENIED,
-        NO_GRANT_TYPE,
-        UNSUPPORTED_GRANT_TYPE,
-        NONEXISTENT_CODE,
-        CODE_CLIENT_MISMATCH,
-        CODE_REDIRECT_URI_MISMATCH,
-        INVALID_CLIENT,
-        NONEXISTENT_REFRESH_TOKEN,
-        REFRESH_TOKEN_CLIENT_MISMATCH,
-        NO_USER_CONSENT,
-        NO_AUTHORIZATION_REQUEST
+    public OAuth2Exception() {
+        super();
     }
-
-    private ErrorCode errorCode;
 
     public int getHttpCode(){
         return HttpStatus.SC_BAD_REQUEST;
@@ -59,27 +39,13 @@ public class OAuth2Exception extends Exception{
     }
 
     /**
-     * Should be rewrite in specific exception classes.
+     * Should be implemented in specific exception classes.
      */
-    public String getErrorType(){
-        return "OAuth2Exception";
-    }
+    public abstract String getErrorType();
 
     /**
      * Should be implemented in specific exception, default is empty.
      */
-    public String getErrorDescription(){
-        return "";
-    }
-
-
-    public OAuth2Exception(ErrorCode errorCode){
-        super();
-        this.errorCode = errorCode;
-    }
-
-    public ErrorCode getErrorCode() {
-        return errorCode;
-    }
+    public abstract String getErrorDescription();
 
 }

@@ -16,13 +16,16 @@
 
 package com.google.googleidentity.oauth2.validator;
 
-import com.google.common.collect.ImmutableSet;
 import com.google.googleidentity.oauth2.client.ClientDetails;
 import com.google.googleidentity.oauth2.client.ClientDetailsService;
-import com.google.googleidentity.oauth2.exception.*;
+import com.google.googleidentity.oauth2.exception.InvalidRequestException;
+import com.google.googleidentity.oauth2.exception.OAuth2Exception;
+import com.google.googleidentity.oauth2.exception.InvalidScopeException;
+import com.google.googleidentity.oauth2.exception.AccessDeniedException;
+import com.google.googleidentity.oauth2.exception.UnauthorizedClientException;
+import com.google.googleidentity.oauth2.exception.UnsupportedResponseTypeException;
 import com.google.googleidentity.oauth2.util.OAuth2ParameterNames;
 import com.google.googleidentity.oauth2.util.OAuth2Utils;
-import org.apache.http.HttpStatus;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -33,7 +36,6 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import static com.google.googleidentity.oauth2.exception.OAuth2Exception.ErrorCode;
 
 public class AuthorizationEndpointRequestValidator {
 
@@ -46,11 +48,11 @@ public class AuthorizationEndpointRequestValidator {
         String clientID = request.getParameter(OAuth2ParameterNames.CLIENT_ID);
 
         if (clientID == null) {
-            throw new InvalidRequestException(ErrorCode.NO_CLIENT_ID);
+            throw new InvalidRequestException("NO_CLIENT_ID");
         }
 
         if(!clientDetailsService.getClientByID(clientID).isPresent()){
-            throw new InvalidRequestException(ErrorCode.NONEXISTENT_CLIENT_ID);
+            throw new InvalidRequestException("NONEXISTENT_CLIENT_ID");
         }
 
         ClientDetails client = clientDetailsService.getClientByID(clientID).get();
@@ -58,7 +60,7 @@ public class AuthorizationEndpointRequestValidator {
         String redirectUri = request.getParameter(OAuth2ParameterNames.REDIRECT_URI);
 
         if(redirectUri == null){
-            throw new InvalidRequestException(ErrorCode.NO_REDIRECT_URI);
+            throw new InvalidRequestException("NO_REDIRECT_URI");
         }
 
         try {
@@ -68,13 +70,13 @@ public class AuthorizationEndpointRequestValidator {
         }
 
         if (!client.getRedirectUrisList().contains(redirectUri)) {
-            throw new InvalidRequestException(ErrorCode.REDIRECT_URI_MISMATCH);
+            throw new InvalidRequestException("REDIRECT_URI_MISMATCH");
         }
 
         String responseType = request.getParameter(OAuth2ParameterNames.RESPONSE_TYPE);
 
         if(request.getParameter(OAuth2ParameterNames.RESPONSE_TYPE) == null){
-            throw new InvalidRequestException(ErrorCode.NO_RESPONSE_TYPE);
+            throw new InvalidRequestException("NO_RESPONSE_TYPE");
         }
         else if (!responseType.equals("token") && !responseType.equals("code")) {
             throw new UnsupportedResponseTypeException();
@@ -100,14 +102,14 @@ public class AuthorizationEndpointRequestValidator {
         String userDeny = request.getParameter("user_deny");
 
         if(!OAuth2Utils.getClientSession(request).getRequest().isPresent()){
-            throw new InvalidRequestException(ErrorCode.NO_AUTHORIZATION_REQUEST);
+            throw new InvalidRequestException("NO_AUTHORIZATION_REQUEST");
         }
         if(Objects.equals(userDeny, "true")){
             throw new AccessDeniedException();
         }
 
         if(!Objects.equals(userConsent, "true")){
-            throw new InvalidRequestException(ErrorCode.NO_USER_CONSENT);
+            throw new InvalidRequestException("NO_USER_CONSENT");
         }
     }
 

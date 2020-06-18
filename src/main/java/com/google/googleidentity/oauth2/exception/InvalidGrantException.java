@@ -16,22 +16,34 @@
 
 package com.google.googleidentity.oauth2.exception;
 
-public class InvalidGrantException extends OAuth2Exception{
+public class InvalidGrantException extends OAuth2Exception {
+    enum ErrorCode{
+        NONEXISTENT_CODE,
+        CODE_CLIENT_MISMATCH,
+        NO_GRANT_TYPE,
+        CODE_REDIRECT_URI_MISMATCH,
+        NONEXISTENT_REFRESH_TOKEN,
+        REFRESH_TOKEN_CLIENT_MISMATCH
+    }
 
     private static final String INVALID_GRANT = "invalid_grant";
 
-    public InvalidGrantException(ErrorCode errorCode) {
-        super(errorCode);
+    private final ErrorCode errorCode;
+
+
+    public InvalidGrantException(String errorCode) {
+        super();
+        this.errorCode = ErrorCode.valueOf(errorCode);
     }
 
     @Override
-    public String getErrorType(){
+    public String getErrorType() {
         return INVALID_GRANT;
     }
 
     @Override
-    public String getErrorDescription(){
-        switch(getErrorCode()){
+    public String getErrorDescription() {
+        switch(errorCode){
             case NONEXISTENT_CODE:
                 return "Non existing code!";
             case CODE_CLIENT_MISMATCH:
@@ -45,9 +57,28 @@ public class InvalidGrantException extends OAuth2Exception{
             case REFRESH_TOKEN_CLIENT_MISMATCH:
                 return "Refresh token and client mismatch!";
             default:
-                throw new IllegalArgumentException(String.valueOf(getErrorCode()));
+                throw new IllegalArgumentException(String.valueOf(errorCode));
         }
     }
 
+    /**
+     * mainly use for tests
+     */
+    @Override
+    public boolean equals(Object object) {
+        if(!(object instanceof  InvalidGrantException)){
+            return false;
+        }
+
+        return ((InvalidGrantException) object).hashCode() == hashCode();
+    }
+
+    /**
+     * mainly use for tests
+     */
+    @Override
+    public int hashCode() {
+        return errorCode.hashCode();
+    }
 
 }

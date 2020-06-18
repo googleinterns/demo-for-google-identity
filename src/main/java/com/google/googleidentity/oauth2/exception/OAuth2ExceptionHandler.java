@@ -18,14 +18,12 @@ package com.google.googleidentity.oauth2.exception;
 
 import com.google.googleidentity.oauth2.util.OAuth2ParameterNames;
 import net.minidev.json.JSONObject;
-import org.apache.http.HttpStatus;
 import org.apache.http.client.utils.URIBuilder;
 
 import java.net.URISyntaxException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import static com.google.googleidentity.oauth2.exception.OAuth2Exception.ErrorCode;
 
 /**
  * class to handle {@link OAuth2Exception}
@@ -34,14 +32,17 @@ public final class OAuth2ExceptionHandler {
 
     private static final Logger log = Logger.getLogger("OAuth2ExceptionHandler");
 
+    private static final String ERROR_DESCRIPTION = "error_description";
+    private static final String ERROR = "error";
+
     /**
      * Used when return json error response
      */
     public static JSONObject getResponseBody(OAuth2Exception exception){
         JSONObject json =  new JSONObject();
-        json.appendField("error", exception.getErrorType());
+        json.appendField(ERROR, exception.getErrorType());
         if (exception.getErrorDescription() != null) {
-            json.appendField("error_description", exception.getErrorDescription());
+            json.appendField(ERROR_DESCRIPTION, exception.getErrorDescription());
         }
         return json;
     }
@@ -53,13 +54,12 @@ public final class OAuth2ExceptionHandler {
      */
     public static String getFullRedirectUrl(
             OAuth2Exception exception, String redirectUri, String state) {
-        ErrorCode code = exception.getErrorCode();
         try {
             URIBuilder uriBuilder = new URIBuilder(redirectUri)
-                    .addParameter("error", exception.getErrorType());
+                    .addParameter(ERROR, exception.getErrorType());
             if (exception.getErrorDescription() != null) {
                 uriBuilder.addParameter(
-                        "error_description", exception.getErrorDescription());
+                        ERROR_DESCRIPTION, exception.getErrorDescription());
             }
             if(state != null) {
                 uriBuilder.addParameter(OAuth2ParameterNames.STATE, state);

@@ -19,22 +19,34 @@ package com.google.googleidentity.oauth2.exception;
 /**
  * OAuth2Exception with type "invalid_request"
  */
-public class InvalidRequestException extends OAuth2Exception{
+public class InvalidRequestException extends OAuth2Exception {
+
+    enum ErrorCode{
+        NO_REDIRECT_URI,
+        REDIRECT_URI_MISMATCH,
+        NO_CLIENT_ID,
+        NONEXISTENT_CLIENT_ID,
+        NO_AUTHORIZATION_REQUEST,
+        NO_USER_CONSENT,
+        NO_RESPONSE_TYPE
+    }
 
     private static final String INVALID_REQUEST = "invalid_request";
 
-    public InvalidRequestException(ErrorCode errorCode) {
-        super(errorCode);
+    private final ErrorCode errorCode;
+
+    public InvalidRequestException(String errorCode) {
+        super();
+        this.errorCode = ErrorCode.valueOf(errorCode);
     }
 
-    @Override
     public String getErrorType(){
         return INVALID_REQUEST;
     }
 
     @Override
-    public boolean isRedirectable(){
-        switch(getErrorCode()){
+    public boolean isRedirectable() {
+        switch(errorCode){
             case NO_REDIRECT_URI:
                 // fall through
             case REDIRECT_URI_MISMATCH:
@@ -50,14 +62,13 @@ public class InvalidRequestException extends OAuth2Exception{
             case NO_RESPONSE_TYPE:
                 return true;
             default:
-                throw new IllegalArgumentException();
+                throw new IllegalArgumentException(String.valueOf(errorCode));
         }
 
     }
 
-    @Override
-    public String getErrorDescription(){
-        switch(getErrorCode()){
+    public String getErrorDescription() {
+        switch(errorCode){
             case NO_RESPONSE_TYPE:
                 return "No Response Type!";
             case NO_CLIENT_ID:
@@ -69,9 +80,28 @@ public class InvalidRequestException extends OAuth2Exception{
             case REDIRECT_URI_MISMATCH:
                 return "Redirect Uri Mismatch!";
             default:
-                throw new IllegalArgumentException(String.valueOf(getErrorCode()));
+                throw new IllegalArgumentException(String.valueOf(errorCode));
         }
     }
 
+    /**
+     * mainly use for tests
+     */
+    @Override
+    public boolean equals(Object object) {
+        if(!(object instanceof  InvalidRequestException)){
+            return false;
+        }
+
+        return ((InvalidRequestException) object).hashCode() == hashCode();
+    }
+
+    /**
+     * mainly use for tests
+     */
+    @Override
+    public int hashCode() {
+        return errorCode.hashCode();
+    }
 
 }

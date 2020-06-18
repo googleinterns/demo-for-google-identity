@@ -16,20 +16,18 @@
 
 package com.google.googleidentity.oauth2.exception;
 
-public class InvalidScopeException extends OAuth2Exception{
+public class InvalidScopeException extends OAuth2Exception {
 
     private static final String INVALID_SCOPE = "invalid_scope";
 
     public InvalidScopeException() {
-        super(ErrorCode.INVALID_SCOPE);
+        super();
     }
 
-    @Override
     public String getErrorType(){
         return INVALID_SCOPE;
     }
 
-    @Override
     public String getErrorDescription(){
         return "Invalid scopes!";
     }

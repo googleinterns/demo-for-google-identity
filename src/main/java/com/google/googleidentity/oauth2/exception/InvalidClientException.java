@@ -18,12 +18,12 @@ package com.google.googleidentity.oauth2.exception;
 
 import org.apache.http.HttpStatus;
 
-public class InvalidClientException extends OAuth2Exception{
+public class InvalidClientException extends OAuth2Exception {
 
     private static final String INVALID_CLIENT = "invalid_client";
 
     public InvalidClientException() {
-        super(ErrorCode.INVALID_CLIENT);
+        super();
     }
 
     @Override
@@ -31,13 +31,10 @@ public class InvalidClientException extends OAuth2Exception{
         return HttpStatus.SC_UNAUTHORIZED;
     }
 
-
-    @Override
     public String getErrorType(){
         return INVALID_CLIENT;
     }
 
-    @Override
     public String getErrorDescription(){
         return "Client Authentication Failed!";
     }

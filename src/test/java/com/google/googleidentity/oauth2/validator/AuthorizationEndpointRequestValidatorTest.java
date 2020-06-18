@@ -24,11 +24,8 @@ import com.google.googleidentity.oauth2.client.ClientSession;
 import com.google.googleidentity.oauth2.client.InMemoryClientDetailsService;
 import com.google.googleidentity.oauth2.exception.*;
 
-import static com.google.googleidentity.oauth2.exception.OAuth2Exception.ErrorCode;
-
 import com.google.googleidentity.oauth2.request.OAuth2Request;
 import com.google.googleidentity.oauth2.util.OAuth2ParameterNames;
-import com.google.googleidentity.oauth2.util.OAuth2Utils;
 import com.google.googleidentity.security.UserSession;
 import com.google.googleidentity.testtools.FakeHttpSession;
 import com.google.googleidentity.user.UserDetails;
@@ -88,7 +85,7 @@ public class AuthorizationEndpointRequestValidatorTest {
     }
 
     @Test
-    public void test_validateGet_NoClientID_throwInvalidRequestException(){
+    public void test_validateGet_NoClientID_throwInvalidRequestException() {
 
         HttpServletRequest request = mock(HttpServletRequest.class);
 
@@ -103,13 +100,12 @@ public class AuthorizationEndpointRequestValidatorTest {
                 ()-> AuthorizationEndpointRequestValidator
                         .validateGET(request, clientDetailsService));
 
-        assertThat(e).isInstanceOf(InvalidRequestException.class);
-        assertThat(e.getErrorCode()).isEqualTo(ErrorCode.NO_CLIENT_ID);
+        assertThat(e).isEqualTo(new InvalidRequestException("NO_CLIENT_ID"));
 
     }
 
     @Test
-    public void test_validateGet_NonExistedClientID_throwInvalidRequestException(){
+    public void test_validateGet_NonExistedClientID_throwInvalidRequestException() {
 
         HttpServletRequest request = mock(HttpServletRequest.class);
 
@@ -124,13 +120,12 @@ public class AuthorizationEndpointRequestValidatorTest {
                 ()-> AuthorizationEndpointRequestValidator
                         .validateGET(request, clientDetailsService));
 
-        assertThat(e).isInstanceOf(InvalidRequestException.class);
-        assertThat(e.getErrorCode()).isEqualTo(ErrorCode.NONEXISTENT_CLIENT_ID);
+        assertThat(e).isEqualTo(new InvalidRequestException("NONEXISTENT_CLIENT_ID"));
 
     }
 
     @Test
-    public void test_validateGet_NoRedirectUri_throwInvalidRequestException(){
+    public void test_validateGet_NoRedirectUri_throwInvalidRequestException() {
 
         HttpServletRequest request = mock(HttpServletRequest.class);
 
@@ -145,14 +140,13 @@ public class AuthorizationEndpointRequestValidatorTest {
                 ()-> AuthorizationEndpointRequestValidator
                         .validateGET(request, clientDetailsService));
 
-        assertThat(e).isInstanceOf(InvalidRequestException.class);
-        assertThat(e.getErrorCode()).isEqualTo(ErrorCode.NO_REDIRECT_URI);
+        assertThat(e).isEqualTo(new InvalidRequestException("NO_REDIRECT_URI"));
 
     }
 
 
     @Test
-    public void test_validateGet_WrongRedirectUri_throwInvalidRequestException(){
+    public void test_validateGet_WrongRedirectUri_throwInvalidRequestException() {
 
         HttpServletRequest request = mock(HttpServletRequest.class);
 
@@ -167,13 +161,12 @@ public class AuthorizationEndpointRequestValidatorTest {
                 ()-> AuthorizationEndpointRequestValidator
                         .validateGET(request, clientDetailsService));
 
-        assertThat(e).isInstanceOf(InvalidRequestException.class);
-        assertThat(e.getErrorCode()).isEqualTo(ErrorCode.REDIRECT_URI_MISMATCH);
+        assertThat(e).isEqualTo(new InvalidRequestException("REDIRECT_URI_MISMATCH"));
 
     }
 
     @Test
-    public void test_validateGet_NoResponseType_throwInvalidRequestException(){
+    public void test_validateGet_NoResponseType_throwInvalidRequestException() {
 
         HttpServletRequest request = mock(HttpServletRequest.class);
 
@@ -188,12 +181,11 @@ public class AuthorizationEndpointRequestValidatorTest {
                 ()-> AuthorizationEndpointRequestValidator
                         .validateGET(request, clientDetailsService));
 
-        assertThat(e).isInstanceOf(InvalidRequestException.class);
-        assertThat(e.getErrorCode()).isEqualTo(ErrorCode.NO_RESPONSE_TYPE);
+        assertThat(e).isEqualTo(new InvalidRequestException("NO_RESPONSE_TYPE"));
     }
 
     @Test
-    public void test_validateGet_UnsupportedResponseType_throwUnsupportedResponseTypeException(){
+    public void test_validateGet_UnsupportedResponseType_throwUnsupportedResponseTypeException() {
 
         HttpServletRequest request = mock(HttpServletRequest.class);
 
@@ -212,7 +204,7 @@ public class AuthorizationEndpointRequestValidatorTest {
     }
 
     @Test
-    public void test_validateGet_UnauthorizedGrantType_throwUnauthorizedClientException(){
+    public void test_validateGet_UnauthorizedGrantType_throwUnauthorizedClientException() {
 
         HttpServletRequest request = mock(HttpServletRequest.class);
 
@@ -231,7 +223,7 @@ public class AuthorizationEndpointRequestValidatorTest {
     }
 
     @Test
-    public void test_validateGet_InvalidScope_throwInvalidScopeException(){
+    public void test_validateGet_InvalidScope_throwInvalidScopeException() {
 
         HttpServletRequest request = mock(HttpServletRequest.class);
 
@@ -250,7 +242,7 @@ public class AuthorizationEndpointRequestValidatorTest {
     }
 
     @Test
-    public void test_validateGet_allRight_noException(){
+    public void test_validateGet_allRight_noException() {
 
         HttpServletRequest request = mock(HttpServletRequest.class);
 
@@ -267,7 +259,7 @@ public class AuthorizationEndpointRequestValidatorTest {
     }
 
     @Test
-    public void test_validatePost_NoRequestInSession_throwInvalidRequestException(){
+    public void test_validatePost_NoRequestInSession_throwInvalidRequestException() {
 
         HttpServletRequest request = mock(HttpServletRequest.class);
 
@@ -281,13 +273,12 @@ public class AuthorizationEndpointRequestValidatorTest {
                 ()-> AuthorizationEndpointRequestValidator
                         .validatePOST(request));
 
-        assertThat(e).isInstanceOf(InvalidRequestException.class);
-        assertThat(e.getErrorCode()).isEqualTo(ErrorCode.NO_AUTHORIZATION_REQUEST);
+        assertThat(e).isEqualTo(new InvalidRequestException("NO_AUTHORIZATION_REQUEST"));
     }
 
 
     @Test
-    public void test_validatePost_userDeny_throwInvalidRequestException(){
+    public void test_validatePost_userDeny_throwInvalidRequestException() {
 
         HttpServletRequest request = mock(HttpServletRequest.class);
 
@@ -309,7 +300,7 @@ public class AuthorizationEndpointRequestValidatorTest {
 
 
     @Test
-    public void test_validatePost_userConsentMissing_throwInvalidRequestException(){
+    public void test_validatePost_userConsentMissing_throwInvalidRequestException() {
 
         HttpServletRequest request = mock(HttpServletRequest.class);
 
@@ -326,13 +317,12 @@ public class AuthorizationEndpointRequestValidatorTest {
                 ()-> AuthorizationEndpointRequestValidator
                         .validatePOST(request));
 
-        assertThat(e).isInstanceOf(InvalidRequestException.class);
-        assertThat(e.getErrorCode()).isEqualTo(ErrorCode.NO_USER_CONSENT);
+        assertThat(e).isEqualTo(new InvalidRequestException("NO_USER_CONSENT"));
     }
 
 
     @Test
-    public void test_validatePost_allRight_noException(){
+    public void test_validatePost_allRight_noException() {
 
         HttpServletRequest request = mock(HttpServletRequest.class);
 
