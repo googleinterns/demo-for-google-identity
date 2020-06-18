@@ -38,7 +38,7 @@ public final class OAuth2ExceptionHandler {
     /**
      * Used when return json error response
      */
-    public static JSONObject getResponseBody(OAuth2Exception exception){
+    public static JSONObject getResponseBody(OAuth2Exception exception) {
         JSONObject json =  new JSONObject();
         json.appendField(ERROR, exception.getErrorType());
         if (exception.getErrorDescription() != null) {
