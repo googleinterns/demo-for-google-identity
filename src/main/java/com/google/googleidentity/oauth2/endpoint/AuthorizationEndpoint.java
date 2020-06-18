@@ -20,9 +20,9 @@ import com.google.googleidentity.oauth2.client.ClientDetailsService;
 import com.google.googleidentity.oauth2.exception.OAuth2ExceptionHandler;
 import com.google.googleidentity.oauth2.exception.OAuth2Exception;
 import com.google.googleidentity.oauth2.util.OAuth2ParameterNames;
+import com.google.googleidentity.oauth2.validator.AuthorizationEndpointRequestValidator;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
-import org.apache.http.HttpStatus;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -30,8 +30,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.logging.Logger;
-
-import static com.google.googleidentity.oauth2.exception.OAuth2ExceptionHandler.ErrorCode;
 
 /**
  * Demo AuthorizationEndpoint for OAuth2 Server
@@ -56,25 +54,18 @@ public final class AuthorizationEndpoint extends HttpServlet {
             throws ServletException, IOException, UnsupportedOperationException{
 
         try {
-            String responseType = request.getParameter(OAuth2ParameterNames.RESPONSE_TYPE);
-
-            if (responseType == null) {
-                throw new OAuth2Exception(ErrorCode.NO_RESPONSE_TYPE);
-            }
-            else if (!responseType.equals("token") && !responseType.equals("code")) {
-                throw new OAuth2Exception(ErrorCode.UNSUPPORTED_RESPONSE_TYPE);
-            }
+            AuthorizationEndpointRequestValidator.validateGET(request, clientDetailsService);
         }
         catch(OAuth2Exception exception){
-            log.info(OAuth2ExceptionHandler.getErrorDescription(exception.getErrorCode()));
-            if(OAuth2ExceptionHandler.isRedirectable(exception.getErrorCode())){
+            log.info(exception.getErrorType() + exception.getErrorDescription());
+            if(exception.isRedirectable()){
                 response.sendRedirect(
                         OAuth2ExceptionHandler.getFullRedirectUrl(
                                 exception,
                                 request.getParameter(OAuth2ParameterNames.REDIRECT_URI),
                                 request.getParameter(OAuth2ParameterNames.STATE)));
             } else {
-                response.setStatus(OAuth2ExceptionHandler.getHttpCode(exception.getErrorCode()));
+                response.setStatus(exception.getHttpCode());
                 response.setContentType("application/json;charset=UTF-8");
                 response.getWriter().println(
                         OAuth2ExceptionHandler.getResponseBody(exception).toJSONString());
@@ -83,9 +74,25 @@ public final class AuthorizationEndpoint extends HttpServlet {
         }
     }
 
+    /**
+     * when user approve or deny the consent, the request will sent here
+     */
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException, UnsupportedOperationException{
+        try{
+            AuthorizationEndpointRequestValidator.validatePOST(request);
+        }
+        catch(OAuth2Exception exception){
+            log.info(exception.getErrorType() + exception.getErrorDescription());
+            response.sendRedirect(
+                    OAuth2ExceptionHandler.getFullRedirectUrl(
+                            exception,
+                            request.getParameter(OAuth2ParameterNames.REDIRECT_URI),
+                            request.getParameter(OAuth2ParameterNames.STATE)));
+        }
     }
+
+
 
 }
 
