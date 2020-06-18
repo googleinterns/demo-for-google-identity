@@ -51,11 +51,11 @@ public final class AuthorizationEndpoint extends HttpServlet {
 
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException, UnsupportedOperationException{
+            throws ServletException, IOException, UnsupportedOperationException {
 
         try {
             AuthorizationEndpointRequestValidator.validateGET(request, clientDetailsService);
-        } catch(OAuth2Exception exception){
+        } catch (OAuth2Exception exception) {
             log.info(exception.getErrorType() + exception.getErrorDescription());
             if(exception.isRedirectable()){
                 response.sendRedirect(
@@ -78,10 +78,10 @@ public final class AuthorizationEndpoint extends HttpServlet {
      * when user approve or deny the consent, the request will sent here
      */
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException, UnsupportedOperationException{
+            throws ServletException, IOException, UnsupportedOperationException {
         try{
             AuthorizationEndpointRequestValidator.validatePOST(request);
-        } catch(OAuth2Exception exception){
+        } catch (OAuth2Exception exception) {
             log.info(exception.getErrorType() + exception.getErrorDescription());
             response.sendRedirect(
                     OAuth2ExceptionHandler.getFullRedirectUrl(
