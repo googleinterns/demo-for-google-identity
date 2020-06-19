@@ -16,7 +16,7 @@
 
 package com.google.googleidentity.oauth2.exception;
 
-public class UnsupportedGrantTypeException extends OAuth2Exception {
+public final class UnsupportedGrantTypeException extends OAuth2Exception {
 
     private static final String UNSUPPORTED_GRANT_TYPE = "unsupported_grant_type";
 

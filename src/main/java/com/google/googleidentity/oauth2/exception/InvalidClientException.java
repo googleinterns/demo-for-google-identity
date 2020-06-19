@@ -18,7 +18,7 @@ package com.google.googleidentity.oauth2.exception;
 
 import org.apache.http.HttpStatus;
 
-public class InvalidClientException extends OAuth2Exception {
+public final class InvalidClientException extends OAuth2Exception {
 
     private static final String INVALID_CLIENT = "invalid_client";
 

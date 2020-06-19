@@ -16,7 +16,7 @@
 
 package com.google.googleidentity.oauth2.exception;
 
-public class AccessDeniedException extends OAuth2Exception {
+public final class AccessDeniedException extends OAuth2Exception {
 
     private static final String ACCESS_DENIED = "access_denied";
 

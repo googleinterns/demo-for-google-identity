@@ -16,7 +16,7 @@
 
 package com.google.googleidentity.oauth2.exception;
 
-public class UnauthorizedClientException extends OAuth2Exception {
+public final class UnauthorizedClientException extends OAuth2Exception {
 
     private static final String UNAUTHORIZED_CLIENT = "unauthorized_client";
 
