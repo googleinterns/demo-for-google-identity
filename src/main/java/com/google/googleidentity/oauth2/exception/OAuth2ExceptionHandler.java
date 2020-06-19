@@ -16,6 +16,7 @@
 
 package com.google.googleidentity.oauth2.exception;
 
+import com.google.common.base.Strings;
 import com.google.googleidentity.oauth2.util.OAuth2ParameterNames;
 import net.minidev.json.JSONObject;
 import org.apache.http.client.utils.URIBuilder;
@@ -41,7 +42,7 @@ public final class OAuth2ExceptionHandler {
     public static JSONObject getResponseBody(OAuth2Exception exception) {
         JSONObject json =  new JSONObject();
         json.appendField(ERROR, exception.getErrorType());
-        if (exception.getErrorDescription() != null) {
+        if ( Strings.isNullOrEmpty(exception.getErrorDescription())) {
             json.appendField(ERROR_DESCRIPTION, exception.getErrorDescription());
         }
         return json;
@@ -57,11 +58,11 @@ public final class OAuth2ExceptionHandler {
         try {
             URIBuilder uriBuilder = new URIBuilder(redirectUri)
                     .addParameter(ERROR, exception.getErrorType());
-            if (exception.getErrorDescription() != null) {
+            if (Strings.isNullOrEmpty(exception.getErrorDescription())) {
                 uriBuilder.addParameter(
                         ERROR_DESCRIPTION, exception.getErrorDescription());
             }
-            if(state != null) {
+            if(Strings.isNullOrEmpty(state)) {
                 uriBuilder.addParameter(OAuth2ParameterNames.STATE, state);
             }
             return uriBuilder.build().toString();

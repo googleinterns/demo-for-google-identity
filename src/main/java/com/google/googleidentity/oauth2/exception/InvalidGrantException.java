@@ -16,8 +16,8 @@
 
 package com.google.googleidentity.oauth2.exception;
 
-public class InvalidGrantException extends OAuth2Exception {
-    enum ErrorCode{
+public final class InvalidGrantException extends OAuth2Exception {
+    public enum ErrorCode{
         NONEXISTENT_CODE,
         CODE_CLIENT_MISMATCH,
         NO_GRANT_TYPE,
@@ -30,10 +30,9 @@ public class InvalidGrantException extends OAuth2Exception {
 
     private final ErrorCode errorCode;
 
-
-    public InvalidGrantException(String errorCode) {
+    public InvalidGrantException(ErrorCode errorCode) {
         super();
-        this.errorCode = ErrorCode.valueOf(errorCode);
+        this.errorCode = errorCode;
     }
 
     @Override
@@ -60,25 +59,4 @@ public class InvalidGrantException extends OAuth2Exception {
                 throw new IllegalArgumentException(String.valueOf(errorCode));
         }
     }
-
-    /**
-     * mainly use for tests
-     */
-    @Override
-    public boolean equals(Object object) {
-        if(!(object instanceof  InvalidGrantException)){
-            return false;
-        }
-
-        return ((InvalidGrantException) object).hashCode() == hashCode();
-    }
-
-    /**
-     * mainly use for tests
-     */
-    @Override
-    public int hashCode() {
-        return errorCode.hashCode();
-    }
-
 }

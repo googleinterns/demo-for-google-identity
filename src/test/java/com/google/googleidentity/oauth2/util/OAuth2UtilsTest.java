@@ -17,10 +17,13 @@
 package com.google.googleidentity.oauth2.util;
 
 import static com.google.common.truth.Truth.assertThat;
+
+import com.google.common.collect.ImmutableList;
 import org.junit.jupiter.api.Test;
 
 
 import java.util.Set;
+import java.util.regex.Pattern;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -50,5 +53,21 @@ public class OAuth2UtilsTest {
         assertThat(scopes)
                 .containsExactly("read", "write", "modify");
 
+    }
+
+    @Test
+    void testMatchUri_simpleGALCorrectInput_CorrectOut() {
+        assertTrue(
+                OAuth2Utils.matchUri(
+                        ImmutableList.of("https://oauth-redirect\\.googleusercontent\\.com/r/.*"),
+                        "https://oauth-redirect.googleusercontent.com/r/YOUR_PROJECT_ID"));
+    }
+
+    @Test
+    void testMatchUri_simpleGALWrongInput_ReturnFalse() {
+        assertFalse(
+                OAuth2Utils.matchUri(
+                        ImmutableList.of("https://oauth-redirect\\.googleusercontent\\.com/r/.*"),
+                        "wrong_uri"));
     }
 }

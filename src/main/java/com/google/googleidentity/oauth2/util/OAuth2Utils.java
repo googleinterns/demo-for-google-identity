@@ -25,7 +25,9 @@ import net.minidev.json.JSONObject;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.List;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 /**
  * OAuth2 Util Library
@@ -49,6 +51,20 @@ public class OAuth2Utils {
 
         return ImmutableSet.copyOf(scopes);
 
+    }
+
+    /**
+     * @param uriList each is a regex string
+     * @param uri
+     * @return whether the uri matches one of the regex pattern
+     */
+    public static boolean matchUri(List<String> uriList, String uri){
+        for(String eachPattern : uriList){
+            if(Pattern.compile(eachPattern).matcher(uri).matches()){
+                return true;
+            }
+        }
+        return false;
     }
 
     /**

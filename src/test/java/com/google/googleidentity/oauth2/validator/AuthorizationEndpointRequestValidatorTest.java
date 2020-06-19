@@ -52,7 +52,8 @@ public class AuthorizationEndpointRequestValidatorTest {
 
     private static final String CLIENTID = "111";
     private static final String SECRET = "111";
-    private static final String REDIRECT_URI = "http://www.google.com";
+    private static final String REDIRECT_URI_REGEX= "http://www\\.google\\.com/.*";
+    private static final String REDIRECT_URI= "http://www.google.com/123";
 
     private static final ClientDetails CLIENT =
             ClientDetails.newBuilder()
@@ -61,7 +62,7 @@ public class AuthorizationEndpointRequestValidatorTest {
                             .hashString(SECRET, Charsets.UTF_8).toString())
                     .addScopes("read")
                     .setIsScoped(true)
-                    .addRedirectUris(REDIRECT_URI)
+                    .addRedirectUris(REDIRECT_URI_REGEX)
                     .addGrantTypes("authorization_code")
                     .build();
 
@@ -100,7 +101,8 @@ public class AuthorizationEndpointRequestValidatorTest {
                 ()-> AuthorizationEndpointRequestValidator
                         .validateRedirectUri(request, clientDetailsService));
 
-        assertThat(e).isEqualTo(new InvalidRequestException("NO_CLIENT_ID"));
+        assertThat(e).isInstanceOf(InvalidRequestException.class);
+        assertThat(e.getErrorDescription()).isEqualTo("No Client ID!");
 
     }
 
@@ -120,7 +122,8 @@ public class AuthorizationEndpointRequestValidatorTest {
                 ()-> AuthorizationEndpointRequestValidator
                         .validateRedirectUri(request, clientDetailsService));
 
-        assertThat(e).isEqualTo(new InvalidRequestException("NONEXISTENT_CLIENT_ID"));
+        assertThat(e).isInstanceOf(InvalidRequestException.class);
+        assertThat(e.getErrorDescription()).isEqualTo("Client ID does not exist!");
 
     }
 
@@ -140,7 +143,8 @@ public class AuthorizationEndpointRequestValidatorTest {
                 ()-> AuthorizationEndpointRequestValidator
                         .validateRedirectUri(request, clientDetailsService));
 
-        assertThat(e).isEqualTo(new InvalidRequestException("NO_REDIRECT_URI"));
+        assertThat(e).isInstanceOf(InvalidRequestException.class);
+        assertThat(e.getErrorDescription()).isEqualTo("No Redirect Uri!");
 
     }
 
@@ -161,7 +165,8 @@ public class AuthorizationEndpointRequestValidatorTest {
                 ()-> AuthorizationEndpointRequestValidator
                         .validateRedirectUri(request, clientDetailsService));
 
-        assertThat(e).isEqualTo(new InvalidRequestException("REDIRECT_URI_MISMATCH"));
+        assertThat(e).isInstanceOf(InvalidRequestException.class);
+        assertThat(e.getErrorDescription()).isEqualTo("Redirect Uri Mismatch!");
 
     }
 
@@ -181,7 +186,8 @@ public class AuthorizationEndpointRequestValidatorTest {
                 ()-> AuthorizationEndpointRequestValidator
                         .validateGET(request, clientDetailsService));
 
-        assertThat(e).isEqualTo(new InvalidRequestException("NO_RESPONSE_TYPE"));
+        assertThat(e).isInstanceOf(InvalidRequestException.class);
+        assertThat(e.getErrorDescription()).isEqualTo("No Response Type!");
     }
 
     @Test
@@ -273,7 +279,8 @@ public class AuthorizationEndpointRequestValidatorTest {
                 ()-> AuthorizationEndpointRequestValidator
                         .validatePOST(request));
 
-        assertThat(e).isEqualTo(new InvalidRequestException("NO_AUTHORIZATION_REQUEST"));
+        assertThat(e).isInstanceOf(InvalidRequestException.class);
+        assertThat(e.getErrorDescription()).isEqualTo("No request need to approve!");
     }
 
 
@@ -317,7 +324,8 @@ public class AuthorizationEndpointRequestValidatorTest {
                 ()-> AuthorizationEndpointRequestValidator
                         .validatePOST(request));
 
-        assertThat(e).isEqualTo(new InvalidRequestException("NO_USER_CONSENT"));
+        assertThat(e).isInstanceOf(InvalidRequestException.class);
+        assertThat(e.getErrorDescription()).isEqualTo("No User consent information!");
     }
 
 

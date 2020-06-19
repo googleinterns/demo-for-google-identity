@@ -19,9 +19,9 @@ package com.google.googleidentity.oauth2.exception;
 /**
  * OAuth2Exception with type "invalid_request"
  */
-public class InvalidRequestException extends OAuth2Exception {
+public final class InvalidRequestException extends OAuth2Exception {
 
-    enum ErrorCode{
+    public enum ErrorCode{
         NO_REDIRECT_URI,
         REDIRECT_URI_MISMATCH,
         NO_CLIENT_ID,
@@ -35,9 +35,9 @@ public class InvalidRequestException extends OAuth2Exception {
 
     private final ErrorCode errorCode;
 
-    public InvalidRequestException(String errorCode) {
+    public InvalidRequestException(ErrorCode errorCode) {
         super();
-        this.errorCode = ErrorCode.valueOf(errorCode);
+        this.errorCode = errorCode;
     }
 
     public String getErrorType(){
@@ -63,26 +63,6 @@ public class InvalidRequestException extends OAuth2Exception {
             default:
                 throw new IllegalArgumentException(String.valueOf(errorCode));
         }
-    }
-
-    /**
-     * mainly use for tests
-     */
-    @Override
-    public boolean equals(Object object) {
-        if(!(object instanceof  InvalidRequestException)){
-            return false;
-        }
-
-        return ((InvalidRequestException) object).hashCode() == hashCode();
-    }
-
-    /**
-     * mainly use for tests
-     */
-    @Override
-    public int hashCode() {
-        return errorCode.hashCode();
     }
 
 }
