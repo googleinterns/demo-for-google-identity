@@ -20,6 +20,7 @@ import com.google.googleidentity.oauth2.client.ClientDetailsService;
 import com.google.googleidentity.oauth2.exception.OAuth2ExceptionHandler;
 import com.google.googleidentity.oauth2.exception.OAuth2Exception;
 import com.google.googleidentity.oauth2.util.OAuth2ParameterNames;
+import com.google.googleidentity.oauth2.util.OAuth2Utils;
 import com.google.googleidentity.oauth2.validator.AuthorizationEndpointRequestValidator;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
@@ -87,11 +88,23 @@ public final class AuthorizationEndpoint extends HttpServlet {
             AuthorizationEndpointRequestValidator.validatePOST(request);
         } catch (OAuth2Exception exception) {
             log.info(exception.getErrorType() + exception.getErrorDescription());
-            response.sendRedirect(
-                    OAuth2ExceptionHandler.getFullRedirectUrl(
-                            exception,
-                            request.getParameter(OAuth2ParameterNames.REDIRECT_URI),
-                            request.getParameter(OAuth2ParameterNames.STATE)));
+            if(OAuth2Utils.getClientSession(request).getRequest().isPresent()){
+                response.sendRedirect(
+                        OAuth2ExceptionHandler.getFullRedirectUrl(
+                                exception,
+                                OAuth2Utils.getClientSession(request).getRequest().get()
+                                        .getAuthorizationResponse().getRedirectUri(),
+                                OAuth2Utils.getClientSession(request).getRequest().get()
+                                        .getAuthorizationResponse().getState()));
+            }
+            else{
+                log.info(exception.getErrorType() + exception.getErrorDescription());
+                response.setStatus(exception.getHttpCode());
+                response.setContentType("application/json;charset=UTF-8");
+                response.getWriter().println(
+                        OAuth2ExceptionHandler.getResponseBody(exception).toJSONString());
+                response.getWriter().flush();
+            }
             return;
         }
     }

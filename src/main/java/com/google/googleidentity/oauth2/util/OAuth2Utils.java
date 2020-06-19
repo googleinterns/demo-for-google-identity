@@ -54,14 +54,17 @@ public class OAuth2Utils {
     }
 
     /**
-     * @param uriList each is a regex string
-     * @param uri
-     * @return whether the uri matches one of the regex pattern
+     * @return whether the uri matches one of the uri in uriList
      */
     public static boolean matchUri(List<String> uriList, String uri){
         for(String eachPattern : uriList){
-            if(Pattern.compile(eachPattern).matcher(uri).matches()){
-                return true;
+            if(uri.startsWith(eachPattern)){
+                if(eachPattern.charAt(eachPattern.length()-1) == '/'){
+                    return true;
+                }
+                if(uri.length()>eachPattern.length() && uri.charAt(eachPattern.length()) == '/'){
+                    return true;
+                }
             }
         }
         return false;

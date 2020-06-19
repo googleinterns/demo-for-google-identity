@@ -38,7 +38,7 @@ public class TestClientModule extends AbstractModule {
             "refresh_token",
             "urn:ietf:params:oauth:grant-type:jwt-bearer");
 
-    private static final String TESTREDIRECTURI = "http://www\\.google\\.com";
+    private static final String TESTREDIRECTURI = "http://www.google.com";
 
     @Override
     protected void configure(){

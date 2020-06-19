@@ -52,7 +52,7 @@ public class AuthorizationEndpointRequestValidatorTest {
 
     private static final String CLIENTID = "111";
     private static final String SECRET = "111";
-    private static final String REDIRECT_URI_REGEX= "http://www\\.google\\.com/.*";
+    private static final String REDIRECT_URI_REGEX= "http://www.google.com/";
     private static final String REDIRECT_URI= "http://www.google.com/123";
 
     private static final ClientDetails CLIENT =

@@ -59,7 +59,7 @@ public class OAuth2UtilsTest {
     void testMatchUri_simpleGALCorrectInput_CorrectOut() {
         assertTrue(
                 OAuth2Utils.matchUri(
-                        ImmutableList.of("https://oauth-redirect\\.googleusercontent\\.com/r/.*"),
+                        ImmutableList.of("https://oauth-redirect.googleusercontent.com/r/"),
                         "https://oauth-redirect.googleusercontent.com/r/YOUR_PROJECT_ID"));
     }
 
@@ -67,7 +67,7 @@ public class OAuth2UtilsTest {
     void testMatchUri_simpleGALWrongInput_ReturnFalse() {
         assertFalse(
                 OAuth2Utils.matchUri(
-                        ImmutableList.of("https://oauth-redirect\\.googleusercontent\\.com/r/.*"),
+                        ImmutableList.of("https://oauth-redirect.googleusercontent.com/r/"),
                         "wrong_uri"));
     }
 }
