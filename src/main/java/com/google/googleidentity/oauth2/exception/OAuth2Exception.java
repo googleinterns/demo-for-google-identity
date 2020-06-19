@@ -32,13 +32,6 @@ public abstract class OAuth2Exception extends Exception {
     }
 
     /**
-     * Only use in Authorization Endpoint to judge redirect or not.
-     */
-    public boolean isRedirectable(){
-        return true;
-    }
-
-    /**
      * Should be implemented in specific exception classes.
      */
     public abstract String getErrorType();

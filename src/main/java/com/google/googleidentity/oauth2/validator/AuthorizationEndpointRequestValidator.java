@@ -41,10 +41,10 @@ public class AuthorizationEndpointRequestValidator {
 
     private static final Logger log = Logger.getLogger("AuthorizationEndpointParameterValidator");
 
-    public static void validateGET(
+
+    public static void validateRedirectUri(
             HttpServletRequest request,
             ClientDetailsService clientDetailsService) throws OAuth2Exception {
-
         String clientID = request.getParameter(OAuth2ParameterNames.CLIENT_ID);
 
         if (clientID == null) {
@@ -54,6 +54,31 @@ public class AuthorizationEndpointRequestValidator {
         if(!clientDetailsService.getClientByID(clientID).isPresent()){
             throw new InvalidRequestException("NONEXISTENT_CLIENT_ID");
         }
+
+        ClientDetails client = clientDetailsService.getClientByID(clientID).get();
+
+        String redirectUri = request.getParameter(OAuth2ParameterNames.REDIRECT_URI);
+
+        if(redirectUri == null){
+            throw new InvalidRequestException("NO_REDIRECT_URI");
+        }
+
+        try {
+            redirectUri = URLDecoder.decode(redirectUri, "utf-8");
+        } catch (UnsupportedEncodingException e) {
+            log.log(Level.INFO, "Uri decode failed", e);
+        }
+
+        if (!client.getRedirectUrisList().contains(redirectUri)) {
+            throw new InvalidRequestException("REDIRECT_URI_MISMATCH");
+        }
+    }
+
+    public static void validateGET(
+            HttpServletRequest request,
+            ClientDetailsService clientDetailsService) throws OAuth2Exception {
+
+        String clientID = request.getParameter(OAuth2ParameterNames.CLIENT_ID);
 
         ClientDetails client = clientDetailsService.getClientByID(clientID).get();
 

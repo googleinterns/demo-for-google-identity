@@ -85,7 +85,7 @@ public class AuthorizationEndpointRequestValidatorTest {
     }
 
     @Test
-    public void test_validateGet_NoClientID_throwInvalidRequestException() {
+    public void test_validateRedirectUri_NoClientID_throwInvalidRequestException() {
 
         HttpServletRequest request = mock(HttpServletRequest.class);
 
@@ -98,14 +98,14 @@ public class AuthorizationEndpointRequestValidatorTest {
         OAuth2Exception e = assertThrows(
                 OAuth2Exception.class,
                 ()-> AuthorizationEndpointRequestValidator
-                        .validateGET(request, clientDetailsService));
+                        .validateRedirectUri(request, clientDetailsService));
 
         assertThat(e).isEqualTo(new InvalidRequestException("NO_CLIENT_ID"));
 
     }
 
     @Test
-    public void test_validateGet_NonExistedClientID_throwInvalidRequestException() {
+    public void test_validateRedirectUri_NonExistedClientID_throwInvalidRequestException() {
 
         HttpServletRequest request = mock(HttpServletRequest.class);
 
@@ -118,14 +118,14 @@ public class AuthorizationEndpointRequestValidatorTest {
         OAuth2Exception e = assertThrows(
                 OAuth2Exception.class,
                 ()-> AuthorizationEndpointRequestValidator
-                        .validateGET(request, clientDetailsService));
+                        .validateRedirectUri(request, clientDetailsService));
 
         assertThat(e).isEqualTo(new InvalidRequestException("NONEXISTENT_CLIENT_ID"));
 
     }
 
     @Test
-    public void test_validateGet_NoRedirectUri_throwInvalidRequestException() {
+    public void test_validateRedirectUri_NoRedirectUri_throwInvalidRequestException() {
 
         HttpServletRequest request = mock(HttpServletRequest.class);
 
@@ -138,7 +138,7 @@ public class AuthorizationEndpointRequestValidatorTest {
         OAuth2Exception e = assertThrows(
                 OAuth2Exception.class,
                 ()-> AuthorizationEndpointRequestValidator
-                        .validateGET(request, clientDetailsService));
+                        .validateRedirectUri(request, clientDetailsService));
 
         assertThat(e).isEqualTo(new InvalidRequestException("NO_REDIRECT_URI"));
 
@@ -146,7 +146,7 @@ public class AuthorizationEndpointRequestValidatorTest {
 
 
     @Test
-    public void test_validateGet_WrongRedirectUri_throwInvalidRequestException() {
+    public void test_validateRedirectUri_WrongRedirectUri_throwInvalidRequestException() {
 
         HttpServletRequest request = mock(HttpServletRequest.class);
 
@@ -159,7 +159,7 @@ public class AuthorizationEndpointRequestValidatorTest {
         OAuth2Exception e = assertThrows(
                 OAuth2Exception.class,
                 ()-> AuthorizationEndpointRequestValidator
-                        .validateGET(request, clientDetailsService));
+                        .validateRedirectUri(request, clientDetailsService));
 
         assertThat(e).isEqualTo(new InvalidRequestException("REDIRECT_URI_MISMATCH"));
 

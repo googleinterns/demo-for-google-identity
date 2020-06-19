@@ -44,29 +44,6 @@ public class InvalidRequestException extends OAuth2Exception {
         return INVALID_REQUEST;
     }
 
-    @Override
-    public boolean isRedirectable() {
-        switch(errorCode){
-            case NO_REDIRECT_URI:
-                // fall through
-            case REDIRECT_URI_MISMATCH:
-                // fall through
-            case NO_CLIENT_ID:
-                // fall through
-            case NONEXISTENT_CLIENT_ID:
-                // fall through
-            case NO_AUTHORIZATION_REQUEST:
-                return false;
-            case NO_USER_CONSENT:
-                // fall through
-            case NO_RESPONSE_TYPE:
-                return true;
-            default:
-                throw new IllegalArgumentException(String.valueOf(errorCode));
-        }
-
-    }
-
     public String getErrorDescription() {
         switch(errorCode){
             case NO_RESPONSE_TYPE:

@@ -52,24 +52,28 @@ public final class AuthorizationEndpoint extends HttpServlet {
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException, UnsupportedOperationException {
+        try{
+            AuthorizationEndpointRequestValidator.validateRedirectUri(
+                    request, clientDetailsService);
+        } catch (OAuth2Exception exception) {
+            log.info(exception.getErrorType() + exception.getErrorDescription());
+            response.setStatus(exception.getHttpCode());
+            response.setContentType("application/json;charset=UTF-8");
+            response.getWriter().println(
+                    OAuth2ExceptionHandler.getResponseBody(exception).toJSONString());
+            response.getWriter().flush();
+            return;
+        }
 
         try {
             AuthorizationEndpointRequestValidator.validateGET(request, clientDetailsService);
         } catch (OAuth2Exception exception) {
             log.info(exception.getErrorType() + exception.getErrorDescription());
-            if(exception.isRedirectable()){
-                response.sendRedirect(
-                        OAuth2ExceptionHandler.getFullRedirectUrl(
-                                exception,
-                                request.getParameter(OAuth2ParameterNames.REDIRECT_URI),
-                                request.getParameter(OAuth2ParameterNames.STATE)));
-            } else {
-                response.setStatus(exception.getHttpCode());
-                response.setContentType("application/json;charset=UTF-8");
-                response.getWriter().println(
-                        OAuth2ExceptionHandler.getResponseBody(exception).toJSONString());
-                response.getWriter().flush();
-            }
+            response.sendRedirect(
+                    OAuth2ExceptionHandler.getFullRedirectUrl(
+                            exception,
+                            request.getParameter(OAuth2ParameterNames.REDIRECT_URI),
+                            request.getParameter(OAuth2ParameterNames.STATE)));
             return;
         }
     }
