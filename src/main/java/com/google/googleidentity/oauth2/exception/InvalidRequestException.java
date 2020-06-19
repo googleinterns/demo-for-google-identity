@@ -56,6 +56,10 @@ public class InvalidRequestException extends OAuth2Exception {
                 return "No Redirect Uri!";
             case REDIRECT_URI_MISMATCH:
                 return "Redirect Uri Mismatch!";
+            case NO_USER_CONSENT:
+                return "No User consent information!";
+            case NO_AUTHORIZATION_REQUEST:
+                return "No request need to approve!";
             default:
                 throw new IllegalArgumentException(String.valueOf(errorCode));
         }
