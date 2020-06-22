@@ -42,7 +42,7 @@ public final class InvalidGrantException extends OAuth2Exception {
 
     @Override
     public String getErrorDescription() {
-        switch(errorCode){
+        switch (errorCode) {
             case NONEXISTENT_CODE:
                 return "Non existing code!";
             case CODE_CLIENT_MISMATCH:

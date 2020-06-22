@@ -21,7 +21,7 @@ import com.google.inject.AbstractModule;
 public final class UserModule extends AbstractModule {
 
     @Override
-    protected void configure(){
+    protected void configure() {
         bind(UserDetailsService.class).to(InMemoryUserDetailsService.class);
     }
 

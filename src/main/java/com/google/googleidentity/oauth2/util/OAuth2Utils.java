@@ -37,8 +37,8 @@ public class OAuth2Utils {
      * @param scope string of scopes with space delimiter
      * @return parsed scope set
      */
-    public static Set<String> parseScope(String scope){
-        if(scope == null){
+    public static Set<String> parseScope(String scope) {
+        if (scope == null) {
             return ImmutableSet.of();
         }
 
@@ -51,16 +51,16 @@ public class OAuth2Utils {
     /**
      * @return whether the uri matches one of the uri in uriList
      */
-    public static boolean matchUri(List<String> uriList, String uri){
-        for(String eachPattern : uriList){
-            if(uri.startsWith(eachPattern)){
-                if(eachPattern.equals(uri)){
+    public static boolean matchUri(List<String> uriList, String uri) {
+        for(String eachPattern : uriList) {
+            if(uri.startsWith(eachPattern)) {
+                if (eachPattern.equals(uri)) {
                     return true;
                 }
-                if(eachPattern.charAt(eachPattern.length()-1) == '/'){
+                if (eachPattern.charAt(eachPattern.length()-1) == '/') {
                     return true;
                 }
-                if(uri.length()>eachPattern.length() && uri.charAt(eachPattern.length()) == '/'){
+                if (uri.length()>eachPattern.length() && uri.charAt(eachPattern.length()) == '/') {
                     return true;
                 }
             }
@@ -71,7 +71,7 @@ public class OAuth2Utils {
     /**
      * Get UserSession from HttpSession
      */
-    public static UserSession getUserSession(HttpServletRequest request){
+    public static UserSession getUserSession(HttpServletRequest request) {
         UserSession userSession =
                 (UserSession) request.getSession().getAttribute(USER_SESSION);
 
@@ -83,14 +83,14 @@ public class OAuth2Utils {
      * Set UserSession to HttpSession
      */
     public static void setUserSession(
-            HttpServletRequest request, UserSession userSession){
+            HttpServletRequest request, UserSession userSession) {
         request.getSession().setAttribute(USER_SESSION, userSession);
     }
 
     /**
      * Get ClientSession from HttpSession
      */
-    public static ClientSession getClientSession(HttpServletRequest request){
+    public static ClientSession getClientSession(HttpServletRequest request) {
         ClientSession clientSession =
                 (ClientSession) request.getSession().getAttribute(CLIENT_SESSION);
 
@@ -101,7 +101,7 @@ public class OAuth2Utils {
      * Set ClientSession to HttpSession
      */
     public static void setClientSession(
-            HttpServletRequest request, ClientSession clientSession){
+            HttpServletRequest request, ClientSession clientSession) {
         request.getSession().setAttribute(CLIENT_SESSION, clientSession);
     }
 }

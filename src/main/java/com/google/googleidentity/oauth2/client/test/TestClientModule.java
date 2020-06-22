@@ -41,7 +41,7 @@ public class TestClientModule extends AbstractModule {
     private static final String TESTREDIRECTURI = "http://www.google.com";
 
     @Override
-    protected void configure(){
+    protected void configure() {
     }
 
     @Provides

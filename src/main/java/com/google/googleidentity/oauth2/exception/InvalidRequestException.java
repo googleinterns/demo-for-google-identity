@@ -47,7 +47,7 @@ public final class InvalidRequestException extends OAuth2Exception {
     }
 
     public String getErrorDescription() {
-        switch(errorCode){
+        switch (errorCode) {
             case NO_RESPONSE_TYPE:
                 return "No Response Type!";
             case NO_CLIENT_ID:

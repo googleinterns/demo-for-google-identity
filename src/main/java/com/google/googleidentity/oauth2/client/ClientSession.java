@@ -58,7 +58,7 @@ public final class ClientSession implements Serializable {
         if (client != null) {
             sb.append("client:" + client.toString() + "\t");
         }
-        if (request != null){
+        if (request != null) {
             sb.append("request:" + request.toString() + "\t" );
         }
         return sb.toString();

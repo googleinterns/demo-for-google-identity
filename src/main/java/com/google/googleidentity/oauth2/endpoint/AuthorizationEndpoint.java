@@ -95,7 +95,7 @@ public final class AuthorizationEndpoint extends HttpServlet {
             AuthorizationEndpointRequestValidator.validatePOST(request);
         } catch (OAuth2Exception exception) {
             log.info(exception.getErrorType() + exception.getErrorDescription());
-            if(OAuth2Utils.getClientSession(request).getRequest().isPresent()){
+            if (OAuth2Utils.getClientSession(request).getRequest().isPresent()) {
                 response.sendRedirect(
                         OAuth2ExceptionHandler.getFullRedirectUrl(
                                 exception,

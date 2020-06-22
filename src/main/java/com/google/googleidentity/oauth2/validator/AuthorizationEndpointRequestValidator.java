@@ -58,14 +58,14 @@ public class AuthorizationEndpointRequestValidator {
 
         Optional<ClientDetails> client = clientDetailsService.getClientByID(clientID);
 
-        if(!client.isPresent()){
+        if (!client.isPresent()) {
             throw new InvalidRequestException(
                     InvalidRequestException.ErrorCode.NONEXISTENT_CLIENT_ID);
         }
 
         String redirectUri = request.getParameter(OAuth2ParameterNames.REDIRECT_URI);
 
-        if(Strings.isNullOrEmpty(redirectUri)){
+        if (Strings.isNullOrEmpty(redirectUri)) {
             throw new InvalidRequestException(InvalidRequestException.ErrorCode.NO_REDIRECT_URI);
         }
 
@@ -96,7 +96,7 @@ public class AuthorizationEndpointRequestValidator {
 
         String responseType = request.getParameter(OAuth2ParameterNames.RESPONSE_TYPE);
 
-        if(Strings.isNullOrEmpty(responseType)){
+        if (Strings.isNullOrEmpty(responseType)) {
             throw new InvalidRequestException(InvalidRequestException.ErrorCode.NO_RESPONSE_TYPE);
         } else if (!responseType.equals("token") && !responseType.equals("code")) {
             throw new UnsupportedResponseTypeException();
@@ -104,7 +104,7 @@ public class AuthorizationEndpointRequestValidator {
 
         String grantType = responseType.equals("token") ? "implicit" : "authorization_code";
 
-        if(!client.getGrantTypesList().contains(grantType)){
+        if (!client.getGrantTypesList().contains(grantType)) {
             throw new UnauthorizedClientException();
         }
 
@@ -124,18 +124,18 @@ public class AuthorizationEndpointRequestValidator {
     public static void validatePOST(HttpServletRequest request) throws OAuth2Exception {
         String userConsent = request.getParameter("user_approve");
 
-        if(!OAuth2Utils.getClientSession(request).getRequest().isPresent()){
+        if (!OAuth2Utils.getClientSession(request).getRequest().isPresent()) {
             throw new InvalidRequestException(
                     InvalidRequestException.ErrorCode.NO_AUTHORIZATION_REQUEST);
         }
 
-        if(Strings.isNullOrEmpty(userConsent)){
+        if (Strings.isNullOrEmpty(userConsent)) {
             throw new InvalidRequestException(InvalidRequestException.ErrorCode.NO_USER_CONSENT);
         }
 
-        if(userConsent.equals("false")){
+        if (userConsent.equals("false")) {
             throw new AccessDeniedException();
-        } else if(!userConsent.equals("true")){
+        } else if (!userConsent.equals("true")) {
             throw new InvalidRequestException(
                     InvalidRequestException.ErrorCode.INVALID_USER_CONSENT);
         }

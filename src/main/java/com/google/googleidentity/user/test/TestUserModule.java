@@ -33,7 +33,7 @@ public class TestUserModule extends AbstractModule {
     private static final String TESTUSERPASSWORD1 = "12345678";
 
     @Override
-    protected void configure(){
+    protected void configure() {
     }
 
     @Provides

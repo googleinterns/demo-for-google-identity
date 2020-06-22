@@ -81,7 +81,7 @@ public final class AuthorizationCodeService {
                         request.getRequestAuth().getClientId(),
                         request.getRequestAuth().getUsername());
 
-        while(!codeStore.setCode(code, request)){
+        while (!codeStore.setCode(code, request)) {
             code = generateCode(
                             request.getRequestAuth().getClientId(),
                             request.getRequestAuth().getUsername());
