@@ -136,7 +136,8 @@ public class AuthorizationEndpointRequestValidator {
         if(userConsent.equals("false")){
             throw new AccessDeniedException();
         } else if(!userConsent.equals("true")){
-            throw new InvalidRequestException(InvalidRequestException.ErrorCode.NO_USER_CONSENT);
+            throw new InvalidRequestException(
+                    InvalidRequestException.ErrorCode.INVALID_USER_CONSENT);
         }
     }
 

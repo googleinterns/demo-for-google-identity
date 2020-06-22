@@ -28,7 +28,9 @@ public final class InvalidRequestException extends OAuth2Exception {
         NONEXISTENT_CLIENT_ID,
         NO_AUTHORIZATION_REQUEST,
         NO_USER_CONSENT,
+        INVALID_USER_CONSENT,
         NO_RESPONSE_TYPE
+
     }
 
     private static final String INVALID_REQUEST = "invalid_request";
@@ -60,6 +62,8 @@ public final class InvalidRequestException extends OAuth2Exception {
                 return "No User consent information!";
             case NO_AUTHORIZATION_REQUEST:
                 return "No request need to approve!";
+            case INVALID_USER_CONSENT:
+                return "Invalid user consent information";
             default:
                 throw new IllegalArgumentException(String.valueOf(errorCode));
         }
