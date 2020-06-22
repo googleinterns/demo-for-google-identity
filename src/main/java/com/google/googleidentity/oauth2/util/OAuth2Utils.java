@@ -52,8 +52,8 @@ public class OAuth2Utils {
      * @return whether the uri matches one of the uri in uriList
      */
     public static boolean matchUri(List<String> uriList, String uri) {
-        for(String eachPattern : uriList) {
-            if(uri.startsWith(eachPattern)) {
+        for (String eachPattern : uriList) {
+            if (uri.startsWith(eachPattern)) {
                 if (eachPattern.equals(uri)) {
                     return true;
                 }
