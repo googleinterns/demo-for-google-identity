@@ -270,7 +270,6 @@ public class AuthorizationEndpointRequestValidatorTest {
         HttpServletRequest request = mock(HttpServletRequest.class);
 
         when(request.getParameter("user_approve")).thenReturn("true");
-        when(request.getParameter("user_deny")).thenReturn(null);
         FakeHttpSession httpSession = new FakeHttpSession();
         when(request.getSession()).thenReturn(httpSession);
 
@@ -289,8 +288,7 @@ public class AuthorizationEndpointRequestValidatorTest {
 
         HttpServletRequest request = mock(HttpServletRequest.class);
 
-        when(request.getParameter("user_approve")).thenReturn(null);
-        when(request.getParameter("user_deny")).thenReturn("true");
+        when(request.getParameter("user_approve")).thenReturn("false");
         FakeHttpSession httpSession = new FakeHttpSession();
         when(request.getSession()).thenReturn(httpSession);
 
@@ -312,7 +310,6 @@ public class AuthorizationEndpointRequestValidatorTest {
         HttpServletRequest request = mock(HttpServletRequest.class);
 
         when(request.getParameter("user_approve")).thenReturn(null);
-        when(request.getParameter("user_deny")).thenReturn(null);
         FakeHttpSession httpSession = new FakeHttpSession();
         when(request.getSession()).thenReturn(httpSession);
 

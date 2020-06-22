@@ -18,16 +18,11 @@ package com.google.googleidentity.oauth2.util;
 
 import com.google.common.collect.ImmutableSet;
 import com.google.googleidentity.oauth2.client.ClientSession;
-import com.google.googleidentity.oauth2.exception.OAuth2Exception;
 import com.google.googleidentity.security.UserSession;
-import net.minidev.json.JSONObject;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
 import java.util.List;
 import java.util.Set;
-import java.util.regex.Pattern;
 
 /**
  * OAuth2 Util Library
@@ -59,6 +54,9 @@ public class OAuth2Utils {
     public static boolean matchUri(List<String> uriList, String uri){
         for(String eachPattern : uriList){
             if(uri.startsWith(eachPattern)){
+                if(eachPattern.equals(uri)){
+                    return true;
+                }
                 if(eachPattern.charAt(eachPattern.length()-1) == '/'){
                     return true;
                 }

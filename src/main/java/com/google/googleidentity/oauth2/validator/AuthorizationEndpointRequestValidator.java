@@ -33,7 +33,6 @@ import javax.servlet.http.HttpServletRequest;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.logging.Level;
@@ -45,9 +44,12 @@ public class AuthorizationEndpointRequestValidator {
     private static final Logger log = Logger.getLogger("AuthorizationEndpointParameterValidator");
 
 
+    /**
+     * Check whether the uri is valid in a Get request to authorization endpoint
+     */
     public static void validateRedirectUri(
             HttpServletRequest request,
-            ClientDetailsService clientDetailsService) throws OAuth2Exception {
+            ClientDetailsService clientDetailsService) throws InvalidRequestException {
         String clientID = request.getParameter(OAuth2ParameterNames.CLIENT_ID);
 
         if (Strings.isNullOrEmpty(clientID)) {
@@ -79,10 +81,15 @@ public class AuthorizationEndpointRequestValidator {
         }
     }
 
+    /**
+     * Check whether the Get request is valid in authorization endpoint,
+     * Must be call after validateRedirectUri function
+     */
     public static void validateGET(
             HttpServletRequest request,
             ClientDetailsService clientDetailsService) throws OAuth2Exception {
 
+        //here the clientID has been checked in validateRedirectUri function
         String clientID = request.getParameter(OAuth2ParameterNames.CLIENT_ID);
 
         ClientDetails client = clientDetailsService.getClientByID(clientID).get();
@@ -111,19 +118,24 @@ public class AuthorizationEndpointRequestValidator {
         }
     }
 
+    /**
+     * Check whether the Post request is valid in authorization endpoint
+     */
     public static void validatePOST(HttpServletRequest request) throws OAuth2Exception {
         String userConsent = request.getParameter("user_approve");
-        String userDeny = request.getParameter("user_deny");
 
         if(!OAuth2Utils.getClientSession(request).getRequest().isPresent()){
             throw new InvalidRequestException(
                     InvalidRequestException.ErrorCode.NO_AUTHORIZATION_REQUEST);
         }
-        if(Objects.equals(userDeny, "true")){
-            throw new AccessDeniedException();
+
+        if(Strings.isNullOrEmpty(userConsent)){
+            throw new InvalidRequestException(InvalidRequestException.ErrorCode.NO_USER_CONSENT);
         }
 
-        if(!Objects.equals(userConsent, "true")){
+        if(userConsent.equals("false")){
+            throw new AccessDeniedException();
+        } else if(!userConsent.equals("true")){
             throw new InvalidRequestException(InvalidRequestException.ErrorCode.NO_USER_CONSENT);
         }
     }

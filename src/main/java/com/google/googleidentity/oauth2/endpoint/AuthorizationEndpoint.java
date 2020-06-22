@@ -17,6 +17,7 @@
 package com.google.googleidentity.oauth2.endpoint;
 
 import com.google.googleidentity.oauth2.client.ClientDetailsService;
+import com.google.googleidentity.oauth2.exception.InvalidRequestException;
 import com.google.googleidentity.oauth2.exception.OAuth2ExceptionHandler;
 import com.google.googleidentity.oauth2.exception.OAuth2Exception;
 import com.google.googleidentity.oauth2.util.OAuth2ParameterNames;
@@ -53,11 +54,14 @@ public final class AuthorizationEndpoint extends HttpServlet {
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException, UnsupportedOperationException {
-        try{
+        try {
             AuthorizationEndpointRequestValidator.validateRedirectUri(
                     request, clientDetailsService);
-        } catch (OAuth2Exception exception) {
-            log.info(exception.getErrorType() + exception.getErrorDescription());
+        } catch (InvalidRequestException exception) {
+            log.info(
+                    "Failed in validating Get request in Authorization Endpoint." +
+                    "Error Type: " + exception.getErrorType() +
+                    "Description: " + exception.getErrorDescription());
             response.setStatus(exception.getHttpCode());
             response.setContentType("application/json;charset=UTF-8");
             response.getWriter().println(
@@ -69,7 +73,10 @@ public final class AuthorizationEndpoint extends HttpServlet {
         try {
             AuthorizationEndpointRequestValidator.validateGET(request, clientDetailsService);
         } catch (OAuth2Exception exception) {
-            log.info(exception.getErrorType() + exception.getErrorDescription());
+            log.info(
+                    "Failed in validating Get request in Authorization Endpoint." +
+                            "Error Type: " + exception.getErrorType() +
+                            "Description: " + exception.getErrorDescription());
             response.sendRedirect(
                     OAuth2ExceptionHandler.getFullRedirectUrl(
                             exception,
@@ -84,7 +91,7 @@ public final class AuthorizationEndpoint extends HttpServlet {
      */
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException, UnsupportedOperationException {
-        try{
+        try {
             AuthorizationEndpointRequestValidator.validatePOST(request);
         } catch (OAuth2Exception exception) {
             log.info(exception.getErrorType() + exception.getErrorDescription());
@@ -96,9 +103,11 @@ public final class AuthorizationEndpoint extends HttpServlet {
                                         .getAuthorizationResponse().getRedirectUri(),
                                 OAuth2Utils.getClientSession(request).getRequest().get()
                                         .getAuthorizationResponse().getState()));
-            }
-            else{
-                log.info(exception.getErrorType() + exception.getErrorDescription());
+            } else {
+                log.info(
+                        "Failed in validating Post request in Authorization Endpoint." +
+                                "Error Type: " + exception.getErrorType() +
+                                "Description: " + exception.getErrorDescription());
                 response.setStatus(exception.getHttpCode());
                 response.setContentType("application/json;charset=UTF-8");
                 response.getWriter().println(
