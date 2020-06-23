@@ -14,15 +14,29 @@
     limitations under the License.
 */
 
-package com.google.googleidentity.user;
+package com.google.googleidentity.oauth2.exception;
 
-import com.google.inject.AbstractModule;
+import org.apache.http.HttpStatus;
 
-public final class UserModule extends AbstractModule {
+public final class InvalidClientException extends OAuth2Exception {
+
+    private static final String INVALID_CLIENT = "invalid_client";
+
+    public InvalidClientException() {
+        super();
+    }
 
     @Override
-    protected void configure() {
-        bind(UserDetailsService.class).to(InMemoryUserDetailsService.class);
+    public int getHttpCode(){
+        return HttpStatus.SC_UNAUTHORIZED;
+    }
+
+    public String getErrorType(){
+        return INVALID_CLIENT;
+    }
+
+    public String getErrorDescription(){
+        return "Client Authentication Failed!";
     }
 
 }

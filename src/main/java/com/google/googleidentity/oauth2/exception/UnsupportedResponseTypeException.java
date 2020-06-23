@@ -14,15 +14,22 @@
     limitations under the License.
 */
 
-package com.google.googleidentity.user;
+package com.google.googleidentity.oauth2.exception;
 
-import com.google.inject.AbstractModule;
+public final class UnsupportedResponseTypeException extends OAuth2Exception {
 
-public final class UserModule extends AbstractModule {
+    private static final String UNSUPPORTED_RESPONSE_TYPE = "unsupported_response_type";
 
-    @Override
-    protected void configure() {
-        bind(UserDetailsService.class).to(InMemoryUserDetailsService.class);
+    public UnsupportedResponseTypeException() {
+        super();
+    }
+
+    public String getErrorType(){
+        return UNSUPPORTED_RESPONSE_TYPE;
+    }
+
+    public String getErrorDescription(){
+        return "Unsupported Response Type!";
     }
 
 }

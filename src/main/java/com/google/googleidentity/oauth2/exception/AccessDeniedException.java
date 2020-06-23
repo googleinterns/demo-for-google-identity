@@ -14,15 +14,22 @@
     limitations under the License.
 */
 
-package com.google.googleidentity.user;
+package com.google.googleidentity.oauth2.exception;
 
-import com.google.inject.AbstractModule;
+public final class AccessDeniedException extends OAuth2Exception {
 
-public final class UserModule extends AbstractModule {
+    private static final String ACCESS_DENIED = "access_denied";
 
-    @Override
-    protected void configure() {
-        bind(UserDetailsService.class).to(InMemoryUserDetailsService.class);
+    public AccessDeniedException() {
+        super();
+    }
+
+    public String getErrorType(){
+        return ACCESS_DENIED;
+    }
+
+    public String getErrorDescription(){
+        return "The client is not allowed to use this method!";
     }
 
 }

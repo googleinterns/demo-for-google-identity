@@ -37,7 +37,7 @@ final class InMemoryCodeStore implements CodeStore {
 
     @Override
     public Optional<OAuth2Request> consumeCode(String code) {
-        if(codeStore.containsKey(code)) {
+        if (codeStore.containsKey(code)) {
             OAuth2Request request = codeStore.get(code);
             codeStore.remove(code);
             return Optional.ofNullable(request);
@@ -52,7 +52,7 @@ final class InMemoryCodeStore implements CodeStore {
      */
     @Override
     public synchronized boolean setCode(String code, OAuth2Request request) {
-        if(codeStore.containsKey(code)){
+        if (codeStore.containsKey(code)) {
             return false;
         }
         else {

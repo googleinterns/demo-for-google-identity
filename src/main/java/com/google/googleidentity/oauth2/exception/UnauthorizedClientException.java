@@ -14,15 +14,22 @@
     limitations under the License.
 */
 
-package com.google.googleidentity.user;
+package com.google.googleidentity.oauth2.exception;
 
-import com.google.inject.AbstractModule;
+public final class UnauthorizedClientException extends OAuth2Exception {
 
-public final class UserModule extends AbstractModule {
+    private static final String UNAUTHORIZED_CLIENT = "unauthorized_client";
 
-    @Override
-    protected void configure() {
-        bind(UserDetailsService.class).to(InMemoryUserDetailsService.class);
+    public UnauthorizedClientException() {
+        super();
+    }
+
+    public String getErrorType(){
+        return UNAUTHORIZED_CLIENT;
+    }
+
+    public String getErrorDescription(){
+        return "The client is not allowed to use this method!";
     }
 
 }
