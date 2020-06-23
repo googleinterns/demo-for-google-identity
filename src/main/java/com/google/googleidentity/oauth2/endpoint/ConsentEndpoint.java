@@ -66,7 +66,7 @@ public class ConsentEndpoint extends HttpServlet {
         try {
             toConsentPage(request, response);
         } catch (TemplateException e) {
-            log.log(Level.INFO,"Display Consent Page Error!", e);
+            log.log(Level.INFO, "Display Consent Page Error!", e);
         }
     }
 
@@ -75,7 +75,7 @@ public class ConsentEndpoint extends HttpServlet {
         try {
             toConsentPage(request, response);
         } catch (TemplateException e) {
-            log.log(Level.INFO,"Display Consent Page Error!", e);
+            log.log(Level.INFO, "Display Consent Page Error!", e);
         }
     }
 
