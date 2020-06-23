@@ -86,7 +86,7 @@ public class AuthorizationEndpointRequestValidatorTest {
     }
 
     @Test
-    public void test_validateRedirectUri_NoClientID_throwInvalidRequestException() {
+    public void test_validateClientAndRedirectUri_NoClientID_throwInvalidRequestException() {
 
         HttpServletRequest request = mock(HttpServletRequest.class);
 
@@ -99,7 +99,7 @@ public class AuthorizationEndpointRequestValidatorTest {
         OAuth2Exception e = assertThrows(
                 OAuth2Exception.class,
                 ()-> AuthorizationEndpointRequestValidator
-                        .validateRedirectUri(request, clientDetailsService));
+                        .validateClientAndRedirectUri(request, clientDetailsService));
 
         assertThat(e).isInstanceOf(InvalidRequestException.class);
         assertThat(e.getErrorDescription()).isEqualTo("No Client ID!");
@@ -107,7 +107,7 @@ public class AuthorizationEndpointRequestValidatorTest {
     }
 
     @Test
-    public void test_validateRedirectUri_NonExistedClientID_throwInvalidRequestException() {
+    public void test_validateClientAndRedirectUri_NonExistedClientID_throwInvalidRequestException() {
 
         HttpServletRequest request = mock(HttpServletRequest.class);
 
@@ -120,7 +120,7 @@ public class AuthorizationEndpointRequestValidatorTest {
         OAuth2Exception e = assertThrows(
                 OAuth2Exception.class,
                 ()-> AuthorizationEndpointRequestValidator
-                        .validateRedirectUri(request, clientDetailsService));
+                        .validateClientAndRedirectUri(request, clientDetailsService));
 
         assertThat(e).isInstanceOf(InvalidRequestException.class);
         assertThat(e.getErrorDescription()).isEqualTo("Client ID does not exist!");
@@ -128,7 +128,7 @@ public class AuthorizationEndpointRequestValidatorTest {
     }
 
     @Test
-    public void test_validateRedirectUri_NoRedirectUri_throwInvalidRequestException() {
+    public void test_validateClientAndRedirectUri_NoRedirectUri_throwInvalidRequestException() {
 
         HttpServletRequest request = mock(HttpServletRequest.class);
 
@@ -141,7 +141,7 @@ public class AuthorizationEndpointRequestValidatorTest {
         OAuth2Exception e = assertThrows(
                 OAuth2Exception.class,
                 ()-> AuthorizationEndpointRequestValidator
-                        .validateRedirectUri(request, clientDetailsService));
+                        .validateClientAndRedirectUri(request, clientDetailsService));
 
         assertThat(e).isInstanceOf(InvalidRequestException.class);
         assertThat(e.getErrorDescription()).isEqualTo("No Redirect Uri!");
@@ -150,7 +150,7 @@ public class AuthorizationEndpointRequestValidatorTest {
 
 
     @Test
-    public void test_validateRedirectUri_WrongRedirectUri_throwInvalidRequestException() {
+    public void test_validateClientAndRedirectUri_WrongRedirectUri_throwInvalidRequestException() {
 
         HttpServletRequest request = mock(HttpServletRequest.class);
 
@@ -163,7 +163,7 @@ public class AuthorizationEndpointRequestValidatorTest {
         OAuth2Exception e = assertThrows(
                 OAuth2Exception.class,
                 ()-> AuthorizationEndpointRequestValidator
-                        .validateRedirectUri(request, clientDetailsService));
+                        .validateClientAndRedirectUri(request, clientDetailsService));
 
         assertThat(e).isInstanceOf(InvalidRequestException.class);
         assertThat(e.getErrorDescription()).isEqualTo("Redirect Uri Mismatch!");

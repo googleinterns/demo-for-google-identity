@@ -49,17 +49,20 @@ public class OAuth2Utils {
     }
 
     /**
-     * @return whether the uri matches one of the uri in uriList
+     * @return whether the uri matches one of the uri in uriList of a client
      */
     public static boolean matchUri(List<String> uriList, String uri) {
         for (String eachPattern : uriList) {
             if (uri.startsWith(eachPattern)) {
+                //match exactly same uris
                 if (eachPattern.equals(uri)) {
                     return true;
                 }
+                //match uris like abc.com/xyz to registered uri abc.com/
                 if (eachPattern.charAt(eachPattern.length()-1) == '/') {
                     return true;
                 }
+                //match uris like abc.com/xyz to registered uri abc.com
                 if (uri.length()>eachPattern.length() && uri.charAt(eachPattern.length()) == '/') {
                     return true;
                 }

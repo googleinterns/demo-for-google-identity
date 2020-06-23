@@ -55,11 +55,11 @@ public final class AuthorizationEndpoint extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException, UnsupportedOperationException {
         try {
-            AuthorizationEndpointRequestValidator.validateRedirectUri(
+            AuthorizationEndpointRequestValidator.validateClientAndRedirectUri(
                     request, clientDetailsService);
         } catch (InvalidRequestException exception) {
             log.info(
-                    "Failed in validating Get request in Authorization Endpoint." +
+                    "Failed in validating client and redirect URI in Authorization Endpoint." +
                     "Error Type: " + exception.getErrorType() +
                     "Description: " + exception.getErrorDescription());
             response.setStatus(exception.getHttpCode());

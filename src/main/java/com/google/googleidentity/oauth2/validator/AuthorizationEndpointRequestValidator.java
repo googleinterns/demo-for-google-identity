@@ -45,9 +45,10 @@ public class AuthorizationEndpointRequestValidator {
 
 
     /**
-     * Check whether the uri is valid in a Get request to authorization endpoint
+     * Check whether the client and redirect uri is valid
+     * in a Get request to authorization endpoint
      */
-    public static void validateRedirectUri(
+    public static void validateClientAndRedirectUri(
             HttpServletRequest request,
             ClientDetailsService clientDetailsService) throws InvalidRequestException {
         String clientID = request.getParameter(OAuth2ParameterNames.CLIENT_ID);
@@ -72,7 +73,7 @@ public class AuthorizationEndpointRequestValidator {
         try {
             redirectUri = URLDecoder.decode(redirectUri, "utf-8");
         } catch (UnsupportedEncodingException e) {
-            log.log(Level.INFO, "Uri decode failed", e);
+            //we always process a encoded uri here in a get request
         }
 
         if (!OAuth2Utils.matchUri(client.get().getRedirectUrisList(), redirectUri)) {
@@ -119,7 +120,9 @@ public class AuthorizationEndpointRequestValidator {
     }
 
     /**
-     * Check whether the Post request is valid in authorization endpoint
+     * Check whether the Post request is valid in authorization endpoint.
+     * It is not defined in OAuth 2.0 spec RFC6749.
+     * It is used to handle user consent
      */
     public static void validatePOST(HttpServletRequest request) throws OAuth2Exception {
         String userConsent = request.getParameter("user_approve");
