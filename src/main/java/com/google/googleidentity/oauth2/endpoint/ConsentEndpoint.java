@@ -55,6 +55,7 @@ public class ConsentEndpoint extends HttpServlet {
 
     public void init() throws ServletException {
 
+        // FreeMaker's version
         Version version = new Version("2.3.30");
         configuration = new Configuration(version);
         configuration.setServletContextForTemplateLoading(getServletContext(), "template");

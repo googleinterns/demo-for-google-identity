@@ -133,7 +133,7 @@ public final class AuthorizationEndpoint extends HttpServlet {
     }
 
     /**
-     * Should be call after all validation in doGet function
+     * Should be called after all validation in doGet function.
      */
     private OAuth2Request parseOAuth2RequestFromHttpRequest(HttpServletRequest request) {
         String responseType = request.getParameter(OAuth2ParameterNames.RESPONSE_TYPE);
