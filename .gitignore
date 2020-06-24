@@ -4,5 +4,6 @@
 /src/main/java/com/google/googleidentity/oauth2/client/ClientDetails.java
 /src/main/java/com/google/googleidentity/user/UserDetails.java
 /src/main/java/com/google/googleidentity/oauth2/request/OAuth2Request.java
+/src/main/java/com/google/googleidentity/oauth2/token/OAuth2Token.java
 *OrBuilder.java
 *OuterClass.java
