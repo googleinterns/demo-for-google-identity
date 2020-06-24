@@ -29,24 +29,19 @@ import com.google.googleidentity.testtools.FakeHttpSession;
 import com.google.googleidentity.user.UserDetails;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.Mockito;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
+
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.util.HashMap;
-import java.util.Map;
+
 
 import static com.google.common.truth.Truth.assertThat;
 import static com.google.common.truth.Truth8.assertThat;
-import static org.mockito.Matchers.anyObject;
-import static org.mockito.Matchers.anyString;
+import static com.google.common.truth.extensions.proto.ProtoTruth.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.verify;
@@ -165,25 +160,32 @@ public class AuthorizationEndpointTest {
 
         verify(response).sendRedirect("/oauth2/consent");
 
+        OAuth2Request exceptedRequest =
+                OAuth2Request.newBuilder()
+                        .setRequestAuth(
+                                OAuth2Request.RequestAuth.newBuilder()
+                                        .setClientId(CLIENTID)
+                                        .setUsername(USERNAME)
+                                        .build())
+                        .setRequestBody(
+                                OAuth2Request.RequestBody.newBuilder()
+                                        .setIsScoped(true)
+                                        .addAllScopes(CLIENT.getScopesList())
+                                        .setResponseType("code")
+                                        .setRefreshable(true)
+                                        .setGrantType("authorization_code")
+                                        .build())
+                        .setAuthorizationResponse(
+                                OAuth2Request.AuthorizationResponse.newBuilder()
+                                        .setState("111")
+                                        .setRedirectUri(REDIRECT_URI)
+                                        .build())
+                        .build();
+
         assertThat(httpSession.getClientSession().getRequest()).isPresent();
 
-        OAuth2Request oauth2Request = httpSession.getClientSession().getRequest().get();
-
-        OAuth2Request.RequestAuth requestAuth = oauth2Request.getRequestAuth();
-        assertThat(requestAuth.getClientId()).isEqualTo(CLIENTID);
-        assertThat(requestAuth.getUsername()).isEqualTo(USERNAME);
-
-        OAuth2Request.RequestBody requestBody = oauth2Request.getRequestBody();
-        assertThat(requestBody.getGrantType()).isEqualTo("authorization_code");
-        assertThat(requestBody.getIsScoped()).isTrue();
-        assertThat(requestBody.getRefreshable()).isTrue();
-        assertThat(requestBody.getResponseType()).isEqualTo("code");
-        assertThat(requestBody.getScopesList()).containsExactlyElementsIn(CLIENT.getScopesList());
-
-        OAuth2Request.AuthorizationResponse authorizationResponse =
-                oauth2Request.getAuthorizationResponse();
-        assertThat(authorizationResponse.getState()).isEqualTo("111");
-        assertThat(authorizationResponse.getRedirectUri()).isEqualTo(REDIRECT_URI);
+        assertThat(httpSession.getClientSession().getRequest().get())
+                .isEqualTo(exceptedRequest);
 
     }
 }

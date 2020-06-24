@@ -53,6 +53,8 @@
     <orderEntry type="library" name="Maven: com.google.auto.value:auto-value-annotations:1.6.3" level="project" />
     <orderEntry type="library" name="Maven: com.google.errorprone:error_prone_annotations:2.3.3" level="project" />
     <orderEntry type="library" name="Maven: com.google.truth.extensions:truth-java8-extension:1.0.1" level="project" />
+    <orderEntry type="library" name="Maven: com.google.truth.extensions:truth-proto-extension:1.0.1" level="project" />
+    <orderEntry type="library" name="Maven: com.google.truth.extensions:truth-liteproto-extension:1.0.1" level="project" />
     <orderEntry type="library" name="Maven: net.minidev:json-smart:2.3" level="project" />
     <orderEntry type="library" name="Maven: net.minidev:accessors-smart:1.2" level="project" />
     <orderEntry type="library" name="Maven: org.ow2.asm:asm:5.0.4" level="project" />

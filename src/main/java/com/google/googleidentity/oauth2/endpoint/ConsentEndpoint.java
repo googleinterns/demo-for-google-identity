@@ -72,11 +72,6 @@ public class ConsentEndpoint extends HttpServlet {
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        try {
-            toConsentPage(request, response);
-        } catch (TemplateException e) {
-            log.log(Level.INFO, "Display Consent Page Error!", e);
-        }
     }
 
     private void toConsentPage(HttpServletRequest request, HttpServletResponse response)

@@ -147,7 +147,9 @@ public final class AuthorizationEndpoint extends HttpServlet {
         try {
             redirectUri = URLDecoder.decode(redirectUri, "utf-8");
         } catch (UnsupportedEncodingException e) {
-            // We always deal with encoded uri in get request
+            // This should never happen.
+            throw new IllegalStateException(
+                    "URL should have been decoded during request validation", e);
         }
 
         Set<String> scope = OAuth2Utils.parseScope(
@@ -174,21 +176,16 @@ public final class AuthorizationEndpoint extends HttpServlet {
                                         .setResponseType(responseType)
                                         .setRefreshable(responseType.equals("code"))
                                         .setGrantType(
-                                                responseType.equals("code")
-                                                        ? "authorization_code": "implicit")
+                                                OAuth2Utils.getGrantTypeFromResponseType(
+                                                        responseType))
                                         .build());
 
-        if (Strings.isNullOrEmpty(request.getParameter(OAuth2ParameterNames.STATE))) {
-            oauth2RequestBuilder.setAuthorizationResponse(
-                    OAuth2Request.AuthorizationResponse.newBuilder()
-                            .setRedirectUri(redirectUri)
-                            .build());
-        } else {
-            oauth2RequestBuilder.setAuthorizationResponse(
-                    OAuth2Request.AuthorizationResponse.newBuilder()
-                            .setState(request.getParameter(OAuth2ParameterNames.STATE))
-                            .setRedirectUri(redirectUri)
-                            .build());
+        oauth2RequestBuilder.getAuthorizationResponseBuilder()
+                .setRedirectUri(redirectUri);
+
+        if (!Strings.isNullOrEmpty(request.getParameter(OAuth2ParameterNames.STATE))) {
+            oauth2RequestBuilder.getAuthorizationResponseBuilder()
+                    .setState(request.getParameter(OAuth2ParameterNames.STATE));
         }
 
         return oauth2RequestBuilder.build();
