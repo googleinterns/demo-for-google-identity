@@ -18,6 +18,7 @@ package com.google.googleidentity.oauth2.token;
 
 import com.google.common.collect.ImmutableList;
 import com.google.googleidentity.oauth2.request.OAuth2Request;
+import com.google.inject.Singleton;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -35,6 +36,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * Default in memory token service.
  * An implementation of {@link OAuth2TokenService}
  */
+@Singleton
 public class InMemoryOAuth2TokenService implements OAuth2TokenService {
 
     private Map<String, OAuth2Token> accessTokenMap = new ConcurrentHashMap<>();
@@ -131,8 +133,7 @@ public class InMemoryOAuth2TokenService implements OAuth2TokenService {
                     .add(newToken);
 
             return Optional.ofNullable(newToken);
-        }
-        else {
+        } else {
             return Optional.empty();
         }
     }
@@ -153,10 +154,9 @@ public class InMemoryOAuth2TokenService implements OAuth2TokenService {
                 refreshTokenMap.remove(token.getRefreshToken());
             }
             userClientTokenMap.get(token.getUsername()).get(token.getClientId())
-                    .remove(accessToken);
+                    .remove(token);
             return true;
-        }
-        else {
+        } else {
             return false;
         }
     }
@@ -173,17 +173,15 @@ public class InMemoryOAuth2TokenService implements OAuth2TokenService {
             userClientTokenMap.get(token.getUsername()).get(token.getClientId()).add(newToken);
 
             return true;
-        }
-        else {
+        } else {
             return false;
         }
     }
 
     public List<String> listUserClient(String username) {
-        if(!userClientTokenMap.containsKey(username)){
+        if (!userClientTokenMap.containsKey(username)) {
             return ImmutableList.of();
-        }
-        else {
+        } else {
             HashMap<String, Set<OAuth2Token>> map = userClientTokenMap.get(username);
             if (map.isEmpty()) {
                 return ImmutableList.of();
@@ -202,14 +200,11 @@ public class InMemoryOAuth2TokenService implements OAuth2TokenService {
     public List<OAuth2Token> listUserClientTokens(String username, String clientID) {
         if (!userClientTokenMap.containsKey(username)) {
             return ImmutableList.of();
-        }
-        else if (!userClientTokenMap.get(username).containsKey(clientID)) {
+        } else if (!userClientTokenMap.get(username).containsKey(clientID)) {
                 return ImmutableList.of();
-        }
-        else {
+        } else {
             return ImmutableList.copyOf(userClientTokenMap.get(username).get(clientID));
         }
     }
-
 
 }
