@@ -49,6 +49,19 @@ public class OAuth2Utils {
     }
 
     /**
+     * Only used in Authorization Endpoint.
+     * Should be called after validation of responseType
+     */
+    public static String getGrantTypeFromResponseType(String responseType) {
+        if (responseType.equals("code")) {
+            return "authorization_code";
+        }
+        else {
+            return "implicit";
+        }
+    }
+
+    /**
      * @return whether the uri matches one of the uri in uriList of a client
      */
     public static boolean matchUri(List<String> uriList, String uri) {

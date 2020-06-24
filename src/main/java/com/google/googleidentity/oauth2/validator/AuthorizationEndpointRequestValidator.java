@@ -19,6 +19,7 @@ package com.google.googleidentity.oauth2.validator;
 import com.google.common.base.Strings;
 import com.google.googleidentity.oauth2.client.ClientDetails;
 import com.google.googleidentity.oauth2.client.ClientDetailsService;
+import com.google.googleidentity.oauth2.endpoint.AuthorizationEndpoint;
 import com.google.googleidentity.oauth2.exception.InvalidRequestException;
 import com.google.googleidentity.oauth2.exception.OAuth2Exception;
 import com.google.googleidentity.oauth2.exception.InvalidScopeException;
@@ -103,7 +104,7 @@ public class AuthorizationEndpointRequestValidator {
             throw new UnsupportedResponseTypeException();
         }
 
-        String grantType = responseType.equals("token") ? "implicit" : "authorization_code";
+        String grantType = OAuth2Utils.getGrantTypeFromResponseType(responseType);
 
         if (!client.getGrantTypesList().contains(grantType)) {
             throw new UnauthorizedClientException();

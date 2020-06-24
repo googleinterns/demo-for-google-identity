@@ -22,8 +22,13 @@ import com.google.googleidentity.oauth2.client.ClientDetails;
 import com.google.googleidentity.oauth2.client.ClientDetailsService;
 import com.google.googleidentity.oauth2.client.ClientSession;
 import com.google.googleidentity.oauth2.client.InMemoryClientDetailsService;
-import com.google.googleidentity.oauth2.exception.*;
+import com.google.googleidentity.oauth2.exception.InvalidRequestException;
+import com.google.googleidentity.oauth2.exception.OAuth2Exception;
+import com.google.googleidentity.oauth2.exception.InvalidScopeException;
+import com.google.googleidentity.oauth2.exception.AccessDeniedException;
 
+import com.google.googleidentity.oauth2.exception.UnauthorizedClientException;
+import com.google.googleidentity.oauth2.exception.UnsupportedResponseTypeException;
 import com.google.googleidentity.oauth2.request.OAuth2Request;
 import com.google.googleidentity.oauth2.util.OAuth2ParameterNames;
 import com.google.googleidentity.security.UserSession;

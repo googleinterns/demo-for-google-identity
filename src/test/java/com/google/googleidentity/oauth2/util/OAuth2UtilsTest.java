@@ -23,9 +23,9 @@ import org.junit.jupiter.api.Test;
 
 
 import java.util.Set;
-import java.util.regex.Pattern;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 /**
  * Test functions in {@link OAuth2Utils}
