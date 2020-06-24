@@ -52,11 +52,11 @@ public class OAuth2Utils {
      * Only used in Authorization Endpoint.
      * Should be called after validation of responseType
      */
-    public static String getGrantTypeFromResponseType(String responseType){
-        if(responseType.equals("code")){
+    public static String getGrantTypeFromResponseType(String responseType) {
+        if (responseType.equals("code")) {
             return "authorization_code";
         }
-        else{
+        else {
             return "implicit";
         }
     }
