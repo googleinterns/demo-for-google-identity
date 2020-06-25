@@ -30,25 +30,25 @@ public interface OAuth2TokenService {
     /**
      * Generate an access token for the request.
      */
-    OAuth2Token generateAccessToken(OAuth2Request request);
+    OAuth2AccessToken generateAccessToken(OAuth2Request request);
 
     /**
      * Try to refresh the access token related to the refresh token string.
      * If no related token, return null.
      */
-    Optional<OAuth2Token> refreshToken(String refreshToken);
+    Optional<OAuth2AccessToken> refreshToken(String refreshToken);
 
     /**
      * Read the token information related to the access token string.
      * If no related token, return null.
      */
-    Optional<OAuth2Token> readByAccessToken(String accessToken);
+    Optional<OAuth2AccessToken> readAccessToken(String accessToken);
 
     /**
      * Read the token information related to the refresh token string.
      * If no related token, return null.
      */
-    Optional<OAuth2Token> readByRefreshToken(String refreshToken);
+    Optional<OAuth2RefreshToken> readRefreshToken(String refreshToken);
 
     /**
      * Revoke access token, if no that token, return false.
@@ -66,7 +66,12 @@ public interface OAuth2TokenService {
     public List<String> listUserClient(String username);
 
     /**
-     *  List all tokens between a user and a client
+     *  List all access tokens between a user and a client
      */
-    List<OAuth2Token> listUserClientTokens(String username, String clientID);
+    List<OAuth2AccessToken> listUserClientAccessTokens(String username, String clientID);
+
+    /**
+     *  List all refresh tokens between a user and a client
+     */
+    List<OAuth2RefreshToken> listUserClientRefreshTokens(String username, String clientID);
 }

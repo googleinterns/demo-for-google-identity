@@ -19,8 +19,8 @@ package googleidentity.oauth2.token;
 option java_package = "com.google.googleidentity.oauth2.token";
 option java_multiple_files = true;
 
-// Store oauth2 token information
-message OAuth2Token {
+// Store oauth2 access token information
+message OAuth2AccessToken {
 
     // OAuth2AccessToken value
     string access_token = 1;
@@ -40,12 +40,9 @@ message OAuth2Token {
     // Token expired time
     int64 expired_time = 6;
 
-    // Whether contains a refresh token
+    // Whether it belong to a refresh_token
     bool refreshable = 7;
 
     // Refresh Token
     string refresh_token = 8;
-
-    // Whether support refresh token rotation
-    bool is_refresh_token_rotatable = 9;
 }
