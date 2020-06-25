@@ -326,7 +326,7 @@ public class InMemoryOAuth2TokenService implements OAuth2TokenService {
         try{
             info = new UserClientTokenInfo(accessToken);
         } catch (InvalidParameterException exception) {
-            log.log(Level.INFO,  "Invalid refresh token Value", exception);
+            log.log(Level.INFO,  "Invalid access token Value", exception);
             return Optional.empty();
         }
 
