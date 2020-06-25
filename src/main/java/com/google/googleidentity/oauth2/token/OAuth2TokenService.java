@@ -51,14 +51,19 @@ public interface OAuth2TokenService {
     Optional<OAuth2RefreshToken> readRefreshToken(String refreshToken);
 
     /**
-     * Revoke access token, if no that token, return false.
+     * Revoke by access token, if no that token, return false.
      */
-    boolean revokeAccessToken(String accessToken);
+    boolean revokeByAccessToken(String accessToken);
 
     /**
-     * Revoke refresh token, if no that token, return false.
+     * Revoke by refresh token, if no that token, return false.
      */
-    boolean revokeRefreshToken(String refreshToken);
+    boolean revokeByRefreshToken(String refreshToken);
+
+    /**
+     * Revoke tokens between a user and a client
+     */
+    void revokeUserClientTokens(String username, String clientID);
 
     /**
      * List all client linked by this user
@@ -71,7 +76,7 @@ public interface OAuth2TokenService {
     List<OAuth2AccessToken> listUserClientAccessTokens(String username, String clientID);
 
     /**
-     *  List all refresh tokens between a user and a client
+     *  Get refresh tokens between a user and a client
      */
-    List<OAuth2RefreshToken> listUserClientRefreshTokens(String username, String clientID);
+    Optional<OAuth2RefreshToken> getUserClientRefreshToken(String username, String clientID);
 }

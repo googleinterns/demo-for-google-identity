@@ -110,29 +110,20 @@ public class InMemoryOAuth2TokenServiceTest {
                         .setUsername(USERNAME)
                         .setIsScoped(true)
                         .addAllScopes(CLIENT.getScopesList())
-                        .setRefreshable(true)
                         .build();
 
         OAuth2AccessToken token  = tokenService.generateAccessToken(TESTREQUEST0);
 
         assertThat(token).comparingExpectedFieldsOnly().isEqualTo(expectedAccessToken);
-
     }
-
 
     @Test
     public void testGenerateAccessToken_notRefreshable_noRefreshToken() {
         OAuth2TokenService tokenService = new InMemoryOAuth2TokenService();
 
-        OAuth2AccessToken expectedToken =
-                OAuth2AccessToken.newBuilder()
-                        .setRefreshable(false)
-                        .build();
-
         OAuth2AccessToken token  = tokenService.generateAccessToken(TESTREQUEST1);
 
-
-        assertThat(token).comparingExpectedFieldsOnly().isEqualTo(expectedToken);
+        assertThat(token.getRefreshToken()).isEmpty();
     }
 
     @Test
@@ -262,7 +253,6 @@ public class InMemoryOAuth2TokenServiceTest {
         OAuth2TokenService tokenService = new InMemoryOAuth2TokenService();
 
         assertThat(tokenService.listUserClient(USERNAME)).isEmpty();
-
     }
 
 
@@ -284,32 +274,15 @@ public class InMemoryOAuth2TokenServiceTest {
 
     }
 
+
+
     @Test
-    public void testListUserClientRefreshTokens_correctInput_returnCorrectResult() {
+    public void testRevokeByAccessToken_correctInput_returnTrueAndRemoveToken() {
         OAuth2TokenService tokenService = new InMemoryOAuth2TokenService();
 
         OAuth2AccessToken token  = tokenService.generateAccessToken(TESTREQUEST0);
 
-        OAuth2RefreshToken token1 = tokenService.readRefreshToken(token.getRefreshToken()).get();
-
-        assertThat(tokenService.listUserClientRefreshTokens(USERNAME, CLIENTID))
-                .containsExactly(token1);
-    }
-    @Test
-    public void testListUserClientRefreshTokens_userLinkNoClient_returnEmpty() {
-        OAuth2TokenService tokenService = new InMemoryOAuth2TokenService();
-
-        assertThat(tokenService.listUserClientRefreshTokens(USERNAME,CLIENTID)).isEmpty();
-
-    }
-
-    @Test
-    public void testRevokeAccessToken_correctInput_returnTrueAndRemoveToken() {
-        OAuth2TokenService tokenService = new InMemoryOAuth2TokenService();
-
-        OAuth2AccessToken token  = tokenService.generateAccessToken(TESTREQUEST0);
-
-        assertThat(tokenService.revokeAccessToken(token.getAccessToken())).isTrue();
+        assertThat(tokenService.revokeByAccessToken(token.getAccessToken())).isTrue();
 
         assertThat(tokenService.readAccessToken(token.getAccessToken())).isEmpty();
 
@@ -318,42 +291,42 @@ public class InMemoryOAuth2TokenServiceTest {
     }
 
     @Test
-    public void testRevokeAccessToken_wrongOrInvalidAccessToken_returnFalse() {
+    public void testRevokeByAccessToken_wrongOrInvalidAccessToken_returnFalse() {
         OAuth2TokenService tokenService = new InMemoryOAuth2TokenService();
 
-        assertThat(tokenService.revokeAccessToken(UUID.randomUUID().toString())).isFalse();
+        assertThat(tokenService.revokeByAccessToken(UUID.randomUUID().toString())).isFalse();
 
         OAuth2AccessToken token  = tokenService.generateAccessToken(TESTREQUEST0);
 
-        assertThat(tokenService.revokeAccessToken(token.getRefreshToken())).isFalse();
+        assertThat(tokenService.revokeByAccessToken(token.getRefreshToken())).isFalse();
 
     }
 
 
 
     @Test
-    public void testRevokeRefreshToken_correctInput_returnTrueAndRemoveRefreshToken() {
+    public void testRevokeByRefreshToken_correctInput_returnTrueAndRemoveRefreshToken() {
         OAuth2TokenService tokenService = new InMemoryOAuth2TokenService();
 
         OAuth2AccessToken token  = tokenService.generateAccessToken(TESTREQUEST0);
 
-        assertThat(tokenService.revokeRefreshToken(token.getRefreshToken())).isTrue();
+        assertThat(tokenService.revokeByRefreshToken(token.getRefreshToken())).isTrue();
 
         assertThat(tokenService.readRefreshToken(token.getRefreshToken())).isEmpty();
 
-        assertThat(tokenService.listUserClientRefreshTokens(USERNAME, CLIENTID)).isEmpty();
+        assertThat(tokenService.getUserClientRefreshToken(USERNAME, CLIENTID)).isEmpty();
 
     }
 
     @Test
-    public void testRevokeRefreshToken_wrongOrInvalidRefreshToken_returnFalse() {
+    public void testRevokeByRefreshToken_wrongOrInvalidRefreshToken_returnFalse() {
         OAuth2TokenService tokenService = new InMemoryOAuth2TokenService();
 
-        assertThat(tokenService.revokeRefreshToken(UUID.randomUUID().toString())).isFalse();
+        assertThat(tokenService.revokeByRefreshToken(UUID.randomUUID().toString())).isFalse();
 
         OAuth2AccessToken token  = tokenService.generateAccessToken(TESTREQUEST1);
 
-        assertThat(tokenService.revokeRefreshToken(token.getAccessToken())).isFalse();
+        assertThat(tokenService.revokeByRefreshToken(token.getAccessToken())).isFalse();
 
     }
 

@@ -40,9 +40,7 @@ message OAuth2AccessToken {
     // Token expired time
     int64 expired_time = 6;
 
-    // Whether it belong to a refresh_token
-    bool refreshable = 7;
-
-    // Refresh Token
-    string refresh_token = 8;
+    // Refresh Token value, used when return refresh_token
+    // in authorization code grant type
+    string refresh_token = 7;
 }
