@@ -137,7 +137,7 @@ public class InMemoryOAuth2TokenService implements OAuth2TokenService {
                 byte[] encryptedBytes = cipher.doFinal(bytesToEncrypt);
                 tokenString = BaseEncoding.base64Url().encode(encryptedBytes);
             } catch (Exception e) {
-                log.log(Level.INFO, "Error when encode tokenString!",  e);
+                log.log(Level.INFO, "Error when encrypting tokenString!",  e);
             }
         }
 
@@ -149,7 +149,7 @@ public class InMemoryOAuth2TokenService implements OAuth2TokenService {
                 byte[] decryptedBytes = cipher.doFinal(bytesToDecrypt);
                 return new String(decryptedBytes, "UTF-8");
             } catch (Exception e) {
-                log.log(Level.INFO, "Error when encode tokenString!",  e);
+                log.log(Level.INFO, "Error when decrypting tokenString!",  e);
                 return null;
             }
         }
