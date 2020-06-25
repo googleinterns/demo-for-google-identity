@@ -228,21 +228,6 @@ public class InMemoryOAuth2TokenService implements OAuth2TokenService {
                     request = builder.build();
                 }
             }
-
-            String refreshTokenValue = UUID.randomUUID().toString();
-            UserClientTokenInfo info =
-                    new UserClientTokenInfo(username, clientID, refreshTokenValue);
-
-            OAuth2RefreshToken refreshToken =
-                    OAuth2RefreshToken.newBuilder()
-                            .setRefreshToken(info.getTokenString())
-                            .setClientId(request.getRequestAuth().getClientId())
-                            .setUsername(request.getRequestAuth().getUsername())
-                            .setIsScoped(request.getRequestBody().getIsScoped())
-                            .addAllScopes(request.getRequestBody().getScopesList())
-                            .build();
-
-            refreshTokenMap.put(clientID, refreshToken);
         }
 
         if (!userClientAccessTokenMap.containsKey(username)) {
