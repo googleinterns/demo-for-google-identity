@@ -55,8 +55,8 @@ public class ClientSessionTest {
 
         clientSession.setRequest(oauth2Request);
 
-        assertThat(clientSession.getClient()).isEqualTo(Optional.ofNullable(client));
+        assertThat(clientSession.getClient()).isEqualTo(Optional.of(client));
 
-        assertThat(clientSession.getRequest()).isEqualTo(Optional.ofNullable(oauth2Request));
+        assertThat(clientSession.getRequest()).isEqualTo(Optional.of(oauth2Request));
     }
 }

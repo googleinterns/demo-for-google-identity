@@ -58,7 +58,7 @@ public final class LoginServlet extends HttpServlet {
             throws ServletException, IOException {
 
         try {
-            displayLoginPage(request, response);
+            displayLoginPage(response);
         } catch (TemplateException e) {
             log.log(Level.INFO, "Error when display login page", e);
         }
@@ -69,18 +69,18 @@ public final class LoginServlet extends HttpServlet {
             throws ServletException, IOException {
 
         try {
-            displayLoginPage(request, response);
+            displayLoginPage(response);
         } catch (TemplateException e) {
             log.log(Level.INFO, "Error when display login page", e);
         }
 
     }
 
-    private void displayLoginPage(HttpServletRequest request, HttpServletResponse response)
+    private void displayLoginPage(HttpServletResponse response)
             throws ServletException, IOException, TemplateException {
 
         Template template = configuration.getTemplate("Login.ftl");
-        Map<String, Object> information = new HashMap<String, Object>();
+        Map<String, Object> information = new HashMap<>();
         response.setCharacterEncoding("utf-8");
         PrintWriter printWriter = response.getWriter();
         template.process(information, printWriter);

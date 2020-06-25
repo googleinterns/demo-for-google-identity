@@ -47,13 +47,11 @@ import static org.mockito.Mockito.when;
 
 
 public class AuthorizationEndpointRequestValidatorTest {
-    private UserSession userSession;
 
     private ClientSession clientSession;
 
     private ClientDetailsService clientDetailsService;
 
-    private static final String LINE = System.lineSeparator();
 
     private static final String CLIENTID = "111";
     private static final String SECRET = "111";
@@ -85,7 +83,7 @@ public class AuthorizationEndpointRequestValidatorTest {
     public void init(){
         clientDetailsService = new InMemoryClientDetailsService();
         clientDetailsService.addClient(CLIENT);
-        userSession = new UserSession();
+        UserSession userSession = new UserSession();
         userSession.setUser(USER);
         clientSession = new ClientSession();
     }

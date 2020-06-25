@@ -32,7 +32,7 @@ import java.util.Random;
 @Singleton
 public final class AuthorizationCodeService {
 
-    private Random random = new Random();
+    private final Random random = new Random();
 
     private final CodeStore codeStore;
 
@@ -41,7 +41,7 @@ public final class AuthorizationCodeService {
      */
     private static final String AUTH_CODE_LENGTH = System.getenv("AUTH_CODE_LENGTH");
 
-    private int codeLength = Integer.valueOf(AUTH_CODE_LENGTH);
+    private int codeLength = Integer.parseInt(AUTH_CODE_LENGTH);
 
     /**
      * Set the byteLength as the minimum one we need for
@@ -90,9 +90,7 @@ public final class AuthorizationCodeService {
     }
 
     /**
-     *
-     * @param code
-     * @return related request
+     * Consume the code and return the related request, if no that code, return null
      */
     public Optional<OAuth2Request> consumeCode(String code){
         return codeStore.consumeCode(code);

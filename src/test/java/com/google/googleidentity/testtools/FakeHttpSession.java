@@ -31,7 +31,7 @@ import java.util.Map;
  */
 public class FakeHttpSession implements HttpSession {
 
-    private Map<String, Object> sessionMap = new HashMap<>();
+    private final Map<String, Object> sessionMap = new HashMap<>();
 
     @Override
     public long getCreationTime() {

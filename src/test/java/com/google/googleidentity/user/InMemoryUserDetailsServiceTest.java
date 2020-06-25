@@ -22,7 +22,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static com.google.common.truth.Truth8.assertThat;
 
 /**
  * Test {@link InMemoryUserDetailsService}
@@ -73,9 +73,7 @@ public class InMemoryUserDetailsServiceTest {
 
         assertTrue(userDetailsService.updateUser(newUser));
 
-        assertEquals(
-                userDetailsService.getUserByName(USERNAME).get()
-                        .getEmail(),"x@x.com");
+        assertThat(userDetailsService.getUserByName(USERNAME)).hasValue(newUser);
 
     }
 

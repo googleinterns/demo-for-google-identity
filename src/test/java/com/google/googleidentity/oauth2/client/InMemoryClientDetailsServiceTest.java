@@ -22,6 +22,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static com.google.common.truth.Truth8.assertThat;
 
 /**
  * Test {@link InMemoryClientDetailsService}
@@ -73,7 +74,8 @@ public class InMemoryClientDetailsServiceTest {
 
         assertTrue(clientDetailsService.updateClient(newClient));
 
-        assertFalse(clientDetailsService.getClientByID(CLIENTID).get().getIsScoped());
+        assertThat(clientDetailsService.getClientByID(CLIENTID)).hasValue(newClient);
+
     }
 
     @Test

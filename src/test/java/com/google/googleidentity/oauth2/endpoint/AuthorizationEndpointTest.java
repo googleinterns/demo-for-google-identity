@@ -20,7 +20,6 @@ import com.google.common.base.Charsets;
 import com.google.common.hash.Hashing;
 import com.google.googleidentity.oauth2.client.ClientDetails;
 import com.google.googleidentity.oauth2.client.ClientDetailsService;
-import com.google.googleidentity.oauth2.client.ClientSession;
 import com.google.googleidentity.oauth2.client.InMemoryClientDetailsService;
 import com.google.googleidentity.oauth2.request.OAuth2Request;
 import com.google.googleidentity.oauth2.util.OAuth2ParameterNames;
@@ -56,12 +55,6 @@ public class AuthorizationEndpointTest {
 
     private UserSession userSession;
 
-    private ClientSession clientSession;
-
-    private ClientDetailsService clientDetailsService;
-
-    private static final String LINE = System.lineSeparator();
-
     private static final String CLIENTID = "111";
     private static final String SECRET = "111";
     private static final String REDIRECT_URI = "http://www.google.com";
@@ -91,11 +84,10 @@ public class AuthorizationEndpointTest {
 
     @Before
     public void init(){
-        clientDetailsService = new InMemoryClientDetailsService();
+        ClientDetailsService clientDetailsService = new InMemoryClientDetailsService();
         clientDetailsService.addClient(CLIENT);
         userSession = new UserSession();
         userSession.setUser(USER);
-        clientSession = new ClientSession();
         authorizationEndpoint = new AuthorizationEndpoint(clientDetailsService);
     }
 

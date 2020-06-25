@@ -19,11 +19,7 @@ package com.google.googleidentity.oauth2.token;
 import com.google.common.base.Charsets;
 import com.google.common.hash.Hashing;
 import com.google.googleidentity.oauth2.client.ClientDetails;
-import com.google.googleidentity.oauth2.exception.InvalidRequestException;
-import com.google.googleidentity.oauth2.exception.OAuth2Exception;
 import com.google.googleidentity.oauth2.request.OAuth2Request;
-import com.google.googleidentity.oauth2.validator.AuthorizationEndpointRequestValidator;
-import com.google.googleidentity.user.UserDetails;
 import org.junit.Test;
 
 import java.util.Optional;
@@ -32,7 +28,7 @@ import java.util.UUID;
 import static com.google.common.truth.Truth.assertThat;
 import static com.google.common.truth.Truth8.assertThat;
 import static com.google.common.truth.extensions.proto.ProtoTruth.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+
 
 /**
  * Tests for {@link InMemoryOAuth2TokenService}
@@ -55,15 +51,6 @@ public class InMemoryOAuth2TokenServiceTest {
                     .build();
 
     private static final String USERNAME = "111";
-    private static final String PASSWORD = "111";
-
-    private static final UserDetails USER =
-            UserDetails.newBuilder()
-                    .setUsername(USERNAME)
-                    .setPassword(Hashing.sha256()
-                            .hashString(PASSWORD, Charsets.UTF_8).toString())
-                    .build();
-
 
     OAuth2Request TESTREQUEST0 =
             OAuth2Request.newBuilder()
@@ -242,7 +229,7 @@ public class InMemoryOAuth2TokenServiceTest {
     public void testListUserClient_correctInput_returnCorrectResult() {
         OAuth2TokenService tokenService = new InMemoryOAuth2TokenService();
 
-        OAuth2AccessToken token  = tokenService.generateAccessToken(TESTREQUEST0);
+        tokenService.generateAccessToken(TESTREQUEST0);
 
         assertThat(tokenService.listUserClient(USERNAME)).containsExactly(CLIENTID);
 

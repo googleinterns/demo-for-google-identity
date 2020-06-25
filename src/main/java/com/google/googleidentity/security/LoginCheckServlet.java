@@ -81,18 +81,13 @@ public final class LoginCheckServlet extends HttpServlet {
         }
 
         response.getWriter().flush();
-        return;
 
     }
 
     private boolean check(String username, String password) {
         Optional<UserDetails> user = userDetailsService.getUserByName(username);
 
-        if (!user.isPresent()) {
-            return false;
-        }
-
-        return Objects.equals(password, user.get().getPassword());
+        return user.isPresent() && Objects.equals(password, user.get().getPassword());
     }
 
 

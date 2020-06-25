@@ -58,10 +58,10 @@ public final class UserSession implements Serializable {
 
         StringBuilder sb = new StringBuilder();
         if (user != null) {
-            sb.append("user:" + user.toString() + "\t");
+            sb.append("user:").append(user.toString()).append("\t");
         }
         if (olduri != null) {
-            sb.append("olduri:" + olduri + "\t");
+            sb.append("olduri:").append(olduri).append("\t");
         }
         return sb.toString();
     }

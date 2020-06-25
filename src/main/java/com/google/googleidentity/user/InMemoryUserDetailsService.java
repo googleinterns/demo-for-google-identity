@@ -30,14 +30,12 @@ import java.util.concurrent.ConcurrentHashMap;
 @Singleton
 public final class InMemoryUserDetailsService implements UserDetailsService {
 
-    private ConcurrentHashMap<String, UserDetails> userStore =
+    private final ConcurrentHashMap<String, UserDetails> userStore =
             new ConcurrentHashMap<>();
 
     public Optional<UserDetails> getUserByName(String username) {
-        Optional<UserDetails> user =
-                Optional.ofNullable(userStore.get(username));
 
-        return user;
+        return Optional.ofNullable(userStore.get(username));
     }
 
     public boolean updateUser(UserDetails user) {

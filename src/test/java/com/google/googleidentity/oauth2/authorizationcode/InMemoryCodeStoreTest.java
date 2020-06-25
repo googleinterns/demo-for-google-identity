@@ -63,7 +63,7 @@ public class InMemoryCodeStoreTest {
         assertTrue(codeStore.setCode(TEST_CODE, oauth2Request));
 
         assertThat(codeStore.consumeCode(TEST_CODE))
-                .isEqualTo(Optional.ofNullable(oauth2Request));
+                .isEqualTo(Optional.of(oauth2Request));
     }
 
     @Test
@@ -83,7 +83,7 @@ public class InMemoryCodeStoreTest {
         assertTrue(codeStore.setCode(TEST_CODE, oauth2Request));
 
         assertThat(codeStore.consumeCode(TEST_CODE))
-                .isEqualTo(Optional.ofNullable(oauth2Request));
+                .isEqualTo(Optional.of(oauth2Request));
 
         assertThat(codeStore.consumeCode(TEST_CODE))
                 .isEqualTo(Optional.empty());

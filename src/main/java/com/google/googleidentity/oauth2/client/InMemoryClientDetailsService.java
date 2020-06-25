@@ -31,14 +31,12 @@ import java.util.concurrent.ConcurrentHashMap;
 @Singleton
 public final class InMemoryClientDetailsService implements ClientDetailsService{
 
-    private ConcurrentHashMap<String, ClientDetails> clientStore
+    private final ConcurrentHashMap<String, ClientDetails> clientStore
             = new ConcurrentHashMap<>();
 
     @Override
     public Optional<ClientDetails> getClientByID(String clientID) {
-        Optional<ClientDetails> client =
-                Optional.ofNullable(clientStore.get(clientID));
-        return client;
+        return Optional.ofNullable(clientStore.get(clientID));
     }
 
     @Override
