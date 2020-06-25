@@ -23,7 +23,7 @@ import com.google.inject.Singleton;
 
 import javax.crypto.Cipher;
 import javax.crypto.KeyGenerator;
-import javax.crypto.NoSuchPaddingException;
+import java.nio.charset.StandardCharsets;
 import java.security.InvalidParameterException;
 import java.security.Key;
 import java.security.NoSuchAlgorithmException;
@@ -35,8 +35,6 @@ import java.util.UUID;
 import java.util.Date;
 import java.util.Optional;
 import java.util.List;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -54,7 +52,7 @@ public class InMemoryOAuth2TokenService implements OAuth2TokenService {
 
     private static final Logger log = Logger.getLogger("InMemoryOAuth2TokenService");
 
-    private long tokenValidTime = 10 * 60l;
+    private long tokenValidTime = 10 * 60L;
 
     Map<String, HashMap<String, HashMap<String, OAuth2AccessToken>>> userClientAccessTokenMap =
             new ConcurrentHashMap<>();
@@ -81,12 +79,12 @@ public class InMemoryOAuth2TokenService implements OAuth2TokenService {
      * Used for encrypt username and clientID
      */
     private class UserClientTokenInfo {
-        private String username;
-        private String clientID;
-        private String tokenValue;
+        private final String username;
+        private final String clientID;
+        private final String tokenValue;
         private String tokenString;
 
-        private String delimiter = "\t";
+        private final String delimiter = "\t";
 
         UserClientTokenInfo(String username, String clientID, String tokenValue) {
             this.username = username;
@@ -133,7 +131,7 @@ public class InMemoryOAuth2TokenService implements OAuth2TokenService {
             try {
                 Cipher cipher = Cipher.getInstance("AES");
                 cipher.init(Cipher.ENCRYPT_MODE, aesKey);
-                byte[] bytesToEncrypt = tokenInfo.getBytes("UTF-8");
+                byte[] bytesToEncrypt = tokenInfo.getBytes(StandardCharsets.UTF_8);
                 byte[] encryptedBytes = cipher.doFinal(bytesToEncrypt);
                 tokenString = BaseEncoding.base64Url().encode(encryptedBytes);
             } catch (Exception e) {
@@ -147,7 +145,7 @@ public class InMemoryOAuth2TokenService implements OAuth2TokenService {
                 byte[] bytesToDecrypt = BaseEncoding.base64Url().decode(tokenString);
                 cipher.init(Cipher.DECRYPT_MODE, aesKey);
                 byte[] decryptedBytes = cipher.doFinal(bytesToDecrypt);
-                return new String(decryptedBytes, "UTF-8");
+                return new String(decryptedBytes, StandardCharsets.UTF_8);
             } catch (Exception e) {
                 log.log(Level.INFO, "Error when decrypting tokenString!",  e);
                 return null;
@@ -157,7 +155,7 @@ public class InMemoryOAuth2TokenService implements OAuth2TokenService {
     }
 
     private void initKey() {
-        KeyGenerator generator = null;
+        KeyGenerator generator;
         try {
             generator = KeyGenerator.getInstance("AES");
             generator.init(256);
@@ -178,7 +176,7 @@ public class InMemoryOAuth2TokenService implements OAuth2TokenService {
                         userMap.getValue().entrySet()) {
                     for (Map.Entry<String, OAuth2AccessToken> token :
                             tokenMap.getValue().entrySet()) {
-                        if (token.getValue().getExpiredTime() < (new Date()).getTime()/1000l) {
+                        if (token.getValue().getExpiredTime() < (new Date()).getTime()/ 1000L) {
                             tokenMap.getValue().remove(token.getKey());
                             if (tokenMap.getValue().isEmpty()) {
                                 userMap.getValue().remove(tokenMap.getKey());
@@ -191,7 +189,7 @@ public class InMemoryOAuth2TokenService implements OAuth2TokenService {
                 }
             }
         }
-    };
+    }
 
     private void setTokenCleaner() {
         service = Executors.newSingleThreadScheduledExecutor();
@@ -255,7 +253,7 @@ public class InMemoryOAuth2TokenService implements OAuth2TokenService {
                         .setUsername(request.getRequestAuth().getUsername())
                         .setIsScoped(request.getRequestBody().getIsScoped())
                         .addAllScopes(request.getRequestBody().getScopesList())
-                        .setExpiredTime((new Date().getTime())/1000l + tokenValidTime);
+                        .setExpiredTime((new Date().getTime())/ 1000L + tokenValidTime);
 
         if (request.getRequestBody().getRefreshable()) {
             String refreshTokenValue = UUID.randomUUID().toString();
@@ -311,17 +309,17 @@ public class InMemoryOAuth2TokenService implements OAuth2TokenService {
                         .setUsername(username)
                         .setIsScoped(token.get().getIsScoped())
                         .addAllScopes(token.get().getScopesList())
-                        .setExpiredTime((new Date().getTime())/1000l + tokenValidTime)
+                        .setExpiredTime((new Date().getTime())/ 1000L + tokenValidTime)
                         .setRefreshToken(refreshToken)
                         .build();
 
         accessTokenMap.put(accessTokenValue, newToken);
 
-        return Optional.ofNullable(newToken);
+        return Optional.of(newToken);
     }
 
     public Optional<OAuth2AccessToken> readAccessToken(String accessToken) {
-        UserClientTokenInfo info = null;
+        UserClientTokenInfo info;
 
         try{
             info = new UserClientTokenInfo(accessToken);
@@ -344,7 +342,7 @@ public class InMemoryOAuth2TokenService implements OAuth2TokenService {
     }
 
     public Optional<OAuth2RefreshToken> readRefreshToken(String refreshToken) {
-        UserClientTokenInfo info = null;
+        UserClientTokenInfo info;
 
         try{
             info = new UserClientTokenInfo(refreshToken);
@@ -355,13 +353,12 @@ public class InMemoryOAuth2TokenService implements OAuth2TokenService {
 
         String username = info.getUsername();
         String clientID = info.getClientID();
-        String tokenValue = info.getTokenValue();
 
         if (userClientRefreshTokenMap.containsKey(username) &&
                 userClientRefreshTokenMap.get(username).containsKey(clientID)) {
             OAuth2RefreshToken token = userClientRefreshTokenMap.get(username).get(clientID);
             if (token.getRefreshToken().equals(refreshToken)) {
-                return Optional.ofNullable(token);
+                return Optional.of(token);
             } else {
                 return Optional.empty();
             }
@@ -373,7 +370,7 @@ public class InMemoryOAuth2TokenService implements OAuth2TokenService {
     public boolean revokeByAccessToken(String accessToken) {
         Optional<OAuth2AccessToken> token = readAccessToken(accessToken);
 
-        if (!token.isPresent() || token.get().getExpiredTime() < (new Date()).getTime()/1000l) {
+        if (!token.isPresent() || token.get().getExpiredTime() < (new Date()).getTime()/ 1000L) {
             return false;
         }
 
