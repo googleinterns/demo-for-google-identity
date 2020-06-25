@@ -217,16 +217,15 @@ public class InMemoryOAuth2TokenService implements OAuth2TokenService {
                 OAuth2RefreshToken oldToken = refreshTokenMap.get(clientID);
                 OAuth2Request.Builder builder =
                         OAuth2Request.newBuilder(request);
-                if (!oldToken.getIsScoped()) {
-                    builder.getRequestBodyBuilder().setIsScoped(false).clearScopes();
-                    request = builder.build();
-                } else {
+                if (oldToken.getIsScoped()) {
                     HashSet<String> scopes =
                             new HashSet<>(request.getRequestBody().getScopesList());
                     scopes.addAll(oldToken.getScopesList());
                     builder.getRequestBodyBuilder().clearScopes().addAllScopes(scopes);
-                    request = builder.build();
+                } else {
+                    builder.getRequestBodyBuilder().setIsScoped(false).clearScopes();
                 }
+                request = builder.build();
             }
         }
 
