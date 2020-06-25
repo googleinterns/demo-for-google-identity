@@ -374,7 +374,7 @@ public class InMemoryOAuth2TokenService implements OAuth2TokenService {
     public boolean revokeByAccessToken(String accessToken) {
         Optional<OAuth2AccessToken> token = readAccessToken(accessToken);
 
-        if (!token.isPresent()) {
+        if (!token.isPresent() || token.get().getExpiredTime() < (new Date()).getTime()/1000l) {
             return false;
         }
 
@@ -420,8 +420,8 @@ public class InMemoryOAuth2TokenService implements OAuth2TokenService {
             clientList.addAll(userClientAccessTokenMap.get(username).keySet());
         }
 
-        // For authorization code grant type, since access may be out of date and be cleared,
-        // we have to check refresh token
+        // For authorization code grant type, since access tokens may
+        // be out of date and be cleared, we have to check refresh token
         if (userClientRefreshTokenMap.containsKey(username)) {
             clientList.addAll(userClientRefreshTokenMap.get(username).keySet());
         }

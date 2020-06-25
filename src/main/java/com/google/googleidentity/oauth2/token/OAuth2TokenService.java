@@ -51,7 +51,7 @@ public interface OAuth2TokenService {
     Optional<OAuth2RefreshToken> readRefreshToken(String refreshToken);
 
     /**
-     * Revoke by access token, if no that token, return false.
+     * Revoke by access token, if no that token or the token is expired,  return false.
      */
     boolean revokeByAccessToken(String accessToken);
 
@@ -68,7 +68,7 @@ public interface OAuth2TokenService {
     /**
      * List all client linked by this user
      */
-    public List<String> listUserClient(String username);
+    List<String> listUserClient(String username);
 
     /**
      *  List all access tokens between a user and a client
