@@ -121,8 +121,8 @@ public final class ClientAuthenticationFilter implements Filter {
             return false;
         }
 
-        return Objects.equals(Hashing.sha256().hashString(secret, Charsets.UTF_8).toString(),
-                client.get().getSecret());
+        return client.get().getSecret()
+                .equals(Hashing.sha256().hashString(secret, Charsets.UTF_8).toString());
     }
 
     @Override
