@@ -16,6 +16,7 @@
 
 package com.google.googleidentity.oauth2.endpoint;
 
+import com.google.common.base.Preconditions;
 import com.google.googleidentity.oauth2.request.OAuth2Request;
 import com.google.googleidentity.oauth2.util.OAuth2Utils;
 import com.google.inject.Inject;
@@ -78,17 +79,20 @@ public class ConsentEndpoint extends HttpServlet {
     private void toConsentPage(HttpServletRequest request, HttpServletResponse response)
             throws IOException, TemplateException {
 
+        Preconditions.checkArgument(
+                OAuth2Utils.getClientSession(request).getRequest().isPresent(),
+                "Request should have been set");
 
         OAuth2Request oauth2Request = OAuth2Utils.getClientSession(request).getRequest().get();
 
-        Map<String, Object> information = new HashMap<String, Object>();
+        Map<String, Object> information = new HashMap<>();
         information.put("clientID", oauth2Request.getRequestAuth().getClientId());
 
         List<String> scopes = oauth2Request.getRequestBody().getScopesList();
 
         StringBuilder sb = new StringBuilder();
         for (String scope : scopes) {
-            sb.append(scope + " ");
+            sb.append(scope).append(" ");
         }
 
         information.put("scopes", sb.toString());

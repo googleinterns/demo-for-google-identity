@@ -16,6 +16,7 @@
 
 package com.google.googleidentity.oauth2.endpoint;
 
+import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableSet;
 import com.google.googleidentity.oauth2.client.ClientDetails;
@@ -140,6 +141,10 @@ public final class AuthorizationEndpoint extends HttpServlet {
 
         String clientID = request.getParameter(OAuth2ParameterNames.CLIENT_ID);
 
+        Preconditions.checkArgument(
+                clientDetailsService.getClientByID(clientID).isPresent(),
+                "Client should have been checked in validation");
+
         ClientDetails client = clientDetailsService.getClientByID(clientID).get();
 
         String redirectUri = request.getParameter(OAuth2ParameterNames.REDIRECT_URI);
@@ -159,6 +164,10 @@ public final class AuthorizationEndpoint extends HttpServlet {
         if (client.getIsScoped() && scope.isEmpty()) {
             scope = ImmutableSet.copyOf(client.getScopesList());
         }
+
+        Preconditions.checkArgument(
+                OAuth2Utils.getUserSession(request).getUser().isPresent(),
+                "User should have logged in");
 
         OAuth2Request.Builder oauth2RequestBuilder =
                 OAuth2Request.newBuilder()

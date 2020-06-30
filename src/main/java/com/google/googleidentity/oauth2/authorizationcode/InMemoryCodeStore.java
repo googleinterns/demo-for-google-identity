@@ -30,7 +30,7 @@ import java.util.concurrent.ConcurrentHashMap;
 @Singleton
 final class InMemoryCodeStore implements CodeStore {
 
-    private ConcurrentHashMap<String, OAuth2Request> codeStore
+    private final ConcurrentHashMap<String, OAuth2Request> codeStore
             = new ConcurrentHashMap<>();
 
     public InMemoryCodeStore(){}

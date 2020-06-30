@@ -93,7 +93,7 @@ public final class UserServlet extends HttpServlet {
 
         UserDetails user = userSession.getUser().get();
 
-        Map<String, Object> information = new HashMap<String, Object>();
+        Map<String, Object> information = new HashMap<>();
 
         information.put("username", user.getUsername());
 

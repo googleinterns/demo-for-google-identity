@@ -16,10 +16,10 @@
 
 package com.google.googleidentity.oauth2.validator;
 
+import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import com.google.googleidentity.oauth2.client.ClientDetails;
 import com.google.googleidentity.oauth2.client.ClientDetailsService;
-import com.google.googleidentity.oauth2.endpoint.AuthorizationEndpoint;
 import com.google.googleidentity.oauth2.exception.InvalidRequestException;
 import com.google.googleidentity.oauth2.exception.OAuth2Exception;
 import com.google.googleidentity.oauth2.exception.InvalidScopeException;
@@ -36,14 +36,9 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.Optional;
 import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 
 public class AuthorizationEndpointRequestValidator {
-
-    private static final Logger log = Logger.getLogger("AuthorizationEndpointParameterValidator");
-
 
     /**
      * Check whether the client and redirect uri is valid
@@ -93,6 +88,10 @@ public class AuthorizationEndpointRequestValidator {
 
         //here the clientID has been checked in validateRedirectUri function
         String clientID = request.getParameter(OAuth2ParameterNames.CLIENT_ID);
+
+        Preconditions.checkArgument(
+                clientDetailsService.getClientByID(clientID).isPresent(),
+                "Client should have been checked in previous validation");
 
         ClientDetails client = clientDetailsService.getClientByID(clientID).get();
 
