@@ -129,9 +129,11 @@ public class TokenEndpoint extends HttpServlet {
             oauth2RequestBuilder.getRequestBodyBuilder()
                     .setIntent(request.getParameter(OAuth2ParameterNames.INTENT))
                     .setAssertion(request.getParameter(OAuth2ParameterNames.ASSERTION));
-            if ( Strings.isNullOrEmpty(request.getParameter(OAuth2ParameterNames.SCOPE))) {
-
+            if ( !Strings.isNullOrEmpty(request.getParameter(OAuth2ParameterNames.SCOPE))) {
+                oauth2RequestBuilder.getAuthorizationResponseBuilder().setState(
+                        request.getParameter(OAuth2ParameterNames.SCOPE));
             }
+            log.info("Assertion: " + request.getParameter(OAuth2ParameterNames.ASSERTION));
         }
         return oauth2RequestBuilder.build();
     }
