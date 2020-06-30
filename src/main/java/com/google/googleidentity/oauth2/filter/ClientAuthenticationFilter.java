@@ -83,11 +83,11 @@ public final class ClientAuthenticationFilter implements Filter {
                 String clientID = request.getParameter(OAuth2ParameterNames.CLIENT_ID);
                 String secret = request.getParameter(OAuth2ParameterNames.CLIENT_SECRET);
 
-                if (clientID == null) {
+                if (Strings.isNullOrEmpty(clientID)) {
                     throw new InvalidRequestException(
                             InvalidRequestException.ErrorCode.NO_CLIENT_ID);
                 }
-                if (secret ==  null || !check(clientID, secret)) {
+                if (Strings.isNullOrEmpty(secret)|| !check(clientID, secret)) {
                     throw new InvalidClientException();
                 }
 
