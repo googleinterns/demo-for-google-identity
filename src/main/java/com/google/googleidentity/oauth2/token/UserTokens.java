@@ -27,11 +27,11 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * Store user tokens in memory
  */
-public class UserTokens {
+public final class UserTokens {
 
-    String username;
+    private final String username;
 
-    private final class ClientTokens {
+    private static final class ClientTokens {
         private final String clientID;
         private Optional<OAuth2RefreshToken> refreshToken = Optional.empty();
         private final Map<String, OAuth2AccessToken> tokenMap = new ConcurrentHashMap<>();
@@ -81,7 +81,6 @@ public class UserTokens {
         public List<OAuth2AccessToken> listAccessTokens(){
             return ImmutableList.copyOf(tokenMap.values());
         }
-
     }
 
     Map<String, ClientTokens> clientTokensMap = new ConcurrentHashMap<>();

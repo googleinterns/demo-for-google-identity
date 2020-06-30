@@ -51,10 +51,17 @@ final class UserClientTokenInfo {
         return clientID;
     }
 
+    /**
+     * The random string generated for a token.
+     */
     public String getTokenValue() {
         return tokenValue;
     }
 
+    /**
+     * The string contains information of username, client ID and tokenValue.
+     * It is encrypt and send to user as token string.
+     */
     public String getEncryptTokenString(Key aesKey) {
         String tokenInfo  = username + delimiter + clientID + delimiter + tokenValue;
         try {

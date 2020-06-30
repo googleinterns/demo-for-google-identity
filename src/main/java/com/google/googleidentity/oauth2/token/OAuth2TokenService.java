@@ -34,34 +34,34 @@ public interface OAuth2TokenService {
 
     /**
      * Try to refresh the access token related to the refresh token string.
-     * If no related token, return empty.
+     * If token cannot be found, return empty.
      */
     Optional<OAuth2AccessToken> refreshToken(String refreshToken);
 
     /**
      * Read the token information related to the access token string.
-     * If no related token, return empty.
+     * If token cannot be found, return empty.
      */
     Optional<OAuth2AccessToken> readAccessToken(String accessToken);
 
     /**
      * Read the token information related to the refresh token string.
-     * If no related token, return empty.
+     * If token cannot be found, return empty.
      */
     Optional<OAuth2RefreshToken> readRefreshToken(String refreshToken);
 
     /**
-     * Revoke by access token, if no that token or the token is expired,  return false.
+     * Revoke by access token, if token cannot be found or the token is expired,  return false.
      */
     boolean revokeByAccessToken(String accessToken);
 
     /**
-     * Revoke by refresh token, if no that token, return false.
+     * Revoke by refresh token, if token cannot be found, return false.
      */
     boolean revokeByRefreshToken(String refreshToken);
 
     /**
-     * Revoke tokens between a user and a client, if no tokens, return false
+     * Revoke tokens between a user and a client, if token cannot be found, return false
      */
     boolean revokeUserClientTokens(String username, String clientID);
 
