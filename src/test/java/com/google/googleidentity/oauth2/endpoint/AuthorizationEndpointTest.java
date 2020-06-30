@@ -83,7 +83,7 @@ public class AuthorizationEndpointTest {
     private AuthorizationEndpoint authorizationEndpoint = null;
 
     @Before
-    public void init(){
+    public void init() {
         ClientDetailsService clientDetailsService = new InMemoryClientDetailsService();
         clientDetailsService.addClient(CLIENT);
         userSession = new UserSession();

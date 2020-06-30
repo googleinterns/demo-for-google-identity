@@ -23,7 +23,14 @@ public final class InvalidGrantException extends OAuth2Exception {
         NO_GRANT_TYPE,
         CODE_REDIRECT_URI_MISMATCH,
         NONEXISTENT_REFRESH_TOKEN,
-        REFRESH_TOKEN_CLIENT_MISMATCH
+        REFRESH_TOKEN_CLIENT_MISMATCH,
+        IMPLICIT_GRANT_IN_TOKEN_ENDPOINT,
+        NO_REDIRECT_URI,
+        NO_AUTHORIZATION_CODE,
+        NO_REFRESH_TOKEN,
+        NO_INTENT,
+        NO_ASSERTION,
+        UNSUPPORTED_INTENT
     }
 
     private static final String INVALID_GRANT = "invalid_grant";
@@ -55,6 +62,20 @@ public final class InvalidGrantException extends OAuth2Exception {
                 return "Refresh token does not exist!";
             case REFRESH_TOKEN_CLIENT_MISMATCH:
                 return "Refresh token and client mismatch!";
+            case IMPLICIT_GRANT_IN_TOKEN_ENDPOINT:
+                return "Implicit flow is not supported at token endpoint!";
+            case NO_REDIRECT_URI:
+                return "No redirect uri!";
+            case NO_AUTHORIZATION_CODE:
+                return "No authorization code!";
+            case NO_REFRESH_TOKEN:
+                return "No refresh_token!";
+            case NO_INTENT:
+                return "No Intent!";
+            case NO_ASSERTION:
+                return "No assertion!";
+            case UNSUPPORTED_INTENT:
+                return "Unsupported intent!";
             default:
                 throw new IllegalArgumentException(String.valueOf(errorCode));
         }

@@ -42,7 +42,7 @@ public final class OAuth2ExceptionHandler {
     public static JSONObject getResponseBody(OAuth2Exception exception) {
         JSONObject json =  new JSONObject();
         json.appendField(ERROR, exception.getErrorType());
-        if ( Strings.isNullOrEmpty(exception.getErrorDescription())) {
+        if (!Strings.isNullOrEmpty(exception.getErrorDescription())) {
             json.appendField(ERROR_DESCRIPTION, exception.getErrorDescription());
         }
         return json;
