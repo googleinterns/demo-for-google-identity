@@ -30,6 +30,7 @@ import com.google.googleidentity.oauth2.exception.AccessDeniedException;
 import com.google.googleidentity.oauth2.exception.UnauthorizedClientException;
 import com.google.googleidentity.oauth2.exception.UnsupportedResponseTypeException;
 import com.google.googleidentity.oauth2.request.OAuth2Request;
+import com.google.googleidentity.oauth2.util.OAuth2Constants;
 import com.google.googleidentity.oauth2.util.OAuth2ParameterNames;
 import com.google.googleidentity.security.UserSession;
 import com.google.googleidentity.testtools.FakeHttpSession;
@@ -66,7 +67,7 @@ public class AuthorizationEndpointRequestValidatorTest {
                     .addScopes("read")
                     .setIsScoped(true)
                     .addRedirectUris(REDIRECT_URI_REGEX)
-                    .addGrantTypes("authorization_code")
+                    .addGrantTypes(OAuth2Constants.GrantType.AUTHORIZATION_CODE)
                     .build();
 
     private static final String USERNAME = "111";
@@ -93,7 +94,8 @@ public class AuthorizationEndpointRequestValidatorTest {
 
         HttpServletRequest request = mock(HttpServletRequest.class);
 
-        when(request.getParameter(OAuth2ParameterNames.RESPONSE_TYPE)).thenReturn("code");
+        when(request.getParameter(OAuth2ParameterNames.RESPONSE_TYPE))
+                .thenReturn(OAuth2Constants.ResponseType.CODE);
         when(request.getParameter(OAuth2ParameterNames.CLIENT_ID)).thenReturn(null);
         when(request.getParameter(OAuth2ParameterNames.REDIRECT_URI)).thenReturn(REDIRECT_URI);
         when(request.getParameter(OAuth2ParameterNames.SCOPE)).thenReturn("read");
@@ -114,7 +116,8 @@ public class AuthorizationEndpointRequestValidatorTest {
 
         HttpServletRequest request = mock(HttpServletRequest.class);
 
-        when(request.getParameter(OAuth2ParameterNames.RESPONSE_TYPE)).thenReturn("code");
+        when(request.getParameter(OAuth2ParameterNames.RESPONSE_TYPE))
+                .thenReturn(OAuth2Constants.ResponseType.CODE);
         when(request.getParameter(OAuth2ParameterNames.CLIENT_ID)).thenReturn("non_existed");
         when(request.getParameter(OAuth2ParameterNames.REDIRECT_URI)).thenReturn(REDIRECT_URI);
         when(request.getParameter(OAuth2ParameterNames.SCOPE)).thenReturn("read");
@@ -135,7 +138,8 @@ public class AuthorizationEndpointRequestValidatorTest {
 
         HttpServletRequest request = mock(HttpServletRequest.class);
 
-        when(request.getParameter(OAuth2ParameterNames.RESPONSE_TYPE)).thenReturn("code");
+        when(request.getParameter(OAuth2ParameterNames.RESPONSE_TYPE))
+                .thenReturn(OAuth2Constants.ResponseType.CODE);
         when(request.getParameter(OAuth2ParameterNames.CLIENT_ID)).thenReturn(CLIENTID);
         when(request.getParameter(OAuth2ParameterNames.REDIRECT_URI)).thenReturn(null);
         when(request.getParameter(OAuth2ParameterNames.SCOPE)).thenReturn("read");
@@ -157,7 +161,8 @@ public class AuthorizationEndpointRequestValidatorTest {
 
         HttpServletRequest request = mock(HttpServletRequest.class);
 
-        when(request.getParameter(OAuth2ParameterNames.RESPONSE_TYPE)).thenReturn("code");
+        when(request.getParameter(OAuth2ParameterNames.RESPONSE_TYPE))
+                .thenReturn(OAuth2Constants.ResponseType.CODE);
         when(request.getParameter(OAuth2ParameterNames.CLIENT_ID)).thenReturn(CLIENTID);
         when(request.getParameter(OAuth2ParameterNames.REDIRECT_URI)).thenReturn("wrong_uri");
         when(request.getParameter(OAuth2ParameterNames.SCOPE)).thenReturn("read");
@@ -217,7 +222,8 @@ public class AuthorizationEndpointRequestValidatorTest {
 
         HttpServletRequest request = mock(HttpServletRequest.class);
 
-        when(request.getParameter(OAuth2ParameterNames.RESPONSE_TYPE)).thenReturn("token");
+        when(request.getParameter(OAuth2ParameterNames.RESPONSE_TYPE))
+                .thenReturn(OAuth2Constants.ResponseType.TOKEN);
         when(request.getParameter(OAuth2ParameterNames.CLIENT_ID)).thenReturn(CLIENTID);
         when(request.getParameter(OAuth2ParameterNames.REDIRECT_URI)).thenReturn(REDIRECT_URI);
         when(request.getParameter(OAuth2ParameterNames.SCOPE)).thenReturn("invalid");
@@ -236,7 +242,8 @@ public class AuthorizationEndpointRequestValidatorTest {
 
         HttpServletRequest request = mock(HttpServletRequest.class);
 
-        when(request.getParameter(OAuth2ParameterNames.RESPONSE_TYPE)).thenReturn("code");
+        when(request.getParameter(OAuth2ParameterNames.RESPONSE_TYPE))
+                .thenReturn(OAuth2Constants.ResponseType.CODE);
         when(request.getParameter(OAuth2ParameterNames.CLIENT_ID)).thenReturn(CLIENTID);
         when(request.getParameter(OAuth2ParameterNames.REDIRECT_URI)).thenReturn(REDIRECT_URI);
         when(request.getParameter(OAuth2ParameterNames.SCOPE)).thenReturn("invalid");
@@ -255,7 +262,8 @@ public class AuthorizationEndpointRequestValidatorTest {
 
         HttpServletRequest request = mock(HttpServletRequest.class);
 
-        when(request.getParameter(OAuth2ParameterNames.RESPONSE_TYPE)).thenReturn("code");
+        when(request.getParameter(OAuth2ParameterNames.RESPONSE_TYPE))
+                .thenReturn(OAuth2Constants.ResponseType.CODE);
         when(request.getParameter(OAuth2ParameterNames.CLIENT_ID)).thenReturn(CLIENTID);
         when(request.getParameter(OAuth2ParameterNames.REDIRECT_URI)).thenReturn(REDIRECT_URI);
         when(request.getParameter(OAuth2ParameterNames.SCOPE)).thenReturn("read");

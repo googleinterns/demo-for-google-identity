@@ -30,7 +30,8 @@ public final class InvalidRequestException extends OAuth2Exception {
         NO_USER_CONSENT,
         INVALID_USER_CONSENT,
         NO_RESPONSE_TYPE,
-        UNSUPPORTED_REQUEST_METHOD
+        UNSUPPORTED_REQUEST_METHOD,
+        NON_URL_ENCODED_URI
     }
 
     private static final String INVALID_REQUEST = "invalid_request";
@@ -66,6 +67,8 @@ public final class InvalidRequestException extends OAuth2Exception {
                 return "Invalid user consent information!";
             case UNSUPPORTED_REQUEST_METHOD:
                 return "Request method is not supported!";
+            case NON_URL_ENCODED_URI:
+                return "URI is in invalid format!";
             default:
                 throw new IllegalArgumentException(String.valueOf(errorCode));
         }

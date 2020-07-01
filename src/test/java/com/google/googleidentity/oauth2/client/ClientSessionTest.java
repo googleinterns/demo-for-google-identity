@@ -20,6 +20,7 @@ import com.google.common.base.Charsets;
 import com.google.common.hash.Hashing;
 import static com.google.common.truth.Truth.assertThat;
 import com.google.googleidentity.oauth2.request.OAuth2Request;
+import com.google.googleidentity.oauth2.util.OAuth2Constants;
 import org.junit.jupiter.api.Test;
 
 import java.util.Optional;
@@ -45,7 +46,7 @@ public class ClientSessionTest {
                                 .hashString("111", Charsets.UTF_8).toString())
                         .addScopes("read")
                         .setIsScoped(true)
-                        .addGrantTypes("authorization")
+                        .addGrantTypes(OAuth2Constants.GrantType.AUTHORIZATION_CODE)
                         .addRedirectUris("http://localhost:8080/redirect")
                         .build();
 

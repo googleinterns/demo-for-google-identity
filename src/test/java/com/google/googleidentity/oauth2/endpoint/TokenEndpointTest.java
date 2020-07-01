@@ -25,6 +25,9 @@ import com.google.googleidentity.oauth2.client.ClientSession;
 import com.google.googleidentity.oauth2.client.InMemoryClientDetailsService;
 import com.google.googleidentity.oauth2.exception.InvalidRequestException;
 import com.google.googleidentity.oauth2.exception.OAuth2ExceptionHandler;
+import com.google.googleidentity.oauth2.request.OAuth2Request;
+import com.google.googleidentity.oauth2.util.OAuth2Constants;
+import com.google.googleidentity.oauth2.util.OAuth2ParameterNames;
 import com.google.googleidentity.security.UserSession;
 import com.google.googleidentity.testtools.FakeHttpSession;
 import com.google.googleidentity.user.UserDetails;
@@ -37,6 +40,9 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+
+import static com.google.common.truth.Truth.assertThat;
+import static com.google.common.truth.extensions.proto.ProtoTruth.assertThat;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -67,10 +73,10 @@ public class TokenEndpointTest {
                     .addScopes("read")
                     .setIsScoped(true)
                     .addRedirectUris(REDIRECT_URI)
-                    .addGrantTypes("authorization_code")
-                    .addGrantTypes("refresh_token")
-                    .addGrantTypes("urn:ietf:params:oauth:grant-type:jwt-bearer")
-                    .addGrantTypes("implicit")
+                    .addGrantTypes(OAuth2Constants.GrantType.AUTHORIZATION_CODE)
+                    .addGrantTypes(OAuth2Constants.GrantType.IMPLICIT)
+                    .addGrantTypes(OAuth2Constants.GrantType.JWT_ASSERTION)
+                    .addGrantTypes(OAuth2Constants.GrantType.REFRESH_TOKEN)
                     .build();
 
     private static final String USERNAME = "111";
@@ -117,6 +123,89 @@ public class TokenEndpointTest {
                 .toJSONString();
 
         Truth.assertThat(stringWriter.toString()).isEqualTo(expected + LINE);
+    }
+
+    @Test
+    public void testParseRequest_authCodeRequest() {
+        HttpServletRequest request = mock(HttpServletRequest.class);
+        FakeHttpSession httpSession = new FakeHttpSession();
+
+        httpSession.setAttribute("client_session", clientSession);
+
+        when(request.getParameter(OAuth2ParameterNames.GRANT_TYPE))
+                .thenReturn(OAuth2Constants.GrantType.AUTHORIZATION_CODE);
+        when(request.getParameter(OAuth2ParameterNames.CLIENT_ID)).thenReturn(CLIENTID);
+        when(request.getParameter(OAuth2ParameterNames.REDIRECT_URI)).thenReturn(REDIRECT_URI);
+        when(request.getParameter(OAuth2ParameterNames.CODE)).thenReturn("auth_code");
+        when(request.getSession()).thenReturn(httpSession);
+
+        OAuth2Request.Builder oauth2RequestBuilder = OAuth2Request.newBuilder();
+        oauth2RequestBuilder.getRequestAuthBuilder()
+                .setClientId(CLIENTID)
+                .setCode("auth_code");
+        oauth2RequestBuilder.getRequestBodyBuilder()
+                .setGrantType(OAuth2Constants.GrantType.AUTHORIZATION_CODE)
+                .setResponseType(OAuth2Constants.ResponseType.TOKEN);
+        oauth2RequestBuilder.getAuthorizationResponseBuilder().setRedirectUri(REDIRECT_URI);
+
+        assertThat(tokenEndpoint.parseOAuth2RequestFromHttpRequest(request))
+                .isEqualTo(oauth2RequestBuilder.build());
+    }
+
+    @Test
+    public void testParseRequest_RefreshTokenRequest() {
+        HttpServletRequest request = mock(HttpServletRequest.class);
+        FakeHttpSession httpSession = new FakeHttpSession();
+
+        httpSession.setAttribute("client_session", clientSession);
+
+        when(request.getParameter(OAuth2ParameterNames.GRANT_TYPE))
+                .thenReturn(OAuth2Constants.GrantType.REFRESH_TOKEN);
+        when(request.getParameter(OAuth2ParameterNames.REFRESH_TOKEN)).thenReturn("refresh_token");
+        when(request.getParameter(OAuth2ParameterNames.CLIENT_ID)).thenReturn(CLIENTID);
+        when(request.getParameter(OAuth2ParameterNames.SCOPE)).thenReturn("read");
+        when(request.getSession()).thenReturn(httpSession);
+
+        OAuth2Request.Builder oauth2RequestBuilder = OAuth2Request.newBuilder();
+        oauth2RequestBuilder.getRequestAuthBuilder()
+                .setClientId(CLIENTID);
+        oauth2RequestBuilder.getRequestBodyBuilder()
+                .setGrantType(OAuth2Constants.GrantType.REFRESH_TOKEN)
+                .setResponseType(OAuth2Constants.ResponseType.TOKEN)
+                .setRefreshToken("refresh_token");
+
+        assertThat(tokenEndpoint.parseOAuth2RequestFromHttpRequest(request))
+                .isEqualTo(oauth2RequestBuilder.build());
+    }
+
+    @Test
+    public void testParseRequest_JwtAssertion() {
+        HttpServletRequest request = mock(HttpServletRequest.class);
+        FakeHttpSession httpSession = new FakeHttpSession();
+
+        httpSession.setAttribute("client_session", clientSession);
+
+        when(request.getParameter(OAuth2ParameterNames.GRANT_TYPE))
+                .thenReturn(OAuth2Constants.GrantType.JWT_ASSERTION);
+        when(request.getParameter(OAuth2ParameterNames.INTENT))
+                .thenReturn(OAuth2Constants.JwtAssertionIntents.CREATE);
+        when(request.getParameter(OAuth2ParameterNames.ASSERTION)).thenReturn("assertion");
+        when(request.getParameter(OAuth2ParameterNames.SCOPE)).thenReturn("read");
+        when(request.getSession()).thenReturn(httpSession);
+
+        OAuth2Request.Builder oauth2RequestBuilder = OAuth2Request.newBuilder();
+        oauth2RequestBuilder.getRequestAuthBuilder()
+                .setClientId(CLIENTID);
+        oauth2RequestBuilder.getRequestBodyBuilder()
+                .setGrantType(OAuth2Constants.GrantType.JWT_ASSERTION)
+                .setAssertion("assertion")
+                .setIntent(OAuth2Constants.JwtAssertionIntents.CREATE)
+                .setResponseType(OAuth2Constants.ResponseType.TOKEN)
+                .setIsScoped(true)
+                .addScopes("read");
+
+        assertThat(tokenEndpoint.parseOAuth2RequestFromHttpRequest(request))
+                .isEqualTo(oauth2RequestBuilder.build());
     }
 
 }

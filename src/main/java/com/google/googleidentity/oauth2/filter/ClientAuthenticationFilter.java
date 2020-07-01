@@ -23,6 +23,7 @@ import com.google.googleidentity.oauth2.client.ClientDetails;
 import com.google.googleidentity.oauth2.client.ClientDetailsService;
 import com.google.googleidentity.oauth2.client.ClientSession;
 import com.google.googleidentity.oauth2.exception.*;
+import com.google.googleidentity.oauth2.util.OAuth2Constants;
 import com.google.googleidentity.oauth2.util.OAuth2ParameterNames;
 import com.google.googleidentity.oauth2.util.OAuth2Utils;
 import com.google.inject.Inject;
@@ -73,7 +74,7 @@ public final class ClientAuthenticationFilter implements Filter {
             }
 
             // Set client for jwt assertion
-            if (grantType.equals("urn:ietf:params:oauth:grant-type:jwt-bearer")) {
+            if (grantType.equals(OAuth2Constants.GrantType.JWT_ASSERTION)) {
                 ClientSession clientSession =
                         OAuth2Utils.getClientSession((HttpServletRequest) request);
                 clientSession.setClient(
@@ -105,11 +106,7 @@ public final class ClientAuthenticationFilter implements Filter {
                     "Failed in client Authentication." +
                             "Error Type: " + exception.getErrorType() +
                             "Description: " + exception.getErrorDescription());
-            ((HttpServletResponse)response).setStatus(exception.getHttpCode());
-            response.setContentType("application/json;charset=UTF-8");
-            response.getWriter().println(
-                    OAuth2ExceptionHandler.getResponseBody(exception).toJSONString());
-            response.getWriter().flush();
+            OAuth2ExceptionHandler.handle(exception, (HttpServletResponse) response);
         }
 
     }

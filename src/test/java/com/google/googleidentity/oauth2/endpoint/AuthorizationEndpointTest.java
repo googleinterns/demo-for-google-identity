@@ -22,6 +22,7 @@ import com.google.googleidentity.oauth2.client.ClientDetails;
 import com.google.googleidentity.oauth2.client.ClientDetailsService;
 import com.google.googleidentity.oauth2.client.InMemoryClientDetailsService;
 import com.google.googleidentity.oauth2.request.OAuth2Request;
+import com.google.googleidentity.oauth2.util.OAuth2Constants;
 import com.google.googleidentity.oauth2.util.OAuth2ParameterNames;
 import com.google.googleidentity.security.UserSession;
 import com.google.googleidentity.testtools.FakeHttpSession;
@@ -67,7 +68,7 @@ public class AuthorizationEndpointTest {
                     .addScopes("read")
                     .setIsScoped(true)
                     .addRedirectUris(REDIRECT_URI)
-                    .addGrantTypes("authorization_code")
+                    .addGrantTypes(OAuth2Constants.GrantType.AUTHORIZATION_CODE)
                     .build();
 
     private static final String USERNAME = "111";

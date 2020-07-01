@@ -21,6 +21,8 @@ import com.google.googleidentity.oauth2.util.OAuth2ParameterNames;
 import net.minidev.json.JSONObject;
 import org.apache.http.client.utils.URIBuilder;
 
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -37,7 +39,18 @@ public final class OAuth2ExceptionHandler {
     private static final String ERROR = "error";
 
     /**
-     * Used when return json error response
+     * Used to return json error response
+     */
+    public static void handle(OAuth2Exception exception, HttpServletResponse response)
+            throws IOException {
+        response.setStatus(exception.getHttpCode());
+        response.setContentType("application/json;charset=UTF-8");
+        response.getWriter().println(getResponseBody(exception).toJSONString());
+        response.getWriter().flush();
+    }
+
+    /**
+     * Used to get json error response
      */
     public static JSONObject getResponseBody(OAuth2Exception exception) {
         JSONObject json =  new JSONObject();

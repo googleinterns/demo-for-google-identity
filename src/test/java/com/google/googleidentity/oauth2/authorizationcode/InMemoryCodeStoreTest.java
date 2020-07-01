@@ -21,6 +21,7 @@ import com.google.googleidentity.oauth2.request.OAuth2Request;
 
 import java.util.Optional;
 
+import com.google.googleidentity.oauth2.util.OAuth2Constants;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -39,7 +40,7 @@ public class InMemoryCodeStoreTest {
                                     .setClientId(TEST_CODE))
                     .setRequestBody(
                             OAuth2Request.RequestBody.newBuilder()
-                                    .setResponseType("code"))
+                                    .setResponseType(OAuth2Constants.ResponseType.CODE))
                     .setAuthorizationResponse(
                             OAuth2Request.AuthorizationResponse.newBuilder()
                                     .setState(TEST_CODE))

@@ -26,6 +26,7 @@ import com.google.googleidentity.oauth2.exception.InvalidGrantException;
 import com.google.googleidentity.oauth2.exception.OAuth2Exception;
 import com.google.googleidentity.oauth2.exception.UnauthorizedClientException;
 import com.google.googleidentity.oauth2.exception.UnsupportedGrantTypeException;
+import com.google.googleidentity.oauth2.util.OAuth2Constants;
 import com.google.googleidentity.oauth2.util.OAuth2ParameterNames;
 import com.google.googleidentity.security.UserSession;
 import com.google.googleidentity.testtools.FakeHttpSession;
@@ -60,10 +61,10 @@ public class TokenEndpointRequestValidatorTest {
                     .addScopes("read")
                     .setIsScoped(true)
                     .addRedirectUris(REDIRECT_URI_REGEX)
-                    .addGrantTypes("authorization_code")
-                    .addGrantTypes("refresh_token")
-                    .addGrantTypes("urn:ietf:params:oauth:grant-type:jwt-bearer")
-                    .addGrantTypes("implicit")
+                    .addGrantTypes(OAuth2Constants.GrantType.AUTHORIZATION_CODE)
+                    .addGrantTypes(OAuth2Constants.GrantType.IMPLICIT)
+                    .addGrantTypes(OAuth2Constants.GrantType.JWT_ASSERTION)
+                    .addGrantTypes(OAuth2Constants.GrantType.REFRESH_TOKEN)
                     .build();
 
     private static final ClientDetails CLIENT1 =
@@ -74,7 +75,7 @@ public class TokenEndpointRequestValidatorTest {
                     .addScopes("read")
                     .setIsScoped(true)
                     .addRedirectUris(REDIRECT_URI_REGEX)
-                    .addGrantTypes("implicit")
+                    .addGrantTypes(OAuth2Constants.GrantType.IMPLICIT)
                     .build();
 
     private static final String USERNAME = "111";
@@ -131,7 +132,7 @@ public class TokenEndpointRequestValidatorTest {
         httpSession.setAttribute("client_session", clientSession);
 
         when(request.getParameter(OAuth2ParameterNames.GRANT_TYPE))
-                .thenReturn("implicit");
+                .thenReturn(OAuth2Constants.GrantType.IMPLICIT);
         when(request.getParameter(OAuth2ParameterNames.CLIENT_ID)).thenReturn(CLIENTID);
         when(request.getParameter(OAuth2ParameterNames.REDIRECT_URI)).thenReturn(REDIRECT_URI);
         when(request.getParameter(OAuth2ParameterNames.CODE)).thenReturn("auth_code");
@@ -164,7 +165,7 @@ public class TokenEndpointRequestValidatorTest {
         httpSession.setAttribute("client_session", clientSession1);
 
         when(request.getParameter(OAuth2ParameterNames.GRANT_TYPE))
-                .thenReturn("authorization_code");
+                .thenReturn(OAuth2Constants.GrantType.AUTHORIZATION_CODE);
         when(request.getParameter(OAuth2ParameterNames.CLIENT_ID)).thenReturn(CLIENTID);
         when(request.getParameter(OAuth2ParameterNames.REDIRECT_URI)).thenReturn(REDIRECT_URI);
         when(request.getParameter(OAuth2ParameterNames.CODE)).thenReturn("auth_code");
@@ -188,7 +189,7 @@ public class TokenEndpointRequestValidatorTest {
         httpSession.setAttribute("client_session", clientSession);
 
         when(request.getParameter(OAuth2ParameterNames.GRANT_TYPE))
-                .thenReturn("authorization_code");
+                .thenReturn(OAuth2Constants.GrantType.AUTHORIZATION_CODE);
         when(request.getParameter(OAuth2ParameterNames.CLIENT_ID)).thenReturn(CLIENTID);
         when(request.getParameter(OAuth2ParameterNames.REDIRECT_URI)).thenReturn(null);
         when(request.getParameter(OAuth2ParameterNames.CODE)).thenReturn("auth_code");
@@ -216,7 +217,7 @@ public class TokenEndpointRequestValidatorTest {
         httpSession.setAttribute("client_session", clientSession);
 
         when(request.getParameter(OAuth2ParameterNames.GRANT_TYPE))
-                .thenReturn("authorization_code");
+                .thenReturn(OAuth2Constants.GrantType.AUTHORIZATION_CODE);
         when(request.getParameter(OAuth2ParameterNames.CLIENT_ID)).thenReturn(CLIENTID);
         when(request.getParameter(OAuth2ParameterNames.REDIRECT_URI)).thenReturn(REDIRECT_URI);
         when(request.getParameter(OAuth2ParameterNames.CODE)).thenReturn(null);
@@ -243,7 +244,7 @@ public class TokenEndpointRequestValidatorTest {
         httpSession.setAttribute("client_session", clientSession);
 
         when(request.getParameter(OAuth2ParameterNames.GRANT_TYPE))
-                .thenReturn("authorization_code");
+                .thenReturn(OAuth2Constants.GrantType.AUTHORIZATION_CODE);
         when(request.getParameter(OAuth2ParameterNames.CLIENT_ID)).thenReturn(CLIENTID);
         when(request.getParameter(OAuth2ParameterNames.REDIRECT_URI)).thenReturn(REDIRECT_URI);
         when(request.getParameter(OAuth2ParameterNames.CODE)).thenReturn("auth_code");
@@ -263,7 +264,7 @@ public class TokenEndpointRequestValidatorTest {
         httpSession.setAttribute("client_session", clientSession);
 
         when(request.getParameter(OAuth2ParameterNames.GRANT_TYPE))
-                .thenReturn("refresh_token");
+                .thenReturn(OAuth2Constants.GrantType.REFRESH_TOKEN);
         when(request.getParameter(OAuth2ParameterNames.REFRESH_TOKEN)).thenReturn(null);
         when(request.getParameter(OAuth2ParameterNames.CLIENT_ID)).thenReturn(CLIENTID);
         when(request.getParameter(OAuth2ParameterNames.SCOPE)).thenReturn("read");
@@ -289,7 +290,7 @@ public class TokenEndpointRequestValidatorTest {
         httpSession.setAttribute("client_session", clientSession);
 
         when(request.getParameter(OAuth2ParameterNames.GRANT_TYPE))
-                .thenReturn("refresh_token");
+                .thenReturn(OAuth2Constants.GrantType.REFRESH_TOKEN);
         when(request.getParameter(OAuth2ParameterNames.REFRESH_TOKEN)).thenReturn("refresh_token");
         when(request.getParameter(OAuth2ParameterNames.CLIENT_ID)).thenReturn(CLIENTID);
         when(request.getParameter(OAuth2ParameterNames.SCOPE)).thenReturn("read");
@@ -309,7 +310,7 @@ public class TokenEndpointRequestValidatorTest {
         httpSession.setAttribute("client_session", clientSession);
 
         when(request.getParameter(OAuth2ParameterNames.GRANT_TYPE))
-                .thenReturn("urn:ietf:params:oauth:grant-type:jwt-bearer");
+                .thenReturn(OAuth2Constants.GrantType.JWT_ASSERTION);
         when(request.getParameter(OAuth2ParameterNames.INTENT)).thenReturn(null);
         when(request.getParameter(OAuth2ParameterNames.ASSERTION)).thenReturn("assertion");
         when(request.getParameter(OAuth2ParameterNames.SCOPE)).thenReturn("read");
@@ -335,7 +336,7 @@ public class TokenEndpointRequestValidatorTest {
         httpSession.setAttribute("client_session", clientSession);
 
         when(request.getParameter(OAuth2ParameterNames.GRANT_TYPE))
-                .thenReturn("urn:ietf:params:oauth:grant-type:jwt-bearer");
+                .thenReturn(OAuth2Constants.GrantType.JWT_ASSERTION);
         when(request.getParameter(OAuth2ParameterNames.INTENT)).thenReturn("unsupported");
         when(request.getParameter(OAuth2ParameterNames.ASSERTION)).thenReturn("assertion");
         when(request.getParameter(OAuth2ParameterNames.SCOPE)).thenReturn("read");
@@ -362,8 +363,9 @@ public class TokenEndpointRequestValidatorTest {
         httpSession.setAttribute("client_session", clientSession);
 
         when(request.getParameter(OAuth2ParameterNames.GRANT_TYPE))
-                .thenReturn("urn:ietf:params:oauth:grant-type:jwt-bearer");
-        when(request.getParameter(OAuth2ParameterNames.INTENT)).thenReturn("create");
+                .thenReturn(OAuth2Constants.GrantType.JWT_ASSERTION);
+        when(request.getParameter(OAuth2ParameterNames.INTENT))
+                .thenReturn(OAuth2Constants.JwtAssertionIntents.CREATE);
         when(request.getParameter(OAuth2ParameterNames.ASSERTION)).thenReturn(null);
         when(request.getParameter(OAuth2ParameterNames.SCOPE)).thenReturn("read");
         when(request.getSession()).thenReturn(httpSession);
@@ -388,8 +390,9 @@ public class TokenEndpointRequestValidatorTest {
         httpSession.setAttribute("client_session", clientSession);
 
         when(request.getParameter(OAuth2ParameterNames.GRANT_TYPE))
-                .thenReturn("urn:ietf:params:oauth:grant-type:jwt-bearer");
-        when(request.getParameter(OAuth2ParameterNames.INTENT)).thenReturn("create");
+                .thenReturn(OAuth2Constants.GrantType.JWT_ASSERTION);
+        when(request.getParameter(OAuth2ParameterNames.INTENT))
+                .thenReturn(OAuth2Constants.JwtAssertionIntents.CREATE);
         when(request.getParameter(OAuth2ParameterNames.ASSERTION)).thenReturn("assertion");
         when(request.getParameter(OAuth2ParameterNames.SCOPE)).thenReturn("read");
         when(request.getSession()).thenReturn(httpSession);
@@ -397,7 +400,5 @@ public class TokenEndpointRequestValidatorTest {
         assertDoesNotThrow(()-> TokenEndpointRequestValidator.validatePost(request));
 
     }
-
-
 
 }

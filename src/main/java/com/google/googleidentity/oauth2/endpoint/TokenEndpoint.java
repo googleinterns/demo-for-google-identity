@@ -23,6 +23,7 @@ import com.google.googleidentity.oauth2.exception.InvalidRequestException;
 import com.google.googleidentity.oauth2.exception.OAuth2Exception;
 import com.google.googleidentity.oauth2.exception.OAuth2ExceptionHandler;
 import com.google.googleidentity.oauth2.request.OAuth2Request;
+import com.google.googleidentity.oauth2.util.OAuth2Constants;
 import com.google.googleidentity.oauth2.util.OAuth2ParameterNames;
 import com.google.googleidentity.oauth2.util.OAuth2Utils;
 import com.google.googleidentity.oauth2.validator.TokenEndpointRequestValidator;
@@ -63,11 +64,8 @@ public class TokenEndpoint extends HttpServlet {
                 new InvalidRequestException(
                         InvalidRequestException.ErrorCode.UNSUPPORTED_REQUEST_METHOD);
         log.info("Token endpoint does not support GET request." );
-        response.setStatus(exception.getHttpCode());
-        response.setContentType("application/json;charset=UTF-8");
-        response.getWriter().println(
-                OAuth2ExceptionHandler.getResponseBody(exception).toJSONString());
-        response.getWriter().flush();
+        OAuth2ExceptionHandler.handle(exception, response);
+        return;
     }
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
@@ -79,11 +77,7 @@ public class TokenEndpoint extends HttpServlet {
                     "Failed in validating Post request in Token Endpoint." +
                             "Error Type: " + exception.getErrorType() +
                             "Description: " + exception.getErrorDescription());
-            response.setStatus(exception.getHttpCode());
-            response.setContentType("application/json;charset=UTF-8");
-            response.getWriter().println(
-                    OAuth2ExceptionHandler.getResponseBody(exception).toJSONString());
-            response.getWriter().flush();
+            OAuth2ExceptionHandler.handle(exception, response);
             return;
         }
 
@@ -93,7 +87,7 @@ public class TokenEndpoint extends HttpServlet {
     /**
      * Should be called after all validation in doPost function.
      */
-    private OAuth2Request parseOAuth2RequestFromHttpRequest(HttpServletRequest request) {
+    public OAuth2Request parseOAuth2RequestFromHttpRequest(HttpServletRequest request) {
 
         String grantType = request.getParameter(OAuth2ParameterNames.GRANT_TYPE);
 
@@ -102,10 +96,12 @@ public class TokenEndpoint extends HttpServlet {
                 "Client should have been set in client filter!");
 
         OAuth2Request.Builder oauth2RequestBuilder = OAuth2Request.newBuilder();
-        oauth2RequestBuilder.getRequestAuthBuilder().setClientId(
+        oauth2RequestBuilder.getRequestAuthBuilder()
+                .setClientId(
                             OAuth2Utils.getClientSession(request).getClient().get().getClientId());
+
         oauth2RequestBuilder.getRequestBodyBuilder()
-                .setGrantType(grantType).setResponseType("token");
+                .setGrantType(grantType).setResponseType(OAuth2Constants.ResponseType.TOKEN);
 
         if (grantType.equals("authorization_code")) {
             oauth2RequestBuilder.getRequestAuthBuilder().setCode(
@@ -116,22 +112,25 @@ public class TokenEndpoint extends HttpServlet {
                                 request.getParameter(OAuth2ParameterNames.REDIRECT_URI),
                                 "utf-8"));
             } catch (UnsupportedEncodingException e) {
-                // This should never happen.
+                // This should never happen, since we have validated it before
                 throw new IllegalStateException(
                         "URL should be valid", e);
             }
 
-        } else if (grantType.equals("refresh_token")) {
+        } else if (grantType.equals(OAuth2Constants.GrantType.REFRESH_TOKEN)) {
             oauth2RequestBuilder.getRequestBodyBuilder().setRefreshToken(
                     request.getParameter(OAuth2ParameterNames.REFRESH_TOKEN));
-        } else if (grantType.equals("urn:ietf:params:oauth:grant-type:jwt-bearer")) {
+        } else if (grantType.equals(OAuth2Constants.GrantType.JWT_ASSERTION)) {
             oauth2RequestBuilder.getRequestBodyBuilder()
                     .setIntent(request.getParameter(OAuth2ParameterNames.INTENT))
                     .setAssertion(request.getParameter(OAuth2ParameterNames.ASSERTION));
             if (!Strings.isNullOrEmpty(request.getParameter(OAuth2ParameterNames.SCOPE))) {
-                oauth2RequestBuilder.getAuthorizationResponseBuilder().setState(
-                        request.getParameter(OAuth2ParameterNames.SCOPE));
+                oauth2RequestBuilder.getRequestBodyBuilder()
+                        .setIsScoped(true).addAllScopes(
+                                OAuth2Utils.parseScope(
+                                        request.getParameter(OAuth2ParameterNames.SCOPE)));
             }
+            // Just used for test, will be removed later
             log.info("Assertion: " + request.getParameter(OAuth2ParameterNames.ASSERTION));
         }
         return oauth2RequestBuilder.build();

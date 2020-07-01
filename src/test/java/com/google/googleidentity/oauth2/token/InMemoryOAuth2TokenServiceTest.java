@@ -20,6 +20,7 @@ import com.google.common.base.Charsets;
 import com.google.common.hash.Hashing;
 import com.google.googleidentity.oauth2.client.ClientDetails;
 import com.google.googleidentity.oauth2.request.OAuth2Request;
+import com.google.googleidentity.oauth2.util.OAuth2Constants;
 import org.junit.Test;
 
 import java.util.Optional;
@@ -47,7 +48,7 @@ public class InMemoryOAuth2TokenServiceTest {
                     .addScopes("read")
                     .setIsScoped(true)
                     .addRedirectUris(REDIRECT_URI)
-                    .addGrantTypes("authorization_code")
+                    .addGrantTypes(OAuth2Constants.GrantType.AUTHORIZATION_CODE)
                     .build();
 
     private static final String USERNAME = "111";
@@ -63,9 +64,9 @@ public class InMemoryOAuth2TokenServiceTest {
                             OAuth2Request.RequestBody.newBuilder()
                                     .setIsScoped(true)
                                     .addAllScopes(CLIENT.getScopesList())
-                                    .setResponseType("token")
+                                    .setResponseType(OAuth2Constants.ResponseType.TOKEN)
                                     .setRefreshable(true)
-                                    .setGrantType("authorization_code")
+                                    .setGrantType(OAuth2Constants.GrantType.AUTHORIZATION_CODE)
                                     .build())
                     .build();
 
@@ -80,9 +81,9 @@ public class InMemoryOAuth2TokenServiceTest {
                             OAuth2Request.RequestBody.newBuilder()
                                     .setIsScoped(true)
                                     .addAllScopes(CLIENT.getScopesList())
-                                    .setResponseType("token")
+                                    .setResponseType(OAuth2Constants.ResponseType.TOKEN)
                                     .setRefreshable(false)
-                                    .setGrantType("implicit")
+                                    .setGrantType(OAuth2Constants.GrantType.IMPLICIT)
                                     .build())
                     .build();
 
