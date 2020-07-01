@@ -28,6 +28,7 @@ public final class OAuth2Constants {
         public static final String JWT_ASSERTION = "urn:ietf:params:oauth:grant-type:jwt-bearer";
     }
 
+
     public static final class ResponseType {
         public static final String TOKEN = "token";
         public static final String CODE = "code";
