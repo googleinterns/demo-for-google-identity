@@ -103,7 +103,7 @@ public class TokenEndpoint extends HttpServlet {
         oauth2RequestBuilder.getRequestBodyBuilder()
                 .setGrantType(grantType).setResponseType(OAuth2Constants.ResponseType.TOKEN);
 
-        if (grantType.equals("authorization_code")) {
+        if (grantType.equals(OAuth2Constants.GrantType.AUTHORIZATION_CODE)) {
             oauth2RequestBuilder.getRequestAuthBuilder().setCode(
                     request.getParameter(OAuth2ParameterNames.CODE));
             try {
