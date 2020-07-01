@@ -22,10 +22,7 @@ import com.google.googleidentity.oauth2.client.ClientDetails;
 import com.google.googleidentity.oauth2.client.ClientDetailsService;
 import com.google.googleidentity.oauth2.client.ClientSession;
 import com.google.googleidentity.oauth2.client.InMemoryClientDetailsService;
-import com.google.googleidentity.oauth2.exception.InvalidGrantException;
-import com.google.googleidentity.oauth2.exception.OAuth2Exception;
-import com.google.googleidentity.oauth2.exception.UnauthorizedClientException;
-import com.google.googleidentity.oauth2.exception.UnsupportedGrantTypeException;
+import com.google.googleidentity.oauth2.exception.*;
 import com.google.googleidentity.oauth2.util.OAuth2Constants;
 import com.google.googleidentity.oauth2.util.OAuth2ParameterNames;
 import com.google.googleidentity.security.UserSession;
@@ -124,7 +121,7 @@ public class TokenEndpointRequestValidatorTest {
 
 
     @Test
-    public void test_validatePost_ImplicitGrantType_throwInvalidGrantException() {
+    public void test_validatePost_ImplicitGrantType_throwInvalidRequestException() {
 
         HttpServletRequest request = mock(HttpServletRequest.class);
         FakeHttpSession httpSession = new FakeHttpSession();
@@ -144,7 +141,7 @@ public class TokenEndpointRequestValidatorTest {
                 ()-> TokenEndpointRequestValidator
                         .validatePost(request));
 
-        assertThat(e).isInstanceOf(InvalidGrantException.class);
+        assertThat(e).isInstanceOf(InvalidRequestException.class);
 
         assertThat(e.getErrorDescription()).isEqualTo(
                 "Implicit flow is not supported at token endpoint!");
@@ -181,7 +178,7 @@ public class TokenEndpointRequestValidatorTest {
     }
 
     @Test
-    public void test_validateAuthCodeRequest_noRedirectUri_throwInvalidGrantException() {
+    public void test_validateAuthCodeRequest_noRedirectUri_throwInvalidRequestException() {
 
         HttpServletRequest request = mock(HttpServletRequest.class);
         FakeHttpSession httpSession = new FakeHttpSession();
@@ -201,15 +198,15 @@ public class TokenEndpointRequestValidatorTest {
                 ()-> TokenEndpointRequestValidator
                         .validatePost(request));
 
-        assertThat(e).isInstanceOf(InvalidGrantException.class);
+        assertThat(e).isInstanceOf(InvalidRequestException.class);
 
-        assertThat(e.getErrorDescription()).isEqualTo("No redirect uri!");
+        assertThat(e.getErrorDescription()).isEqualTo("No Redirect Uri!");
 
     }
 
 
     @Test
-    public void test_validateAuthCodeRequest_noCode_throwInvalidGrantException() {
+    public void test_validateAuthCodeRequest_noCode_throwInvalidRequestException() {
 
         HttpServletRequest request = mock(HttpServletRequest.class);
         FakeHttpSession httpSession = new FakeHttpSession();
@@ -229,7 +226,7 @@ public class TokenEndpointRequestValidatorTest {
                 ()-> TokenEndpointRequestValidator
                         .validatePost(request));
 
-        assertThat(e).isInstanceOf(InvalidGrantException.class);
+        assertThat(e).isInstanceOf(InvalidRequestException.class);
 
         assertThat(e.getErrorDescription()).isEqualTo("No authorization code!");
 
@@ -256,7 +253,7 @@ public class TokenEndpointRequestValidatorTest {
     }
 
     @Test
-    public void test_validateRefreshTokenRequest_noRefreshToken_throwInvalidGrantException() {
+    public void test_validateRefreshTokenRequest_noRefreshToken_throwInvalidRequestException() {
 
         HttpServletRequest request = mock(HttpServletRequest.class);
         FakeHttpSession httpSession = new FakeHttpSession();
@@ -275,7 +272,7 @@ public class TokenEndpointRequestValidatorTest {
                 ()-> TokenEndpointRequestValidator
                         .validatePost(request));
 
-        assertThat(e).isInstanceOf(InvalidGrantException.class);
+        assertThat(e).isInstanceOf(InvalidRequestException.class);
 
         assertThat(e.getErrorDescription()).isEqualTo("No refresh_token!");
 
@@ -302,7 +299,7 @@ public class TokenEndpointRequestValidatorTest {
 
 
     @Test
-    public void test_validateJwtAssertion_noIntent_throwInvalidGrantException() {
+    public void test_validateJwtAssertion_noIntent_throwInvalidRequestException() {
 
         HttpServletRequest request = mock(HttpServletRequest.class);
         FakeHttpSession httpSession = new FakeHttpSession();
@@ -321,14 +318,14 @@ public class TokenEndpointRequestValidatorTest {
                 ()-> TokenEndpointRequestValidator
                         .validatePost(request));
 
-        assertThat(e).isInstanceOf(InvalidGrantException.class);
+        assertThat(e).isInstanceOf(InvalidRequestException.class);
 
         assertThat(e.getErrorDescription()).isEqualTo("No Intent!");
 
     }
 
     @Test
-    public void test_validateJwtAssertion_unsupportedIntent_throwInvalidGrantException() {
+    public void test_validateJwtAssertion_unsupportedIntent_throwInvalidRequestException() {
 
         HttpServletRequest request = mock(HttpServletRequest.class);
         FakeHttpSession httpSession = new FakeHttpSession();
@@ -347,7 +344,7 @@ public class TokenEndpointRequestValidatorTest {
                 ()-> TokenEndpointRequestValidator
                         .validatePost(request));
 
-        assertThat(e).isInstanceOf(InvalidGrantException.class);
+        assertThat(e).isInstanceOf(InvalidRequestException.class);
 
         assertThat(e.getErrorDescription()).isEqualTo("Unsupported intent!");
 
@@ -355,7 +352,7 @@ public class TokenEndpointRequestValidatorTest {
 
 
     @Test
-    public void test_validateJwtAssertion_noAssertion_throwInvalidGrantException() {
+    public void test_validateJwtAssertion_noAssertion_throwInvalidRequestException() {
 
         HttpServletRequest request = mock(HttpServletRequest.class);
         FakeHttpSession httpSession = new FakeHttpSession();
@@ -375,7 +372,7 @@ public class TokenEndpointRequestValidatorTest {
                 ()-> TokenEndpointRequestValidator
                         .validatePost(request));
 
-        assertThat(e).isInstanceOf(InvalidGrantException.class);
+        assertThat(e).isInstanceOf(InvalidRequestException.class);
 
         assertThat(e.getErrorDescription()).isEqualTo("No assertion!");
 

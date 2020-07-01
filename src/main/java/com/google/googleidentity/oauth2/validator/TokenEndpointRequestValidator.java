@@ -64,8 +64,8 @@ public class TokenEndpointRequestValidator {
         }
 
         if (grantType.equals(OAuth2Constants.GrantType.IMPLICIT)) {
-            throw new InvalidGrantException(
-                    InvalidGrantException.ErrorCode.IMPLICIT_GRANT_IN_TOKEN_ENDPOINT);
+            throw new InvalidRequestException(
+                    InvalidRequestException.ErrorCode.IMPLICIT_GRANT_IN_TOKEN_ENDPOINT);
         }
 
         if (!client.getGrantTypesList().contains(grantType)) {
@@ -88,7 +88,8 @@ public class TokenEndpointRequestValidator {
 
     private static void validateAuthCodeRequest(HttpServletRequest request) throws OAuth2Exception {
         if (Strings.isNullOrEmpty(request.getParameter(OAuth2ParameterNames.REDIRECT_URI))) {
-            throw new InvalidGrantException(InvalidGrantException.ErrorCode.NO_REDIRECT_URI);
+            throw new InvalidRequestException(
+                    InvalidRequestException.ErrorCode.NO_REDIRECT_URI);
         }
         try {
             URLDecoder.decode(request.getParameter(OAuth2ParameterNames.REDIRECT_URI), "utf-8");
@@ -97,28 +98,33 @@ public class TokenEndpointRequestValidator {
                     InvalidRequestException.ErrorCode.NON_URL_ENCODED_URI);
         }
         if (Strings.isNullOrEmpty(request.getParameter(OAuth2ParameterNames.CODE))) {
-            throw new InvalidGrantException(InvalidGrantException.ErrorCode.NO_AUTHORIZATION_CODE);
+            throw new InvalidRequestException(
+                    InvalidRequestException.ErrorCode.NO_AUTHORIZATION_CODE);
         }
     }
 
     private static void validateRefreshTokenRequest(HttpServletRequest request)
             throws OAuth2Exception {
         if (Strings.isNullOrEmpty(request.getParameter(OAuth2ParameterNames.REFRESH_TOKEN))) {
-            throw new InvalidGrantException(InvalidGrantException.ErrorCode.NO_REFRESH_TOKEN);
+            throw new InvalidRequestException(
+                    InvalidRequestException.ErrorCode.NO_REFRESH_TOKEN);
         }
     }
 
     private static void validateJwtAssertion(HttpServletRequest request) throws OAuth2Exception {
         String intent = request.getParameter(OAuth2ParameterNames.INTENT);
         if (Strings.isNullOrEmpty(intent)) {
-            throw new InvalidGrantException(InvalidGrantException.ErrorCode.NO_INTENT);
+            throw new InvalidRequestException(
+                    InvalidRequestException.ErrorCode.NO_INTENT);
         }
 
         if (!supportedIntents.contains(intent)) {
-            throw new InvalidGrantException(InvalidGrantException.ErrorCode.UNSUPPORTED_INTENT);
+            throw new InvalidRequestException(
+                    InvalidRequestException.ErrorCode.UNSUPPORTED_INTENT);
         }
         if (Strings.isNullOrEmpty(request.getParameter(OAuth2ParameterNames.ASSERTION))) {
-            throw new InvalidGrantException(InvalidGrantException.ErrorCode.NO_ASSERTION);
+            throw new InvalidRequestException(
+                    InvalidRequestException.ErrorCode.NO_ASSERTION);
         }
     }
 }

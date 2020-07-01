@@ -126,12 +126,11 @@ public class TokenEndpoint extends HttpServlet {
                     .setAssertion(request.getParameter(OAuth2ParameterNames.ASSERTION));
             if (!Strings.isNullOrEmpty(request.getParameter(OAuth2ParameterNames.SCOPE))) {
                 oauth2RequestBuilder.getRequestBodyBuilder()
-                        .setIsScoped(true).addAllScopes(
+                        .setIsScoped(true)
+                        .addAllScopes(
                                 OAuth2Utils.parseScope(
                                         request.getParameter(OAuth2ParameterNames.SCOPE)));
             }
-            // Just used for test, will be removed later
-            log.info("Assertion: " + request.getParameter(OAuth2ParameterNames.ASSERTION));
         }
         return oauth2RequestBuilder.build();
     }

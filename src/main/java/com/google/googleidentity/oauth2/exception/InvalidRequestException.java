@@ -31,7 +31,13 @@ public final class InvalidRequestException extends OAuth2Exception {
         INVALID_USER_CONSENT,
         NO_RESPONSE_TYPE,
         UNSUPPORTED_REQUEST_METHOD,
-        NON_URL_ENCODED_URI
+        NON_URL_ENCODED_URI,
+        IMPLICIT_GRANT_IN_TOKEN_ENDPOINT,
+        NO_AUTHORIZATION_CODE,
+        NO_REFRESH_TOKEN,
+        NO_INTENT,
+        NO_ASSERTION,
+        UNSUPPORTED_INTENT
     }
 
     private static final String INVALID_REQUEST = "invalid_request";
@@ -69,6 +75,18 @@ public final class InvalidRequestException extends OAuth2Exception {
                 return "Request method is not supported!";
             case NON_URL_ENCODED_URI:
                 return "URI is in invalid format!";
+            case IMPLICIT_GRANT_IN_TOKEN_ENDPOINT:
+                return "Implicit flow is not supported at token endpoint!";
+            case NO_AUTHORIZATION_CODE:
+                return "No authorization code!";
+            case NO_REFRESH_TOKEN:
+                return "No refresh_token!";
+            case NO_INTENT:
+                return "No Intent!";
+            case NO_ASSERTION:
+                return "No assertion!";
+            case UNSUPPORTED_INTENT:
+                return "Unsupported intent!";
             default:
                 throw new IllegalArgumentException(String.valueOf(errorCode));
         }
