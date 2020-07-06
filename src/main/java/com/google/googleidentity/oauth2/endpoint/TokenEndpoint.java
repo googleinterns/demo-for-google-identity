@@ -23,11 +23,13 @@ import com.google.googleidentity.oauth2.exception.InvalidRequestException;
 import com.google.googleidentity.oauth2.exception.OAuth2Exception;
 import com.google.googleidentity.oauth2.exception.OAuth2ExceptionHandler;
 import com.google.googleidentity.oauth2.request.OAuth2Request;
+import com.google.googleidentity.oauth2.request.RequestHandler;
 import com.google.googleidentity.oauth2.util.OAuth2Constants;
 import com.google.googleidentity.oauth2.util.OAuth2ParameterNames;
 import com.google.googleidentity.oauth2.util.OAuth2Utils;
 import com.google.googleidentity.oauth2.validator.TokenEndpointRequestValidator;
 import com.google.inject.Inject;
+import com.google.inject.Provider;
 import com.google.inject.Singleton;
 
 import javax.servlet.ServletException;
@@ -51,10 +53,14 @@ public class TokenEndpoint extends HttpServlet {
 
     private final ClientDetailsService clientDetailsService;
 
+    private final Provider<RequestHandler> requestHandler;
 
     @Inject
-    public TokenEndpoint(ClientDetailsService clientDetailsService) {
+    public TokenEndpoint(
+            ClientDetailsService clientDetailsService,
+            Provider<RequestHandler> requestHandler) {
         this.clientDetailsService = clientDetailsService;
+        this.requestHandler = requestHandler;
     }
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -82,6 +88,16 @@ public class TokenEndpoint extends HttpServlet {
         }
 
         OAuth2Request oauth2Request = parseOAuth2RequestFromHttpRequest(request);
+
+        try {
+            requestHandler.get().handle(response, oauth2Request);
+        } catch (OAuth2Exception exception) {
+            log.info(
+                    "Failed when process request in Token Endpoint" +
+                            "Error Type: " + exception.getErrorType() +
+                            "Description: " + exception.getErrorDescription());
+            OAuth2ExceptionHandler.handle(exception, response);
+        }
     }
 
     /**

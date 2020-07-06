@@ -28,7 +28,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * {@link CodeStore}
  */
 @Singleton
-final class InMemoryCodeStore implements CodeStore {
+public final class InMemoryCodeStore implements CodeStore {
 
     private final ConcurrentHashMap<String, OAuth2Request> codeStore
             = new ConcurrentHashMap<>();

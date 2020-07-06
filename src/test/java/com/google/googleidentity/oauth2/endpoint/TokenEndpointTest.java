@@ -19,18 +19,26 @@ package com.google.googleidentity.oauth2.endpoint;
 import com.google.common.base.Charsets;
 import com.google.common.hash.Hashing;
 import com.google.common.truth.Truth;
+import com.google.googleidentity.oauth2.authorizationcode.AuthorizationCodeService;
+import com.google.googleidentity.oauth2.authorizationcode.InMemoryCodeStore;
 import com.google.googleidentity.oauth2.client.ClientDetails;
 import com.google.googleidentity.oauth2.client.ClientDetailsService;
 import com.google.googleidentity.oauth2.client.ClientSession;
 import com.google.googleidentity.oauth2.client.InMemoryClientDetailsService;
 import com.google.googleidentity.oauth2.exception.InvalidRequestException;
 import com.google.googleidentity.oauth2.exception.OAuth2ExceptionHandler;
+import com.google.googleidentity.oauth2.request.DefaultRequestHandlerProvider;
 import com.google.googleidentity.oauth2.request.OAuth2Request;
+import com.google.googleidentity.oauth2.request.RequestHandler;
+import com.google.googleidentity.oauth2.token.InMemoryOAuth2TokenService;
 import com.google.googleidentity.oauth2.util.OAuth2Constants;
 import com.google.googleidentity.oauth2.util.OAuth2ParameterNames;
 import com.google.googleidentity.security.UserSession;
 import com.google.googleidentity.testtools.FakeHttpSession;
+import com.google.googleidentity.user.InMemoryUserDetailsService;
 import com.google.googleidentity.user.UserDetails;
+import com.google.googleidentity.user.UserDetailsService;
+import com.google.inject.Provider;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -41,7 +49,6 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 
-import static com.google.common.truth.Truth.assertThat;
 import static com.google.common.truth.extensions.proto.ProtoTruth.assertThat;
 
 import static org.mockito.Mockito.mock;
@@ -93,13 +100,23 @@ public class TokenEndpointTest {
 
     @Before
     public void init() {
+
         ClientDetailsService clientDetailsService = new InMemoryClientDetailsService();
         clientDetailsService.addClient(CLIENT);
+        UserDetailsService userDetailsService = new InMemoryUserDetailsService();
+        userDetailsService.addUser(USER);
         userSession = new UserSession();
         userSession.setUser(USER);
         clientSession = new ClientSession();
         clientSession.setClient(CLIENT);
-        tokenEndpoint = new TokenEndpoint(clientDetailsService);
+        System.setProperty("AUTH_CODE_LENGTH", "10");
+        Provider<RequestHandler> provider =
+                new DefaultRequestHandlerProvider(
+                        new AuthorizationCodeService(new InMemoryCodeStore()),
+                        new InMemoryOAuth2TokenService(),
+                        userDetailsService,
+                        clientDetailsService);
+        tokenEndpoint = new TokenEndpoint(clientDetailsService, provider);
     }
 
     @Test

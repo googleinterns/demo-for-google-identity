@@ -29,7 +29,7 @@ import static com.google.common.truth.Truth8.assertThat;
  */
 public class InMemoryUserDetailsServiceTest {
 
-    private static final String USERNAME = "usernames";
+    private static final String USERNAME = "username";
     private static final String PASSWORD = "password";
 
     private static final UserDetails USER =
@@ -93,7 +93,7 @@ public class InMemoryUserDetailsServiceTest {
 
         assertTrue(userDetailsService.addUser(USER));
 
-        assertTrue(userDetailsService.getUserByName("111").isPresent());
+        assertTrue(userDetailsService.getUserByName(USERNAME).isPresent());
 
     }
 

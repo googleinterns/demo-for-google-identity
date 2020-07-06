@@ -26,11 +26,13 @@ import com.google.googleidentity.oauth2.exception.InvalidRequestException;
 import com.google.googleidentity.oauth2.exception.OAuth2ExceptionHandler;
 import com.google.googleidentity.oauth2.exception.OAuth2Exception;
 import com.google.googleidentity.oauth2.request.OAuth2Request;
+import com.google.googleidentity.oauth2.request.RequestHandler;
 import com.google.googleidentity.oauth2.util.OAuth2Constants;
 import com.google.googleidentity.oauth2.util.OAuth2ParameterNames;
 import com.google.googleidentity.oauth2.util.OAuth2Utils;
 import com.google.googleidentity.oauth2.validator.AuthorizationEndpointRequestValidator;
 import com.google.inject.Inject;
+import com.google.inject.Provider;
 import com.google.inject.Singleton;
 
 import javax.servlet.ServletException;
@@ -55,10 +57,14 @@ public final class AuthorizationEndpoint extends HttpServlet {
 
     private final ClientDetailsService clientDetailsService;
 
+    private final Provider<RequestHandler> requestHandler;
 
     @Inject
-    public AuthorizationEndpoint(ClientDetailsService clientDetailsService) {
+    public AuthorizationEndpoint(
+            ClientDetailsService clientDetailsService,
+            Provider<RequestHandler> requestHandler) {
         this.clientDetailsService = clientDetailsService;
+        this.requestHandler = requestHandler;
     }
 
 
@@ -123,6 +129,21 @@ public final class AuthorizationEndpoint extends HttpServlet {
                 OAuth2ExceptionHandler.handle(exception, response);
             }
             return;
+        }
+
+        Preconditions.checkArgument(
+                OAuth2Utils.getClientSession(request).getRequest().isPresent(),
+                "Request should have been checked in validation");
+
+        try {
+            requestHandler.get().handle(
+                    response, OAuth2Utils.getClientSession(request).getRequest().get());
+        } catch (OAuth2Exception exception) {
+            log.info(
+                    "Failed when process request in Authorization Endpoint" +
+                            "Error Type: " + exception.getErrorType() +
+                            "Description: " + exception.getErrorDescription());
+            OAuth2ExceptionHandler.handle(exception, response);
         }
     }
 

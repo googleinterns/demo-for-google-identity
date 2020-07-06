@@ -14,24 +14,14 @@
     limitations under the License.
 */
 
-package com.google.googleidentity.oauth2.config;
+package com.google.googleidentity.oauth2.request;
 
-import com.google.googleidentity.oauth2.authorizationcode.AuthorizationCodeModule;
-import com.google.googleidentity.oauth2.request.RequestHandler;
-import com.google.googleidentity.oauth2.request.RequestHandlerModule;
-import com.google.googleidentity.oauth2.token.TokenModule;
 import com.google.inject.AbstractModule;
 
-/**
- * Module for OAuth2Server
- */
-public class OAuth2ServerModule extends AbstractModule {
+public class RequestHandlerModule extends AbstractModule {
 
     @Override
     protected void configure(){
-        install(new AuthorizationCodeModule());
-        install(new TokenModule());
-        install(new RequestHandlerModule());
+        bind(RequestHandler.class).toProvider(DefaultRequestHandlerProvider.class);
     }
-
 }

@@ -34,8 +34,7 @@ public final class OAuth2GuiceServletContextListener extends GuiceServletContext
                 new OAuth2Module(),
                 new OAuth2ServerModule(),
                 new TestUserModule(),
-                new TestClientModule(),
-                new TokenModule());
+                new TestClientModule());
     }
 
 }

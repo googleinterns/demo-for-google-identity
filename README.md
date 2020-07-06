@@ -31,19 +31,26 @@ Apache header:
 ## Current Progress
 
 Finish Basic Login Filter using Guice-Servlet
-Finish Basic AuthorizationEndpoint and ApprovalEndpoint(currently no code or token will return)
+Finish Basic AuthorizationEndpoin, ConsentEndpoint and TokenEndpoint.
+
+Only Authorization Code Flow is workable now.
 
 In memory user information storage with sha256 based hashing on password.
 In memory client information storage with sha256 based hashing on secret.
 
 Two test user added:
-username	password
-user		123456
-user1 		12345678
+ 
+ username	password 
+ 
+ user		123456 
+ 
+ user1 		12345678 
 
 One test client added:
-ClientID	secret      scope    redirect_uri
-google		123456       read     http://www.google.com 
+ 
+ClientID	secret      scope      redirect_uri 
+
+google		123456       read     http://www.google.com  
 
 The project can be reached at
 
@@ -52,6 +59,8 @@ Login Page: http://gal-2020-summer-intern.appspot.com/login
 Resource Page: http://gal-2020-summer-intern.appspot.com/resource/user
 
 Authorization Endpoint: http://gal-2020-summer-intern.appspot.com/oauth2/authorize
+
+Token Endpoint: http://gal-2020-summer-intern.appspot.com/oauth2/authorize
 
 All resources under /resource is protected(currently only have /resource/user)
 
