@@ -18,10 +18,10 @@ package com.google.googleidentity.oauth2.token;
 
 import com.google.inject.AbstractModule;
 
-public class TokenModule extends AbstractModule{
+public class TokenModule extends AbstractModule {
 
     @Override
-    protected void configure(){
+    protected void configure() {
         bind(OAuth2TokenService.class).to(InMemoryOAuth2TokenService.class);
     }
 }

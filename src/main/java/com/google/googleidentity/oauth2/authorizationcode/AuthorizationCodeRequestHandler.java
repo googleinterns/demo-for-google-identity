@@ -48,15 +48,15 @@ public class AuthorizationCodeRequestHandler implements RequestHandler {
     private final OAuth2TokenService oauth2TokenService;
 
     @Inject
-    public AuthorizationCodeRequestHandler(AuthorizationCodeService authorizationCodeService,
-                                           OAuth2TokenService oauth2TokenService) {
+    public AuthorizationCodeRequestHandler(
+            AuthorizationCodeService authorizationCodeService,
+            OAuth2TokenService oauth2TokenService) {
         this.authorizationCodeService = authorizationCodeService;
         this.oauth2TokenService = oauth2TokenService;
     }
 
     @Override
-    public void handle(
-            HttpServletResponse response, OAuth2Request oauth2Request)
+    public void handle(HttpServletResponse response, OAuth2Request oauth2Request)
             throws IOException, OAuth2Exception {
         if (oauth2Request.getRequestBody().getResponseType()
                 .equals(OAuth2Constants.ResponseType.CODE)) {

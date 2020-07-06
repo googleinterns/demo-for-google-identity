@@ -29,7 +29,7 @@ public class MultipleRequestHandler implements RequestHandler {
 
     private Map<String, RequestHandler> requestHandlerMap;
 
-    public MultipleRequestHandler(Map<String, RequestHandler> requestHandlerMap){
+    public MultipleRequestHandler(Map<String, RequestHandler> requestHandlerMap) {
         this.requestHandlerMap = requestHandlerMap;
     }
 

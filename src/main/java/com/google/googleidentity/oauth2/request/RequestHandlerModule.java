@@ -21,7 +21,7 @@ import com.google.inject.AbstractModule;
 public class RequestHandlerModule extends AbstractModule {
 
     @Override
-    protected void configure(){
+    protected void configure() {
         bind(RequestHandler.class).toProvider(DefaultRequestHandlerProvider.class);
     }
 }

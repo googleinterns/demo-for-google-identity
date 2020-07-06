@@ -45,7 +45,7 @@ public class DefaultRequestHandlerProvider implements Provider<RequestHandler> {
     public DefaultRequestHandlerProvider(AuthorizationCodeService authorizationCodeService,
                                   OAuth2TokenService oauth2TokenService,
                                   UserDetailsService userDetailsService,
-                                  ClientDetailsService clientDetailsService){
+                                  ClientDetailsService clientDetailsService) {
         this.authorizationCodeService = authorizationCodeService;
         this.oauth2TokenService = oauth2TokenService;
         this.userDetailsService = userDetailsService;
