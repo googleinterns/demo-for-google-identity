@@ -52,7 +52,7 @@ One test client added:
  
 ClientID	secret      scope      redirect_uri 
 
-google		123456       read     http://www.google.com  
+google		secret       read     http://www.google.com  
 
 The project can be reached at
 
