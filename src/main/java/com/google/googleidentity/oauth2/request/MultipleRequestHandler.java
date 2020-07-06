@@ -17,6 +17,7 @@
 package com.google.googleidentity.oauth2.request;
 
 import com.google.googleidentity.oauth2.exception.OAuth2Exception;
+import com.google.googleidentity.oauth2.exception.UnsupportedGrantTypeException;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -35,8 +36,12 @@ public class MultipleRequestHandler implements RequestHandler {
 
     public void handle(HttpServletResponse response, OAuth2Request oauth2Request)
             throws IOException, OAuth2Exception {
-        requestHandlerMap.get(oauth2Request.getRequestBody().getGrantType())
-                .handle(response, oauth2Request);
+        if (requestHandlerMap.containsKey(oauth2Request.getRequestBody().getGrantType())) {
+            requestHandlerMap.get(oauth2Request.getRequestBody().getGrantType())
+                    .handle(response, oauth2Request);
+        } else {
+            throw new UnsupportedGrantTypeException();
+        }
     }
 
 }
