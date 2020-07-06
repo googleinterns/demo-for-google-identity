@@ -26,6 +26,7 @@ import com.google.googleidentity.oauth2.exception.InvalidScopeException;
 import com.google.googleidentity.oauth2.exception.AccessDeniedException;
 import com.google.googleidentity.oauth2.exception.UnauthorizedClientException;
 import com.google.googleidentity.oauth2.exception.UnsupportedResponseTypeException;
+import com.google.googleidentity.oauth2.util.OAuth2Constants;
 import com.google.googleidentity.oauth2.util.OAuth2ParameterNames;
 import com.google.googleidentity.oauth2.util.OAuth2Utils;
 
@@ -69,7 +70,8 @@ public class AuthorizationEndpointRequestValidator {
         try {
             redirectUri = URLDecoder.decode(redirectUri, "utf-8");
         } catch (UnsupportedEncodingException e) {
-            //we always process a encoded uri here in a get request
+            throw new InvalidRequestException(
+                    InvalidRequestException.ErrorCode.NON_URL_ENCODED_URI);
         }
 
         if (!OAuth2Utils.matchUri(client.get().getRedirectUrisList(), redirectUri)) {
@@ -99,7 +101,8 @@ public class AuthorizationEndpointRequestValidator {
 
         if (Strings.isNullOrEmpty(responseType)) {
             throw new InvalidRequestException(InvalidRequestException.ErrorCode.NO_RESPONSE_TYPE);
-        } else if (!responseType.equals("token") && !responseType.equals("code")) {
+        } else if (!responseType.equals(OAuth2Constants.ResponseType.CODE)
+                && !responseType.equals(OAuth2Constants.ResponseType.TOKEN)) {
             throw new UnsupportedResponseTypeException();
         }
 

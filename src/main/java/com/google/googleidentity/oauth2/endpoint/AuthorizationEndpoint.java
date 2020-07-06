@@ -26,6 +26,7 @@ import com.google.googleidentity.oauth2.exception.InvalidRequestException;
 import com.google.googleidentity.oauth2.exception.OAuth2ExceptionHandler;
 import com.google.googleidentity.oauth2.exception.OAuth2Exception;
 import com.google.googleidentity.oauth2.request.OAuth2Request;
+import com.google.googleidentity.oauth2.util.OAuth2Constants;
 import com.google.googleidentity.oauth2.util.OAuth2ParameterNames;
 import com.google.googleidentity.oauth2.util.OAuth2Utils;
 import com.google.googleidentity.oauth2.validator.AuthorizationEndpointRequestValidator;
@@ -71,11 +72,7 @@ public final class AuthorizationEndpoint extends HttpServlet {
                     "Failed in validating client and redirect URI in Authorization Endpoint." +
                     "Error Type: " + exception.getErrorType() +
                     "Description: " + exception.getErrorDescription());
-            response.setStatus(exception.getHttpCode());
-            response.setContentType("application/json;charset=UTF-8");
-            response.getWriter().println(
-                    OAuth2ExceptionHandler.getResponseBody(exception).toJSONString());
-            response.getWriter().flush();
+            OAuth2ExceptionHandler.handle(exception, response);
             return;
         }
 
@@ -123,11 +120,7 @@ public final class AuthorizationEndpoint extends HttpServlet {
                         "Failed in validating Post request in Authorization Endpoint." +
                                 "Error Type: " + exception.getErrorType() +
                                 "Description: " + exception.getErrorDescription());
-                response.setStatus(exception.getHttpCode());
-                response.setContentType("application/json;charset=UTF-8");
-                response.getWriter().println(
-                        OAuth2ExceptionHandler.getResponseBody(exception).toJSONString());
-                response.getWriter().flush();
+                OAuth2ExceptionHandler.handle(exception, response);
             }
             return;
         }
@@ -183,7 +176,9 @@ public final class AuthorizationEndpoint extends HttpServlet {
                                         .setIsScoped(!scope.isEmpty())
                                         .addAllScopes(scope)
                                         .setResponseType(responseType)
-                                        .setRefreshable(responseType.equals("code"))
+                                        .setRefreshable(
+                                                responseType.equals(
+                                                        OAuth2Constants.ResponseType.CODE))
                                         .setGrantType(
                                                 OAuth2Utils.getGrantTypeFromResponseType(
                                                         responseType))

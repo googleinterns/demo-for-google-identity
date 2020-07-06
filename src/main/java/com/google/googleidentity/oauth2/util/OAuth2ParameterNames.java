@@ -33,5 +33,15 @@ public final class OAuth2ParameterNames {
 
     public static final String SCOPE = "scope";
 
+    public static final String GRANT_TYPE = "grant_type";
+
+    public static final String CODE = "code";
+
+    public static final String REFRESH_TOKEN = "refresh_token";
+
+    public static final String INTENT = "intent";
+
+    public static final String ASSERTION = "assertion";
+
     private OAuth2ParameterNames() {}
 }

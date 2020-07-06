@@ -19,6 +19,7 @@ package com.google.googleidentity.oauth2.token;
 import com.google.common.base.Charsets;
 import com.google.common.hash.Hashing;
 import com.google.googleidentity.oauth2.client.ClientDetails;
+import com.google.googleidentity.oauth2.util.OAuth2Constants;
 import org.junit.Test;
 
 import java.time.Instant;
@@ -28,8 +29,8 @@ import static com.google.common.truth.Truth8.assertThat;
 import static com.google.common.truth.Truth.assertThat;
 
 public class UserTokensTest {
-    private static final String CLIENTID = "111";
-    private static final String SECRET = "111";
+    private static final String CLIENTID = "clientid";
+    private static final String SECRET = "secret";
     private static final String REDIRECT_URI = "http://www.google.com";
 
     private static final ClientDetails CLIENT =
@@ -40,7 +41,7 @@ public class UserTokensTest {
                     .addScopes("read")
                     .setIsScoped(true)
                     .addRedirectUris(REDIRECT_URI)
-                    .addGrantTypes("authorization_code")
+                    .addGrantTypes(OAuth2Constants.GrantType.AUTHORIZATION_CODE)
                     .build();
 
     private static final String USERNAME = "111";

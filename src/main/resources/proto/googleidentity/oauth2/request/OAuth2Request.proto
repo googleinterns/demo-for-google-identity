@@ -57,6 +57,18 @@ message OAuth2Request {
 
         // Refresh token for refresh token request
         string refresh_token = 6;
+
+        // Jwt assertion
+        string assertion = 7;
+
+        // Jwt assertion intent
+        string intent = 8;
+
+        // Token need to revoke
+        string token_to_revoke = 9;
+
+        // Revoke token type hint
+        string token_type_hint = 10;
     }
 
     RequestBody request_body = 2;

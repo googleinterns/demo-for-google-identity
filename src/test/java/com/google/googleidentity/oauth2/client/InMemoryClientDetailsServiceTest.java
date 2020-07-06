@@ -29,7 +29,7 @@ import static com.google.common.truth.Truth8.assertThat;
  */
 public class InMemoryClientDetailsServiceTest {
 
-    private static final String CLIENTID = "111";
+    private static final String CLIENTID = "client";
     private static final String SECRET = "111";
 
     private static final ClientDetails CLIENT =

@@ -22,6 +22,7 @@ import com.google.googleidentity.oauth2.client.ClientDetails;
 import com.google.googleidentity.oauth2.client.ClientDetailsService;
 import com.google.googleidentity.oauth2.client.InMemoryClientDetailsService;
 import com.google.googleidentity.oauth2.request.OAuth2Request;
+import com.google.googleidentity.oauth2.util.OAuth2Constants;
 import com.google.googleidentity.oauth2.util.OAuth2ParameterNames;
 import com.google.googleidentity.security.UserSession;
 import com.google.googleidentity.testtools.FakeHttpSession;
@@ -55,7 +56,7 @@ public class AuthorizationEndpointTest {
 
     private UserSession userSession;
 
-    private static final String CLIENTID = "111";
+    private static final String CLIENTID = "client";
     private static final String SECRET = "111";
     private static final String REDIRECT_URI = "http://www.google.com";
 
@@ -67,11 +68,11 @@ public class AuthorizationEndpointTest {
                     .addScopes("read")
                     .setIsScoped(true)
                     .addRedirectUris(REDIRECT_URI)
-                    .addGrantTypes("authorization_code")
+                    .addGrantTypes(OAuth2Constants.GrantType.AUTHORIZATION_CODE)
                     .build();
 
-    private static final String USERNAME = "111";
-    private static final String PASSWORD = "111";
+    private static final String USERNAME = "usernames";
+    private static final String PASSWORD = "password";
 
     private static final UserDetails USER =
             UserDetails.newBuilder()
@@ -83,7 +84,7 @@ public class AuthorizationEndpointTest {
     private AuthorizationEndpoint authorizationEndpoint = null;
 
     @Before
-    public void init(){
+    public void init() {
         ClientDetailsService clientDetailsService = new InMemoryClientDetailsService();
         clientDetailsService.addClient(CLIENT);
         userSession = new UserSession();
