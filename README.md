@@ -31,20 +31,22 @@ Apache header:
 ## Current Progress
 
 Finish Basic Login Filter using Guice-Servlet
+
 Finish Basic AuthorizationEndpoin, ConsentEndpoint and TokenEndpoint.
 
 Only Authorization Code Flow is workable now.
 
 In memory user information storage with sha256 based hashing on password.
+
 In memory client information storage with sha256 based hashing on secret.
 
 Two test user added:
  
- username	password 
+username	password 
  
- user		123456 
+user		123456 
  
- user1 		12345678 
+user1 		12345678 
 
 One test client added:
  
