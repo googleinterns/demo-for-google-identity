@@ -20,6 +20,8 @@ import com.google.googleidentity.oauth2.authorizationcode.AuthorizationCodeReque
 import com.google.googleidentity.oauth2.authorizationcode.AuthorizationCodeService;
 import com.google.googleidentity.oauth2.client.ClientDetailsService;
 import com.google.googleidentity.oauth2.token.OAuth2TokenService;
+import com.google.googleidentity.oauth2.util.OAuth2Constants;
+import com.google.googleidentity.oauth2.util.OAuth2ParameterNames;
 import com.google.googleidentity.user.UserDetailsService;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
@@ -56,7 +58,7 @@ public class DefaultRequestHandlerProvider implements Provider<RequestHandler> {
     @Singleton
     public RequestHandler get() {
         Map<String, RequestHandler> tokenProcessorMap = new HashMap<>();
-        tokenProcessorMap.put("authorization_code",
+        tokenProcessorMap.put(OAuth2Constants.GrantType.AUTHORIZATION_CODE,
                 new AuthorizationCodeRequestHandler(
                         authorizationCodeService,
                         oauth2TokenService));
