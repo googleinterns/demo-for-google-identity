@@ -17,6 +17,7 @@
 package com.google.googleidentity.config;
 
 
+import com.google.googleidentity.filter.OAuth2TokenAuthenticationFilter;
 import com.google.googleidentity.filter.UserAuthenticationFilter;
 import com.google.googleidentity.oauth2.endpoint.AuthorizationEndpoint;
 import com.google.googleidentity.oauth2.endpoint.ConsentEndpoint;
@@ -53,6 +54,8 @@ public final class OAuth2Module extends AbstractModule {
                         .with(ConsentEndpoint.class);
                 serve("/oauth2/token")
                         .with(TokenEndpoint.class);
+                filterRegex("/resource/.*")
+                        .through(OAuth2TokenAuthenticationFilter.class);
                 filterRegex(
                         "/oauth2/authorize",
                         "/resource/.*")
