@@ -23,9 +23,7 @@ import com.google.googleidentity.oauth2.client.ClientDetailsService;
 import com.google.googleidentity.oauth2.client.InMemoryClientDetailsService;
 import com.google.googleidentity.oauth2.exception.InvalidGrantException;
 import com.google.googleidentity.oauth2.exception.OAuth2Exception;
-import com.google.googleidentity.oauth2.request.DefaultRequestHandlerProvider;
 import com.google.googleidentity.oauth2.request.OAuth2Request;
-import com.google.googleidentity.oauth2.request.RequestHandler;
 import com.google.googleidentity.oauth2.token.InMemoryOAuth2TokenService;
 import com.google.googleidentity.oauth2.token.OAuth2AccessToken;
 import com.google.googleidentity.oauth2.token.OAuth2RefreshToken;
@@ -36,7 +34,6 @@ import com.google.googleidentity.security.UserSession;
 import com.google.googleidentity.user.InMemoryUserDetailsService;
 import com.google.googleidentity.user.UserDetails;
 import com.google.googleidentity.user.UserDetailsService;
-import com.google.inject.Provider;
 import net.minidev.json.JSONObject;
 import net.minidev.json.parser.JSONParser;
 import net.minidev.json.parser.ParseException;
@@ -60,6 +57,9 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.verify;
 
+/**
+ * Tests for {@link AuthorizationCodeRequestHandler}
+ */
 public class AuthorizationCodeRequestHandlerTest {
 
     private UserSession userSession;

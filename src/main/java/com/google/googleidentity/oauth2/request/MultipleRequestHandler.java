@@ -22,6 +22,9 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Map;
 
+/**
+ * Make multiple grant type available.
+ */
 public class MultipleRequestHandler implements RequestHandler {
 
     private Map<String, RequestHandler> requestHandlerMap;

@@ -16,7 +16,6 @@
 
 package com.google.googleidentity.oauth2.authorizationcode;
 
-import com.google.common.base.Preconditions;
 import com.google.googleidentity.oauth2.exception.InvalidGrantException;
 import com.google.googleidentity.oauth2.exception.OAuth2Exception;
 import com.google.googleidentity.oauth2.request.OAuth2Request;
@@ -25,22 +24,21 @@ import com.google.googleidentity.oauth2.token.OAuth2AccessToken;
 import com.google.googleidentity.oauth2.token.OAuth2TokenService;
 import com.google.googleidentity.oauth2.util.OAuth2Constants;
 import com.google.googleidentity.oauth2.util.OAuth2ParameterNames;
-import com.google.googleidentity.oauth2.util.OAuth2Utils;
 import com.google.inject.Inject;
 import net.minidev.json.JSONObject;
 import org.apache.http.client.utils.URIBuilder;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.time.Instant;
-import java.util.Date;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+/**
+ * An Implementation of {@link RequestHandler}, handle request in Authorization Code Flow.
+ */
 public class AuthorizationCodeRequestHandler implements RequestHandler {
 
     private final AuthorizationCodeService authorizationCodeService;
