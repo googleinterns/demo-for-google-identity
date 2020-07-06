@@ -59,7 +59,7 @@ public class TokenEndpointTest {
 
     private ClientSession clientSession;
 
-    private static final String CLIENTID = "111";
+    private static final String CLIENTID = "client";
     private static final String SECRET = "111";
     private static final String REDIRECT_URI = "http://www.google.com";
 
@@ -79,8 +79,8 @@ public class TokenEndpointTest {
                     .addGrantTypes(OAuth2Constants.GrantType.REFRESH_TOKEN)
                     .build();
 
-    private static final String USERNAME = "111";
-    private static final String PASSWORD = "111";
+    private static final String USERNAME = "usernames";
+    private static final String PASSWORD = "password";
 
     private static final UserDetails USER =
             UserDetails.newBuilder()

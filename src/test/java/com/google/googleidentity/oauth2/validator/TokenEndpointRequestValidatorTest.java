@@ -45,8 +45,8 @@ public class TokenEndpointRequestValidatorTest {
     private ClientDetailsService clientDetailsService;
 
 
-    private static final String CLIENTID = "111";
-    private static final String SECRET = "111";
+    private static final String CLIENTID = "google";
+    private static final String SECRET = "secret";
     private static final String REDIRECT_URI_REGEX= "http://www.google.com/";
     private static final String REDIRECT_URI= "http://www.google.com/123";
 

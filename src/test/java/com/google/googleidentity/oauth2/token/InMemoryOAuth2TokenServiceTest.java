@@ -36,7 +36,7 @@ import static com.google.common.truth.extensions.proto.ProtoTruth.assertThat;
  */
 public class InMemoryOAuth2TokenServiceTest {
 
-    private static final String CLIENTID = "111";
+    private static final String CLIENTID = "client";
     private static final String SECRET = "111";
     private static final String REDIRECT_URI = "http://www.google.com";
 

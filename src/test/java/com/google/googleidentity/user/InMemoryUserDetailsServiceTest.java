@@ -29,8 +29,8 @@ import static com.google.common.truth.Truth8.assertThat;
  */
 public class InMemoryUserDetailsServiceTest {
 
-    private static final String USERNAME = "111";
-    private static final String PASSWORD = "111";
+    private static final String USERNAME = "usernames";
+    private static final String PASSWORD = "password";
 
     private static final UserDetails USER =
             UserDetails.newBuilder()

@@ -30,7 +30,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.Set;
 
-public class TokenEndpointRequestValidator {
+public final class TokenEndpointRequestValidator {
 
     private static final Set<String> supportedGrantTypes =
             ImmutableSet.of(
@@ -56,30 +56,32 @@ public class TokenEndpointRequestValidator {
         Preconditions.checkArgument(
                 !Strings.isNullOrEmpty(request.getParameter(OAuth2ParameterNames.GRANT_TYPE)),
                 "Grant type is not null since it has been checked in ClientAuthentication Filter");
-        //
+
         String grantType = request.getParameter(OAuth2ParameterNames.GRANT_TYPE);
 
-        if (!supportedGrantTypes.contains(grantType)) {
-            throw new UnsupportedGrantTypeException();
-        }
-
-        if (grantType.equals(OAuth2Constants.GrantType.IMPLICIT)) {
-            throw new InvalidRequestException(
-                    InvalidRequestException.ErrorCode.IMPLICIT_GRANT_IN_TOKEN_ENDPOINT);
-        }
-
-        if (!client.getGrantTypesList().contains(grantType)) {
-            throw new UnauthorizedClientException();
-        }
-
         switch (grantType) {
+            case OAuth2Constants.GrantType.IMPLICIT:
+                if (!client.getGrantTypesList().contains(grantType)) {
+                    throw new UnauthorizedClientException();
+                }
+                throw new InvalidRequestException(
+                        InvalidRequestException.ErrorCode.IMPLICIT_GRANT_IN_TOKEN_ENDPOINT);
             case OAuth2Constants.GrantType.AUTHORIZATION_CODE:
+                if (!client.getGrantTypesList().contains(grantType)) {
+                    throw new UnauthorizedClientException();
+                }
                 validateAuthCodeRequest(request);
                 break;
             case OAuth2Constants.GrantType.REFRESH_TOKEN:
+                if (!client.getGrantTypesList().contains(grantType)) {
+                    throw new UnauthorizedClientException();
+                }
                 validateRefreshTokenRequest(request);
                 break;
             case OAuth2Constants.GrantType.JWT_ASSERTION:
+                if (!client.getGrantTypesList().contains(grantType)) {
+                    throw new UnauthorizedClientException();
+                }
                 validateJwtAssertion(request);
                 break;
             default: throw new UnsupportedGrantTypeException();

@@ -29,8 +29,8 @@ import static com.google.common.truth.Truth8.assertThat;
 import static com.google.common.truth.Truth.assertThat;
 
 public class UserTokensTest {
-    private static final String CLIENTID = "111";
-    private static final String SECRET = "111";
+    private static final String CLIENTID = "clientid";
+    private static final String SECRET = "secret";
     private static final String REDIRECT_URI = "http://www.google.com";
 
     private static final ClientDetails CLIENT =

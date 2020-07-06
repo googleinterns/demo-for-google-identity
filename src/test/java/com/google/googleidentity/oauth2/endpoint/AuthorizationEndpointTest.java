@@ -56,7 +56,7 @@ public class AuthorizationEndpointTest {
 
     private UserSession userSession;
 
-    private static final String CLIENTID = "111";
+    private static final String CLIENTID = "client";
     private static final String SECRET = "111";
     private static final String REDIRECT_URI = "http://www.google.com";
 
@@ -71,8 +71,8 @@ public class AuthorizationEndpointTest {
                     .addGrantTypes(OAuth2Constants.GrantType.AUTHORIZATION_CODE)
                     .build();
 
-    private static final String USERNAME = "111";
-    private static final String PASSWORD = "111";
+    private static final String USERNAME = "usernames";
+    private static final String PASSWORD = "password";
 
     private static final UserDetails USER =
             UserDetails.newBuilder()

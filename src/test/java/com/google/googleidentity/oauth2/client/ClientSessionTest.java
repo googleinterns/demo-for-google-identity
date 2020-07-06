@@ -41,7 +41,7 @@ public class ClientSessionTest {
 
         ClientDetails client =
                 ClientDetails.newBuilder()
-                        .setClientId("111")
+                        .setClientId("client")
                         .setSecret(Hashing.sha256()
                                 .hashString("111", Charsets.UTF_8).toString())
                         .addScopes("read")
