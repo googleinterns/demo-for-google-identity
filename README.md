@@ -32,7 +32,7 @@ Apache header:
 
 Finish Basic Login Filter using Guice-Servlet
 
-Finish Basic AuthorizationEndpoin, ConsentEndpoint and TokenEndpoint.
+Finish Basic AuthorizationEndpoint, ConsentEndpoint and TokenEndpoint.
 
 Only Authorization Code Flow is workable now.
 
