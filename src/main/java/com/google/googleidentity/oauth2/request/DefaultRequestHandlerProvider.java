@@ -58,7 +58,8 @@ public class DefaultRequestHandlerProvider implements Provider<RequestHandler> {
     @Singleton
     public RequestHandler get() {
         Map<String, RequestHandler> tokenProcessorMap = new HashMap<>();
-        tokenProcessorMap.put(OAuth2Constants.GrantType.AUTHORIZATION_CODE,
+        tokenProcessorMap.put(
+                OAuth2Constants.GrantType.AUTHORIZATION_CODE,
                 new AuthorizationCodeRequestHandler(
                         authorizationCodeService,
                         oauth2TokenService));
