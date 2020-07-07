@@ -214,7 +214,7 @@ public class AuthorizationCodeRequestHandlerTest {
   }
 
   @Test
-  public void testHandleTokenRequest_correctRequest_returnToken()
+  public void testHandleTokenRequest_correctRequest_returnTokenAndDeleteCode()
       throws IOException, ParseException {
     HttpServletResponse response = mock(HttpServletResponse.class);
 
@@ -230,6 +230,8 @@ public class AuthorizationCodeRequestHandlerTest {
     builder.getRequestAuthBuilder().setCode(code);
 
     assertDoesNotThrow(() -> authorizationCodeRequestHandler.handle(response, builder.build()));
+
+    assertThat(authorizationCodeService.consumeCode(code)).isEmpty();
 
     JSONObject json =
         (JSONObject) new JSONParser(JSONParser.MODE_PERMISSIVE).parse(stringWriter.toString());
@@ -271,6 +273,7 @@ public class AuthorizationCodeRequestHandlerTest {
     assertThat(refreshToken).isPresent();
 
     assertThat(refreshToken.get()).comparingExpectedFieldsOnly().isEqualTo(expectedRefreshToken);
+
   }
 
   @Test
