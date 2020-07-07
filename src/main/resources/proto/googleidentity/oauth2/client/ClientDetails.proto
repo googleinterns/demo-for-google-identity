@@ -26,8 +26,16 @@ message ClientDetails {
 
     string secret = 2;
 
+    enum GrantType {
+        NONE = 0;
+        AUTHORIZATION_CODE = 1;
+        IMPLICIT = 2;
+        REFRESH_TOKEN = 3;
+        JWT_ASSERTION = 4;
+    }
+
     // The OAuth 2.0 grant types that are permitted by this client.
-    repeated string grant_types = 3;
+    repeated GrantType grant_types = 3;
 
     // Whether scopes for this client is limited
     bool is_scoped = 4;

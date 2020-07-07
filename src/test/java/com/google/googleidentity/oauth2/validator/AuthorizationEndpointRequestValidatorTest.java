@@ -67,7 +67,7 @@ public class AuthorizationEndpointRequestValidatorTest {
                     .addScopes("read")
                     .setIsScoped(true)
                     .addRedirectUris(REDIRECT_URI_REGEX)
-                    .addGrantTypes(OAuth2Constants.GrantType.AUTHORIZATION_CODE)
+                    .addGrantTypes(ClientDetails.GrantType.AUTHORIZATION_CODE)
                     .build();
 
     private static final String USERNAME = "usernames";

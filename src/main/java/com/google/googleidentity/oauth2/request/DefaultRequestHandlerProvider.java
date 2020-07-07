@@ -30,6 +30,9 @@ import com.google.inject.Singleton;
 import java.util.HashMap;
 import java.util.Map;
 
+
+import static com.google.googleidentity.oauth2.request.OAuth2Request.RequestBody.GrantType;
+
 /**
  * Default request handler provider, will contain all type of handlers
  */
@@ -57,9 +60,9 @@ public class DefaultRequestHandlerProvider implements Provider<RequestHandler> {
     @Override
     @Singleton
     public RequestHandler get() {
-        Map<String, RequestHandler> tokenProcessorMap = new HashMap<>();
+        Map<GrantType, RequestHandler> tokenProcessorMap = new HashMap<>();
         tokenProcessorMap.put(
-                OAuth2Constants.GrantType.AUTHORIZATION_CODE,
+                OAuth2Request.RequestBody.GrantType.AUTHORIZATION_CODE,
                 new AuthorizationCodeRequestHandler(
                         authorizationCodeService,
                         oauth2TokenService));

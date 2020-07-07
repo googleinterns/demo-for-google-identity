@@ -46,7 +46,7 @@ public class ClientSessionTest {
                                 .hashString("111", Charsets.UTF_8).toString())
                         .addScopes("read")
                         .setIsScoped(true)
-                        .addGrantTypes(OAuth2Constants.GrantType.AUTHORIZATION_CODE)
+                        .addGrantTypes(ClientDetails.GrantType.AUTHORIZATION_CODE)
                         .addRedirectUris("http://localhost:8080/redirect")
                         .build();
 

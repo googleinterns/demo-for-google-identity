@@ -59,7 +59,7 @@ public class AuthorizationCodeRequestHandler implements RequestHandler {
     public void handle(HttpServletResponse response, OAuth2Request oauth2Request)
             throws IOException, OAuth2Exception {
         if (oauth2Request.getRequestBody().getResponseType()
-                .equals(OAuth2Constants.ResponseType.CODE)) {
+                .equals(OAuth2Request.RequestBody.ResponseType.CODE)) {
             String code = authorizationCodeService.getCodeForRequest(oauth2Request);
 
             try {
@@ -76,7 +76,8 @@ public class AuthorizationCodeRequestHandler implements RequestHandler {
                 log.log(Level.INFO, "Error when parse redirect uri to return auth code!", e);
             }
 
-        } else {
+        } else if (oauth2Request.getRequestBody().getResponseType()
+                .equals(OAuth2Request.RequestBody.ResponseType.TOKEN)) {
             Optional<OAuth2Request> opRequest =
                     authorizationCodeService.consumeCode(oauth2Request.getRequestAuth().getCode());
             if (!opRequest.isPresent()) {

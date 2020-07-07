@@ -106,7 +106,18 @@ public class AuthorizationEndpointRequestValidator {
             throw new UnsupportedResponseTypeException();
         }
 
-        String grantType = OAuth2Utils.getGrantTypeFromResponseType(responseType);
+        ClientDetails.GrantType grantType = ClientDetails.GrantType.NONE;
+
+        switch (OAuth2Utils.getGrantTypeFromResponseType(responseType)) {
+            case OAuth2Constants.GrantType.AUTHORIZATION_CODE:
+                grantType = ClientDetails.GrantType.AUTHORIZATION_CODE;
+                break;
+            case OAuth2Constants.GrantType.IMPLICIT:
+                grantType = ClientDetails.GrantType.IMPLICIT;
+            default:
+                // Never happen
+                break;
+        }
 
         if (!client.getGrantTypesList().contains(grantType)) {
             throw new UnauthorizedClientException();

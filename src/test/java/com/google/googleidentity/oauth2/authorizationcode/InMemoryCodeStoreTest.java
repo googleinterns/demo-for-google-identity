@@ -40,7 +40,7 @@ public class InMemoryCodeStoreTest {
                                     .setClientId(TEST_CODE))
                     .setRequestBody(
                             OAuth2Request.RequestBody.newBuilder()
-                                    .setResponseType(OAuth2Constants.ResponseType.CODE))
+                                    .setResponseType(OAuth2Request.RequestBody.ResponseType.CODE))
                     .setAuthorizationResponse(
                             OAuth2Request.AuthorizationResponse.newBuilder()
                                     .setState(TEST_CODE))

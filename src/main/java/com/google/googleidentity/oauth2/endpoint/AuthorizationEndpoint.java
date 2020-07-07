@@ -22,9 +22,7 @@ import com.google.common.collect.ImmutableSet;
 import com.google.googleidentity.oauth2.client.ClientDetails;
 import com.google.googleidentity.oauth2.client.ClientDetailsService;
 import com.google.googleidentity.oauth2.client.ClientSession;
-import com.google.googleidentity.oauth2.exception.InvalidRequestException;
-import com.google.googleidentity.oauth2.exception.OAuth2ExceptionHandler;
-import com.google.googleidentity.oauth2.exception.OAuth2Exception;
+import com.google.googleidentity.oauth2.exception.*;
 import com.google.googleidentity.oauth2.request.OAuth2Request;
 import com.google.googleidentity.oauth2.request.RequestHandler;
 import com.google.googleidentity.oauth2.util.OAuth2Constants;
@@ -44,6 +42,9 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.Set;
 import java.util.logging.Logger;
+
+import static com.google.googleidentity.oauth2.request.OAuth2Request.RequestBody.GrantType;
+import static com.google.googleidentity.oauth2.request.OAuth2Request.RequestBody.ResponseType;
 
 /**
  * Demo AuthorizationEndpoint for OAuth2 Server
@@ -183,27 +184,41 @@ public final class AuthorizationEndpoint extends HttpServlet {
                 OAuth2Utils.getUserSession(request).getUser().isPresent(),
                 "User should have logged in");
 
-        OAuth2Request.Builder oauth2RequestBuilder =
-                OAuth2Request.newBuilder()
-                        .setRequestAuth(
-                                OAuth2Request.RequestAuth.newBuilder()
-                                        .setClientId(client.getClientId())
-                                        .setUsername(
-                                                OAuth2Utils.getUserSession(request).getUser().get()
-                                                        .getUsername())
-                                        .build())
-                        .setRequestBody(
-                                OAuth2Request.RequestBody.newBuilder()
-                                        .setIsScoped(!scope.isEmpty())
-                                        .addAllScopes(scope)
-                                        .setResponseType(responseType)
-                                        .setRefreshable(
-                                                responseType.equals(
-                                                        OAuth2Constants.ResponseType.CODE))
-                                        .setGrantType(
-                                                OAuth2Utils.getGrantTypeFromResponseType(
-                                                        responseType))
-                                        .build());
+        OAuth2Request.Builder oauth2RequestBuilder = OAuth2Request.newBuilder();
+        oauth2RequestBuilder.getRequestAuthBuilder()
+                .setClientId(client.getClientId())
+                .setUsername(
+                        OAuth2Utils.getUserSession(request).getUser().get()
+                                .getUsername());
+        oauth2RequestBuilder.getRequestBodyBuilder()
+                .setIsScoped(!scope.isEmpty())
+                .addAllScopes(scope);
+        switch (responseType) {
+            case OAuth2Constants.ResponseType.CODE:
+                oauth2RequestBuilder.getRequestBodyBuilder().setResponseType(ResponseType.CODE);
+                break;
+            case OAuth2Constants.ResponseType.TOKEN:
+                oauth2RequestBuilder.getRequestBodyBuilder().setResponseType(ResponseType.TOKEN);
+            default:
+                // Will never happen since we have validated it
+                break;
+        }
+
+        switch (OAuth2Utils.getGrantTypeFromResponseType(responseType)) {
+            case OAuth2Constants.GrantType.AUTHORIZATION_CODE:
+                oauth2RequestBuilder.getRequestBodyBuilder()
+                        .setGrantType(GrantType.AUTHORIZATION_CODE)
+                        .setRefreshable(true);
+                break;
+            case OAuth2Constants.GrantType.IMPLICIT:
+                oauth2RequestBuilder.getRequestBodyBuilder()
+                        .setGrantType(GrantType.IMPLICIT)
+                        .setRefreshable(false);
+                break;
+            default:
+                // Will never happen since we have validated it
+                break;
+        }
 
         oauth2RequestBuilder.getAuthorizationResponseBuilder()
                 .setRedirectUri(redirectUri);

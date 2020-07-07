@@ -48,7 +48,7 @@ public class InMemoryOAuth2TokenServiceTest {
                     .addScopes("read")
                     .setIsScoped(true)
                     .addRedirectUris(REDIRECT_URI)
-                    .addGrantTypes(OAuth2Constants.GrantType.AUTHORIZATION_CODE)
+                    .addGrantTypes(ClientDetails.GrantType.AUTHORIZATION_CODE)
                     .build();
 
     private static final String USERNAME = "111";
@@ -64,9 +64,10 @@ public class InMemoryOAuth2TokenServiceTest {
                             OAuth2Request.RequestBody.newBuilder()
                                     .setIsScoped(true)
                                     .addAllScopes(CLIENT.getScopesList())
-                                    .setResponseType(OAuth2Constants.ResponseType.TOKEN)
+                                    .setResponseType(OAuth2Request.RequestBody.ResponseType.TOKEN)
                                     .setRefreshable(true)
-                                    .setGrantType(OAuth2Constants.GrantType.AUTHORIZATION_CODE)
+                                    .setGrantType(
+                                            OAuth2Request.RequestBody.GrantType.AUTHORIZATION_CODE)
                                     .build())
                     .build();
 
@@ -81,9 +82,9 @@ public class InMemoryOAuth2TokenServiceTest {
                             OAuth2Request.RequestBody.newBuilder()
                                     .setIsScoped(true)
                                     .addAllScopes(CLIENT.getScopesList())
-                                    .setResponseType(OAuth2Constants.ResponseType.TOKEN)
+                                    .setResponseType(OAuth2Request.RequestBody.ResponseType.TOKEN)
                                     .setRefreshable(false)
-                                    .setGrantType(OAuth2Constants.GrantType.IMPLICIT)
+                                    .setGrantType(OAuth2Request.RequestBody.GrantType.IMPLICIT)
                                     .build())
                     .build();
 

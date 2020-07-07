@@ -40,11 +40,26 @@ message OAuth2Request {
     RequestAuth request_auth = 1;
 
     message RequestBody{
+
+        enum ResponseType {
+             EMPTY = 0;
+             CODE = 1;
+             TOKEN = 2;
+        }
+
         // Request response type
-        string response_type = 1;
+        ResponseType response_type = 1;
+
+        enum GrantType {
+            NONE = 0;
+            AUTHORIZATION_CODE = 1;
+            IMPLICIT = 2;
+            REFRESH_TOKEN = 3;
+            JWT_ASSERTION = 4;
+        }
 
         // Request grant type
-        string grant_type = 2;
+        GrantType grant_type = 2;
 
         // Whether request scoped is limited
         bool is_scoped = 3;
@@ -67,8 +82,13 @@ message OAuth2Request {
         // Token need to revoke
         string token_to_revoke = 9;
 
+        enum TokenType {
+            ACCESS = 0;
+            REFRESH = 1;
+        }
+
         // Revoke token type hint
-        string token_type_hint = 10;
+        TokenType token_type_hint = 10;
     }
 
     RequestBody request_body = 2;

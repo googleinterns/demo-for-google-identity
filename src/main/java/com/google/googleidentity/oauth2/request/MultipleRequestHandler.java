@@ -23,14 +23,16 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Map;
 
+import static com.google.googleidentity.oauth2.request.OAuth2Request.RequestBody.GrantType;
+
 /**
  * Make multiple grant type available.
  */
 public class MultipleRequestHandler implements RequestHandler {
 
-    private Map<String, RequestHandler> requestHandlerMap;
+    private Map<GrantType, RequestHandler> requestHandlerMap;
 
-    public MultipleRequestHandler(Map<String, RequestHandler> requestHandlerMap) {
+    public MultipleRequestHandler(Map<GrantType, RequestHandler> requestHandlerMap) {
         this.requestHandlerMap = requestHandlerMap;
     }
 

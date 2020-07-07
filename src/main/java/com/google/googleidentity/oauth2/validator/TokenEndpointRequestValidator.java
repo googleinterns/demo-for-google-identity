@@ -61,25 +61,26 @@ public final class TokenEndpointRequestValidator {
 
         switch (grantType) {
             case OAuth2Constants.GrantType.IMPLICIT:
-                if (!client.getGrantTypesList().contains(grantType)) {
+                if (!client.getGrantTypesList().contains(ClientDetails.GrantType.IMPLICIT)) {
                     throw new UnauthorizedClientException();
                 }
                 throw new InvalidRequestException(
                         InvalidRequestException.ErrorCode.IMPLICIT_GRANT_IN_TOKEN_ENDPOINT);
             case OAuth2Constants.GrantType.AUTHORIZATION_CODE:
-                if (!client.getGrantTypesList().contains(grantType)) {
+                if (!client.getGrantTypesList()
+                        .contains(ClientDetails.GrantType.AUTHORIZATION_CODE)) {
                     throw new UnauthorizedClientException();
                 }
                 validateAuthCodeRequest(request);
                 break;
             case OAuth2Constants.GrantType.REFRESH_TOKEN:
-                if (!client.getGrantTypesList().contains(grantType)) {
+                if (!client.getGrantTypesList().contains(ClientDetails.GrantType.REFRESH_TOKEN)) {
                     throw new UnauthorizedClientException();
                 }
                 validateRefreshTokenRequest(request);
                 break;
             case OAuth2Constants.GrantType.JWT_ASSERTION:
-                if (!client.getGrantTypesList().contains(grantType)) {
+                if (!client.getGrantTypesList().contains(ClientDetails.GrantType.JWT_ASSERTION)) {
                     throw new UnauthorizedClientException();
                 }
                 validateJwtAssertion(request);

@@ -17,6 +17,7 @@
 package com.google.googleidentity.oauth2.validator;
 
 import com.google.common.base.Charsets;
+import com.google.common.collect.ImmutableList;
 import com.google.common.hash.Hashing;
 import com.google.googleidentity.oauth2.client.ClientDetails;
 import com.google.googleidentity.oauth2.client.ClientDetailsService;
@@ -50,6 +51,12 @@ public class TokenEndpointRequestValidatorTest {
     private static final String REDIRECT_URI_REGEX= "http://www.google.com/";
     private static final String REDIRECT_URI= "http://www.google.com/123";
 
+    private static final ImmutableList<ClientDetails.GrantType> TESTGRANTTYPES = ImmutableList.of(
+            ClientDetails.GrantType.AUTHORIZATION_CODE,
+            ClientDetails.GrantType.IMPLICIT,
+            ClientDetails.GrantType.REFRESH_TOKEN,
+            ClientDetails.GrantType.JWT_ASSERTION);
+
     private static final ClientDetails CLIENT =
             ClientDetails.newBuilder()
                     .setClientId(CLIENTID)
@@ -58,10 +65,7 @@ public class TokenEndpointRequestValidatorTest {
                     .addScopes("read")
                     .setIsScoped(true)
                     .addRedirectUris(REDIRECT_URI_REGEX)
-                    .addGrantTypes(OAuth2Constants.GrantType.AUTHORIZATION_CODE)
-                    .addGrantTypes(OAuth2Constants.GrantType.IMPLICIT)
-                    .addGrantTypes(OAuth2Constants.GrantType.JWT_ASSERTION)
-                    .addGrantTypes(OAuth2Constants.GrantType.REFRESH_TOKEN)
+                    .addAllGrantTypes(TESTGRANTTYPES)
                     .build();
 
     private static final ClientDetails CLIENT1 =
@@ -72,7 +76,7 @@ public class TokenEndpointRequestValidatorTest {
                     .addScopes("read")
                     .setIsScoped(true)
                     .addRedirectUris(REDIRECT_URI_REGEX)
-                    .addGrantTypes(OAuth2Constants.GrantType.IMPLICIT)
+                    .addGrantTypes(ClientDetails.GrantType.IMPLICIT)
                     .build();
 
     private static final String USERNAME = "111";

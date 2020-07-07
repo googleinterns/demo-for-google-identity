@@ -41,6 +41,8 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.logging.Logger;
 
+import static com.google.googleidentity.oauth2.request.OAuth2Request.RequestBody.ResponseType;
+
 /**
  * Token exchange endpoint in OAuth2 Server
  */
@@ -116,10 +118,29 @@ public class TokenEndpoint extends HttpServlet {
                 .setClientId(
                             OAuth2Utils.getClientSession(request).getClient().get().getClientId());
 
+        switch (grantType) {
+            case OAuth2Constants.GrantType.AUTHORIZATION_CODE:
+                oauth2RequestBuilder.getRequestBodyBuilder()
+                        .setGrantType(OAuth2Request.RequestBody.GrantType.AUTHORIZATION_CODE);
+                break;
+            case OAuth2Constants.GrantType.REFRESH_TOKEN:
+                oauth2RequestBuilder.getRequestBodyBuilder()
+                        .setGrantType(OAuth2Request.RequestBody.GrantType.REFRESH_TOKEN);
+                break;
+            case OAuth2Constants.GrantType.JWT_ASSERTION:
+                oauth2RequestBuilder.getRequestBodyBuilder()
+                        .setGrantType(OAuth2Request.RequestBody.GrantType.JWT_ASSERTION);
+                break;
+            default:
+                // Will never happen since we have validated it
+                break;
+        }
         oauth2RequestBuilder.getRequestBodyBuilder()
-                .setGrantType(grantType).setResponseType(OAuth2Constants.ResponseType.TOKEN);
+                .setResponseType(ResponseType.TOKEN);
 
         if (grantType.equals(OAuth2Constants.GrantType.AUTHORIZATION_CODE)) {
+            oauth2RequestBuilder.getRequestBodyBuilder()
+                    .setGrantType(OAuth2Request.RequestBody.GrantType.AUTHORIZATION_CODE);
             oauth2RequestBuilder.getRequestAuthBuilder().setCode(
                     request.getParameter(OAuth2ParameterNames.CODE));
             try {
@@ -134,10 +155,13 @@ public class TokenEndpoint extends HttpServlet {
             }
 
         } else if (grantType.equals(OAuth2Constants.GrantType.REFRESH_TOKEN)) {
-            oauth2RequestBuilder.getRequestBodyBuilder().setRefreshToken(
-                    request.getParameter(OAuth2ParameterNames.REFRESH_TOKEN));
+            oauth2RequestBuilder.getRequestBodyBuilder()
+                    .setGrantType(OAuth2Request.RequestBody.GrantType.REFRESH_TOKEN)
+                    .setRefreshToken(
+                            request.getParameter(OAuth2ParameterNames.REFRESH_TOKEN));
         } else if (grantType.equals(OAuth2Constants.GrantType.JWT_ASSERTION)) {
             oauth2RequestBuilder.getRequestBodyBuilder()
+                    .setGrantType(OAuth2Request.RequestBody.GrantType.JWT_ASSERTION)
                     .setIntent(request.getParameter(OAuth2ParameterNames.INTENT))
                     .setAssertion(request.getParameter(OAuth2ParameterNames.ASSERTION));
             if (!Strings.isNullOrEmpty(request.getParameter(OAuth2ParameterNames.SCOPE))) {

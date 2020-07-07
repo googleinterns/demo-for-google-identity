@@ -75,10 +75,10 @@ public class OAuth2TokenAuthenticationFilterTest {
                     .addScopes("read")
                     .setIsScoped(true)
                     .addRedirectUris(REDIRECT_URI)
-                    .addGrantTypes(OAuth2Constants.GrantType.AUTHORIZATION_CODE)
+                    .addGrantTypes(ClientDetails.GrantType.AUTHORIZATION_CODE)
                     .build();
 
-    OAuth2Request TESTREQUEST0 =
+    private static final OAuth2Request TESTREQUEST0 =
             OAuth2Request.newBuilder()
                     .setRequestAuth(
                             OAuth2Request.RequestAuth.newBuilder()
@@ -89,9 +89,10 @@ public class OAuth2TokenAuthenticationFilterTest {
                             OAuth2Request.RequestBody.newBuilder()
                                     .setIsScoped(true)
                                     .addAllScopes(CLIENT.getScopesList())
-                                    .setResponseType(OAuth2Constants.ResponseType.TOKEN)
+                                    .setResponseType(OAuth2Request.RequestBody.ResponseType.TOKEN)
                                     .setRefreshable(true)
-                                    .setGrantType(OAuth2Constants.GrantType.AUTHORIZATION_CODE)
+                                    .setGrantType(
+                                            OAuth2Request.RequestBody.GrantType.AUTHORIZATION_CODE)
                                     .build())
                     .build();
 

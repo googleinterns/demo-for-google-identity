@@ -28,7 +28,6 @@ import com.google.googleidentity.oauth2.token.InMemoryOAuth2TokenService;
 import com.google.googleidentity.oauth2.token.OAuth2AccessToken;
 import com.google.googleidentity.oauth2.token.OAuth2RefreshToken;
 import com.google.googleidentity.oauth2.token.OAuth2TokenService;
-import com.google.googleidentity.oauth2.util.OAuth2Constants;
 import com.google.googleidentity.oauth2.util.OAuth2ParameterNames;
 import com.google.googleidentity.security.UserSession;
 import com.google.googleidentity.user.InMemoryUserDetailsService;
@@ -57,294 +56,263 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.verify;
 
-/**
- * Tests for {@link AuthorizationCodeRequestHandler}
- */
+/** Tests for {@link AuthorizationCodeRequestHandler} */
 public class AuthorizationCodeRequestHandlerTest {
 
-    private UserSession userSession;
-
-    private static final String CLIENTID = "client";
-    private static final String CLIENTID1 = "client1";
-    private static final String SECRET = "secret";
-    private static final String REDIRECT_URI = "http://www.google.com";
-
-    private static final String REDIRECT_URI1 = "http://www.facebook.com";
-
-    private static final String LINE = System.lineSeparator();
-
-
-    private static final ClientDetails CLIENT =
-            ClientDetails.newBuilder()
-                    .setClientId(CLIENTID)
-                    .setSecret(Hashing.sha256()
-                            .hashString(SECRET, Charsets.UTF_8).toString())
-                    .addScopes("read")
-                    .setIsScoped(true)
-                    .addRedirectUris(REDIRECT_URI)
-                    .addGrantTypes(OAuth2Constants.GrantType.AUTHORIZATION_CODE)
-                    .build();
-
-    private static final String USERNAME = "username";
-    private static final String PASSWORD = "password";
-    private static final String STATE = "state";
-
-    private static final UserDetails USER =
-            UserDetails.newBuilder()
-                    .setUsername(USERNAME)
-                    .setPassword(Hashing.sha256()
-                            .hashString(PASSWORD, Charsets.UTF_8).toString())
-                    .build();
-
-    AuthorizationCodeRequestHandler authorizationCodeRequestHandler;
-
-    AuthorizationCodeService authorizationCodeService;
-
-    OAuth2TokenService oauth2TokenService;
-
-
-    OAuth2Request TEST_REQUEST =
-            OAuth2Request.newBuilder()
-                    .setRequestAuth(
-                            OAuth2Request.RequestAuth.newBuilder()
-                                    .setClientId(CLIENTID)
-                                    .setUsername(USERNAME)
-                                    .build())
-                    .setRequestBody(
-                            OAuth2Request.RequestBody.newBuilder()
-                                    .setIsScoped(true)
-                                    .addAllScopes(CLIENT.getScopesList())
-                                    .setResponseType(OAuth2Constants.ResponseType.CODE)
-                                    .setRefreshable(true)
-                                    .setGrantType(OAuth2Constants.GrantType.AUTHORIZATION_CODE)
-                                    .build())
-                    .setAuthorizationResponse(
-                            OAuth2Request.AuthorizationResponse.newBuilder()
-                                    .setState(STATE)
-                                    .setRedirectUri(REDIRECT_URI)
-                                    .build())
-                    .build();
-
-    OAuth2Request TEST_REQUEST1 =
-            OAuth2Request.newBuilder()
-                    .setRequestAuth(
-                            OAuth2Request.RequestAuth.newBuilder()
-                                    .setClientId(CLIENTID)
-                                    .setUsername(USERNAME)
-                                    .build())
-                    .setRequestBody(
-                            OAuth2Request.RequestBody.newBuilder()
-                                    .setIsScoped(true)
-                                    .addAllScopes(CLIENT.getScopesList())
-                                    .setResponseType(OAuth2Constants.ResponseType.TOKEN)
-                                    .setRefreshable(true)
-                                    .setGrantType(OAuth2Constants.GrantType.AUTHORIZATION_CODE)
-                                    .build())
-                    .setAuthorizationResponse(
-                            OAuth2Request.AuthorizationResponse.newBuilder()
-                                    .setState(STATE)
-                                    .setRedirectUri(REDIRECT_URI)
-                                    .build())
-                    .build();
-
-
-
-    @Before
-    public void init() {
-        ClientDetailsService clientDetailsService = new InMemoryClientDetailsService();
-        clientDetailsService.addClient(CLIENT);
-        UserDetailsService userDetailsService = new InMemoryUserDetailsService();
-        userDetailsService.addUser(USER);
-        userSession = new UserSession();
-        userSession.setUser(USER);
-        authorizationCodeService = new AuthorizationCodeService(new InMemoryCodeStore());
-        oauth2TokenService = new InMemoryOAuth2TokenService();
-        authorizationCodeRequestHandler = new AuthorizationCodeRequestHandler(
-                authorizationCodeService, oauth2TokenService);
-    }
+  private static final String CLIENTID = "client";
+  private static final String CLIENTID1 = "client1";
+  private static final String SECRET = "secret";
+  private static final String REDIRECT_URI = "http://www.google.com";
+  private static final String REDIRECT_URI1 = "http://www.facebook.com";
+  private static final String LINE = System.lineSeparator();
+  private static final ClientDetails CLIENT =
+      ClientDetails.newBuilder()
+          .setClientId(CLIENTID)
+          .setSecret(Hashing.sha256().hashString(SECRET, Charsets.UTF_8).toString())
+          .addScopes("read")
+          .setIsScoped(true)
+          .addRedirectUris(REDIRECT_URI)
+          .addGrantTypes(ClientDetails.GrantType.AUTHORIZATION_CODE)
+          .build();
+  private static final String USERNAME = "username";
+  private static final String PASSWORD = "password";
+  private static final String STATE = "state";
+  private static final UserDetails USER =
+      UserDetails.newBuilder()
+          .setUsername(USERNAME)
+          .setPassword(Hashing.sha256().hashString(PASSWORD, Charsets.UTF_8).toString())
+          .build();
+  private static final OAuth2Request TEST_REQUEST =
+      OAuth2Request.newBuilder()
+          .setRequestAuth(
+              OAuth2Request.RequestAuth.newBuilder()
+                  .setClientId(CLIENTID)
+                  .setUsername(USERNAME)
+                  .build())
+          .setRequestBody(
+              OAuth2Request.RequestBody.newBuilder()
+                  .setIsScoped(true)
+                  .addAllScopes(CLIENT.getScopesList())
+                  .setResponseType(OAuth2Request.RequestBody.ResponseType.CODE)
+                  .setRefreshable(true)
+                  .setGrantType(OAuth2Request.RequestBody.GrantType.AUTHORIZATION_CODE)
+                  .build())
+          .setAuthorizationResponse(
+              OAuth2Request.AuthorizationResponse.newBuilder()
+                  .setState(STATE)
+                  .setRedirectUri(REDIRECT_URI)
+                  .build())
+          .build();
+  private static final OAuth2Request TEST_REQUEST1 =
+      OAuth2Request.newBuilder()
+          .setRequestAuth(
+              OAuth2Request.RequestAuth.newBuilder()
+                  .setClientId(CLIENTID)
+                  .setUsername(USERNAME)
+                  .build())
+          .setRequestBody(
+              OAuth2Request.RequestBody.newBuilder()
+                  .setIsScoped(true)
+                  .addAllScopes(CLIENT.getScopesList())
+                  .setResponseType(OAuth2Request.RequestBody.ResponseType.TOKEN)
+                  .setRefreshable(true)
+                  .setGrantType(OAuth2Request.RequestBody.GrantType.AUTHORIZATION_CODE)
+                  .build())
+          .setAuthorizationResponse(
+              OAuth2Request.AuthorizationResponse.newBuilder()
+                  .setState(STATE)
+                  .setRedirectUri(REDIRECT_URI)
+                  .build())
+          .build();
+  AuthorizationCodeRequestHandler authorizationCodeRequestHandler;
+  AuthorizationCodeService authorizationCodeService;
+  OAuth2TokenService oauth2TokenService;
+  private UserSession userSession;
+
+  @Before
+  public void init() {
+    ClientDetailsService clientDetailsService = new InMemoryClientDetailsService();
+    clientDetailsService.addClient(CLIENT);
+    UserDetailsService userDetailsService = new InMemoryUserDetailsService();
+    userDetailsService.addUser(USER);
+    userSession = new UserSession();
+    userSession.setUser(USER);
+    authorizationCodeService = new AuthorizationCodeService(new InMemoryCodeStore());
+    oauth2TokenService = new InMemoryOAuth2TokenService();
+    authorizationCodeRequestHandler =
+        new AuthorizationCodeRequestHandler(authorizationCodeService, oauth2TokenService);
+  }
+
+  @Test
+  public void testHandleCodeRequest_correctRequest_redirect() throws IOException {
+    HttpServletResponse response = mock(HttpServletResponse.class);
+
+    assertDoesNotThrow(() -> authorizationCodeRequestHandler.handle(response, TEST_REQUEST));
+
+    verify(response).sendRedirect(
+        Matchers.matches(REDIRECT_URI + "\\?code=.{10}&state=" + STATE));
+  }
+
+  @Test
+  public void testHandleTokenRequest_nonexistentCode_throwInvalidGrantException() {
+    HttpServletResponse response = mock(HttpServletResponse.class);
+
+    OAuth2Request.Builder builder = OAuth2Request.newBuilder(TEST_REQUEST1);
+    builder.getRequestAuthBuilder().setCode("nonexistence");
+
+    OAuth2Exception e =
+        assertThrows(
+            OAuth2Exception.class,
+            () -> authorizationCodeRequestHandler.handle(response, builder.build()));
 
-    @Test
-    public void testHandleCodeRequest_correctRequest_redirect() throws IOException {
-        HttpServletResponse response = mock(HttpServletResponse.class);
+    assertThat(e).isInstanceOf(InvalidGrantException.class);
 
-        assertDoesNotThrow(()-> authorizationCodeRequestHandler.handle(response, TEST_REQUEST));
+    assertThat(e.getErrorDescription()).isEqualTo("Non existing code!");
+  }
 
-        verify(response).sendRedirect(
-                Matchers.matches(REDIRECT_URI + "\\?code=.{10}&state=" + STATE));
-    }
+  @Test
+  public void testHandleTokenRequest_codeClientIdMismatch_throwInvalidGrantException() {
+    HttpServletResponse response = mock(HttpServletResponse.class);
 
-    @Test
-    public void testHandleTokenRequest_nonexistentCode_throwInvalidGrantException() {
-        HttpServletResponse response = mock(HttpServletResponse.class);
+    assertDoesNotThrow(() -> authorizationCodeRequestHandler.handle(response, TEST_REQUEST));
 
-        OAuth2Request.Builder builder = OAuth2Request.newBuilder(TEST_REQUEST1);
-        builder.getRequestAuthBuilder().setCode("nonexistence");
+    OAuth2Request.Builder builder = OAuth2Request.newBuilder(TEST_REQUEST1);
+    String code = authorizationCodeService.getCodeForRequest(TEST_REQUEST);
 
+    builder.getRequestAuthBuilder().setClientId(CLIENTID1).setCode(code);
 
-        OAuth2Exception e = assertThrows(
-                        OAuth2Exception.class,
-                        ()-> authorizationCodeRequestHandler.handle(response, builder.build()));
+    OAuth2Exception e =
+        assertThrows(
+            OAuth2Exception.class,
+            () -> authorizationCodeRequestHandler.handle(response, builder.build()));
 
-        assertThat(e).isInstanceOf(InvalidGrantException.class);
+    assertThat(e).isInstanceOf(InvalidGrantException.class);
 
-        assertThat(e.getErrorDescription()).isEqualTo("Non existing code!");
-    }
+    assertThat(e.getErrorDescription()).isEqualTo("Code client mismatch!");
+  }
 
-    @Test
-    public void testHandleTokenRequest_codeClientIdMismatch_throwInvalidGrantException() {
-        HttpServletResponse response = mock(HttpServletResponse.class);
+  @Test
+  public void testHandleTokenRequest_codeRedirectUriMismatch_throwInvalidGrantException() {
+    HttpServletResponse response = mock(HttpServletResponse.class);
 
-        assertDoesNotThrow(()-> authorizationCodeRequestHandler.handle(response, TEST_REQUEST));
+    assertDoesNotThrow(() -> authorizationCodeRequestHandler.handle(response, TEST_REQUEST));
 
-        OAuth2Request.Builder builder = OAuth2Request.newBuilder(TEST_REQUEST1);
-        String code = authorizationCodeService.getCodeForRequest(TEST_REQUEST);
+    OAuth2Request.Builder builder = OAuth2Request.newBuilder(TEST_REQUEST1);
+    String code = authorizationCodeService.getCodeForRequest(TEST_REQUEST);
 
-        builder.getRequestAuthBuilder().setClientId(CLIENTID1).setCode(code);
+    builder.getRequestAuthBuilder().setClientId(CLIENTID).setUsername(USERNAME).setCode(code);
+    builder.getAuthorizationResponseBuilder().setRedirectUri(REDIRECT_URI1);
 
-        OAuth2Exception e = assertThrows(
-                OAuth2Exception.class,
-                ()-> authorizationCodeRequestHandler.handle(response, builder.build()));
+    OAuth2Exception e =
+        assertThrows(
+            OAuth2Exception.class,
+            () -> authorizationCodeRequestHandler.handle(response, builder.build()));
 
-        assertThat(e).isInstanceOf(InvalidGrantException.class);
+    assertThat(e).isInstanceOf(InvalidGrantException.class);
 
-        assertThat(e.getErrorDescription()).isEqualTo("Code client mismatch!");
-    }
+    assertThat(e.getErrorDescription()).isEqualTo("Redirect uri mismatches the grant!");
+  }
 
+  @Test
+  public void testHandleTokenRequest_correctRequest_returnToken()
+      throws IOException, ParseException {
+    HttpServletResponse response = mock(HttpServletResponse.class);
 
-    @Test
-    public void testHandleTokenRequest_codeRedirectUriMismatch_throwInvalidGrantException() {
-        HttpServletResponse response = mock(HttpServletResponse.class);
+    StringWriter stringWriter = new StringWriter();
+    PrintWriter writer = new PrintWriter(stringWriter);
+    when(response.getWriter()).thenReturn(writer);
 
-        assertDoesNotThrow(()-> authorizationCodeRequestHandler.handle(response, TEST_REQUEST));
+    assertDoesNotThrow(() -> authorizationCodeRequestHandler.handle(response, TEST_REQUEST));
 
-        OAuth2Request.Builder builder = OAuth2Request.newBuilder(TEST_REQUEST1);
-        String code = authorizationCodeService.getCodeForRequest(TEST_REQUEST);
+    OAuth2Request.Builder builder = OAuth2Request.newBuilder(TEST_REQUEST1);
+    String code = authorizationCodeService.getCodeForRequest(TEST_REQUEST);
 
-        builder.getRequestAuthBuilder().setClientId(CLIENTID).setUsername(USERNAME).setCode(code);
-        builder.getAuthorizationResponseBuilder().setRedirectUri(REDIRECT_URI1);
+    builder.getRequestAuthBuilder().setCode(code);
 
-        OAuth2Exception e = assertThrows(
-                OAuth2Exception.class,
-                ()-> authorizationCodeRequestHandler.handle(response, builder.build()));
+    assertDoesNotThrow(() -> authorizationCodeRequestHandler.handle(response, builder.build()));
 
-        assertThat(e).isInstanceOf(InvalidGrantException.class);
+    JSONObject json =
+        (JSONObject) new JSONParser(JSONParser.MODE_PERMISSIVE).parse(stringWriter.toString());
 
-        assertThat(e.getErrorDescription()).isEqualTo("Redirect uri mismatches the grant!");
-    }
+    assertThat(json).containsKey(OAuth2ParameterNames.ACCESS_TOKEN);
+    assertThat(json).containsKey(OAuth2ParameterNames.REFRESH_TOKEN);
+    assertThat(json).containsKey("expires_in");
+    assertThat(json).containsEntry("token_type", "Bearer");
 
+    String accessTokenString = json.getAsString(OAuth2ParameterNames.ACCESS_TOKEN);
+    String refreshTokenString = json.getAsString(OAuth2ParameterNames.REFRESH_TOKEN);
 
-    @Test
-    public void testHandleTokenRequest_correctRequest_returnToken()
-            throws IOException, ParseException {
-        HttpServletResponse response = mock(HttpServletResponse.class);
+    OAuth2AccessToken expectedAccessToken =
+        OAuth2AccessToken.newBuilder()
+            .setAccessToken(accessTokenString)
+            .setRefreshToken(refreshTokenString)
+            .setIsScoped(true)
+            .addAllScopes(CLIENT.getScopesList())
+            .setClientId(CLIENTID)
+            .setUsername(USERNAME)
+            .build();
+    Optional<OAuth2AccessToken> accessToken = oauth2TokenService.readAccessToken(accessTokenString);
 
-        StringWriter stringWriter = new StringWriter();
-        PrintWriter writer = new PrintWriter(stringWriter);
-        when(response.getWriter()).thenReturn(writer);
+    assertThat(accessToken).isPresent();
 
-        assertDoesNotThrow(()-> authorizationCodeRequestHandler.handle(response, TEST_REQUEST));
+    assertThat(accessToken.get()).comparingExpectedFieldsOnly().isEqualTo(expectedAccessToken);
 
-        OAuth2Request.Builder builder = OAuth2Request.newBuilder(TEST_REQUEST1);
-        String code = authorizationCodeService.getCodeForRequest(TEST_REQUEST);
+    OAuth2RefreshToken expectedRefreshToken =
+        OAuth2RefreshToken.newBuilder()
+            .setRefreshToken(refreshTokenString)
+            .setClientId(CLIENTID)
+            .setUsername(USERNAME)
+            .setIsScoped(CLIENT.getIsScoped())
+            .addAllScopes(CLIENT.getScopesList())
+            .build();
+    Optional<OAuth2RefreshToken> refreshToken =
+        oauth2TokenService.readRefreshToken(refreshTokenString);
 
-        builder.getRequestAuthBuilder().setCode(code);
+    assertThat(refreshToken).isPresent();
 
-        assertDoesNotThrow(()-> authorizationCodeRequestHandler.handle(response, builder.build()));
+    assertThat(refreshToken.get()).comparingExpectedFieldsOnly().isEqualTo(expectedRefreshToken);
+  }
 
-        JSONObject json =
-                (JSONObject) new JSONParser(JSONParser.MODE_PERMISSIVE)
-                        .parse(stringWriter.toString());
+  @Test
+  public void testHandleTokenRequest_scopesDoNotMatch_relyOnTheOnRelatedToCode()
+      throws IOException, ParseException {
+    HttpServletResponse response = mock(HttpServletResponse.class);
 
-        assertThat(json).containsKey(OAuth2ParameterNames.ACCESS_TOKEN);
-        assertThat(json).containsKey(OAuth2ParameterNames.REFRESH_TOKEN);
-        assertThat(json).containsKey("expires_in");
-        assertThat(json).containsEntry("token_type", "Bearer");
+    StringWriter stringWriter = new StringWriter();
+    PrintWriter writer = new PrintWriter(stringWriter);
+    when(response.getWriter()).thenReturn(writer);
 
-        String accessTokenString = json.getAsString(OAuth2ParameterNames.ACCESS_TOKEN);
-        String refreshTokenString = json.getAsString(OAuth2ParameterNames.REFRESH_TOKEN);
+    assertDoesNotThrow(() -> authorizationCodeRequestHandler.handle(response, TEST_REQUEST));
 
-        OAuth2AccessToken expectedAccessToken =
-                OAuth2AccessToken.newBuilder()
-                        .setAccessToken(accessTokenString)
-                        .setRefreshToken(refreshTokenString)
-                        .setIsScoped(true)
-                        .addAllScopes(CLIENT.getScopesList())
-                        .setClientId(CLIENTID)
-                        .setUsername(USERNAME)
-                        .build();
-        Optional<OAuth2AccessToken> accessToken =
-                oauth2TokenService.readAccessToken(accessTokenString);
+    OAuth2Request.Builder builder = OAuth2Request.newBuilder(TEST_REQUEST1);
+    String code = authorizationCodeService.getCodeForRequest(TEST_REQUEST);
 
-        assertThat(accessToken).isPresent();
+    builder.getRequestAuthBuilder().setCode(code);
+    builder.getRequestBodyBuilder().clearScopes().addScopes("write");
 
-        assertThat(accessToken.get()).comparingExpectedFieldsOnly().isEqualTo(expectedAccessToken);
+    assertDoesNotThrow(() -> authorizationCodeRequestHandler.handle(response, builder.build()));
 
-        OAuth2RefreshToken expectedRefreshToken =
-                OAuth2RefreshToken.newBuilder()
-                        .setRefreshToken(refreshTokenString)
-                        .setClientId(CLIENTID)
-                        .setUsername(USERNAME)
-                        .setIsScoped(CLIENT.getIsScoped())
-                        .addAllScopes(CLIENT.getScopesList())
-                        .build();
-        Optional<OAuth2RefreshToken> refreshToken =
-                oauth2TokenService.readRefreshToken(refreshTokenString);
+    JSONObject json =
+        (JSONObject) new JSONParser(JSONParser.MODE_PERMISSIVE).parse(stringWriter.toString());
 
-        assertThat(refreshToken).isPresent();
+    String accessTokenString = json.getAsString(OAuth2ParameterNames.ACCESS_TOKEN);
+    String refreshTokenString = json.getAsString(OAuth2ParameterNames.REFRESH_TOKEN);
 
-        assertThat(refreshToken.get())
-                .comparingExpectedFieldsOnly().isEqualTo(expectedRefreshToken);
-    }
+    OAuth2AccessToken expectedAccessToken =
+        OAuth2AccessToken.newBuilder().addAllScopes(CLIENT.getScopesList()).build();
+    Optional<OAuth2AccessToken> accessToken = oauth2TokenService.readAccessToken(accessTokenString);
 
+    assertThat(accessToken).isPresent();
 
-    @Test
-    public void testHandleTokenRequest_scopesDoNotMatch_relyOnTheOnRelatedToCode()
-            throws IOException, ParseException {
-        HttpServletResponse response = mock(HttpServletResponse.class);
+    assertThat(accessToken.get()).comparingExpectedFieldsOnly().isEqualTo(expectedAccessToken);
 
-        StringWriter stringWriter = new StringWriter();
-        PrintWriter writer = new PrintWriter(stringWriter);
-        when(response.getWriter()).thenReturn(writer);
+    OAuth2RefreshToken expectedRefreshToken =
+        OAuth2RefreshToken.newBuilder().addAllScopes(CLIENT.getScopesList()).build();
+    Optional<OAuth2RefreshToken> refreshToken =
+        oauth2TokenService.readRefreshToken(refreshTokenString);
 
-        assertDoesNotThrow(()-> authorizationCodeRequestHandler.handle(response, TEST_REQUEST));
+    assertThat(refreshToken).isPresent();
 
-        OAuth2Request.Builder builder = OAuth2Request.newBuilder(TEST_REQUEST1);
-        String code = authorizationCodeService.getCodeForRequest(TEST_REQUEST);
-
-        builder.getRequestAuthBuilder().setCode(code);
-        builder.getRequestBodyBuilder().clearScopes().addScopes("write");
-
-        assertDoesNotThrow(()-> authorizationCodeRequestHandler.handle(response, builder.build()));
-
-        JSONObject json =
-                (JSONObject) new JSONParser(JSONParser.MODE_PERMISSIVE)
-                        .parse(stringWriter.toString());
-
-        String accessTokenString = json.getAsString(OAuth2ParameterNames.ACCESS_TOKEN);
-        String refreshTokenString = json.getAsString(OAuth2ParameterNames.REFRESH_TOKEN);
-
-        OAuth2AccessToken expectedAccessToken =
-                OAuth2AccessToken.newBuilder()
-                        .addAllScopes(CLIENT.getScopesList())
-                        .build();
-        Optional<OAuth2AccessToken> accessToken =
-                oauth2TokenService.readAccessToken(accessTokenString);
-
-        assertThat(accessToken).isPresent();
-
-        assertThat(accessToken.get()).comparingExpectedFieldsOnly().isEqualTo(expectedAccessToken);
-
-        OAuth2RefreshToken expectedRefreshToken =
-                OAuth2RefreshToken.newBuilder()
-                        .addAllScopes(CLIENT.getScopesList())
-                        .build();
-        Optional<OAuth2RefreshToken> refreshToken =
-                oauth2TokenService.readRefreshToken(refreshTokenString);
-
-        assertThat(refreshToken).isPresent();
-
-        assertThat(refreshToken.get())
-                .comparingExpectedFieldsOnly().isEqualTo(expectedRefreshToken);
-    }
-
+    assertThat(refreshToken.get()).comparingExpectedFieldsOnly().isEqualTo(expectedRefreshToken);
+  }
 }

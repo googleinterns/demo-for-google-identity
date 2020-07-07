@@ -17,6 +17,7 @@
 package com.google.googleidentity.oauth2.endpoint;
 
 import com.google.common.base.Charsets;
+import com.google.common.collect.ImmutableList;
 import com.google.common.hash.Hashing;
 import com.google.common.truth.Truth;
 import com.google.googleidentity.oauth2.authorizationcode.AuthorizationCodeService;
@@ -72,6 +73,12 @@ public class TokenEndpointTest {
 
     private static final String LINE = System.lineSeparator();
 
+    private static final ImmutableList<ClientDetails.GrantType> TESTGRANTTYPES = ImmutableList.of(
+            ClientDetails.GrantType.AUTHORIZATION_CODE,
+            ClientDetails.GrantType.IMPLICIT,
+            ClientDetails.GrantType.REFRESH_TOKEN,
+            ClientDetails.GrantType.JWT_ASSERTION);
+
     private static final ClientDetails CLIENT =
             ClientDetails.newBuilder()
                     .setClientId(CLIENTID)
@@ -80,10 +87,7 @@ public class TokenEndpointTest {
                     .addScopes("read")
                     .setIsScoped(true)
                     .addRedirectUris(REDIRECT_URI)
-                    .addGrantTypes(OAuth2Constants.GrantType.AUTHORIZATION_CODE)
-                    .addGrantTypes(OAuth2Constants.GrantType.IMPLICIT)
-                    .addGrantTypes(OAuth2Constants.GrantType.JWT_ASSERTION)
-                    .addGrantTypes(OAuth2Constants.GrantType.REFRESH_TOKEN)
+                    .addAllGrantTypes(TESTGRANTTYPES)
                     .build();
 
     private static final String USERNAME = "usernames";
@@ -161,8 +165,8 @@ public class TokenEndpointTest {
                 .setClientId(CLIENTID)
                 .setCode("auth_code");
         oauth2RequestBuilder.getRequestBodyBuilder()
-                .setGrantType(OAuth2Constants.GrantType.AUTHORIZATION_CODE)
-                .setResponseType(OAuth2Constants.ResponseType.TOKEN);
+                .setGrantType(OAuth2Request.RequestBody.GrantType.AUTHORIZATION_CODE)
+                .setResponseType(OAuth2Request.RequestBody.ResponseType.TOKEN);
         oauth2RequestBuilder.getAuthorizationResponseBuilder().setRedirectUri(REDIRECT_URI);
 
         assertThat(tokenEndpoint.parseOAuth2RequestFromHttpRequest(request))
@@ -187,8 +191,8 @@ public class TokenEndpointTest {
         oauth2RequestBuilder.getRequestAuthBuilder()
                 .setClientId(CLIENTID);
         oauth2RequestBuilder.getRequestBodyBuilder()
-                .setGrantType(OAuth2Constants.GrantType.REFRESH_TOKEN)
-                .setResponseType(OAuth2Constants.ResponseType.TOKEN)
+                .setGrantType(OAuth2Request.RequestBody.GrantType.REFRESH_TOKEN)
+                .setResponseType(OAuth2Request.RequestBody.ResponseType.TOKEN)
                 .setRefreshToken("refresh_token");
 
         assertThat(tokenEndpoint.parseOAuth2RequestFromHttpRequest(request))
@@ -214,10 +218,10 @@ public class TokenEndpointTest {
         oauth2RequestBuilder.getRequestAuthBuilder()
                 .setClientId(CLIENTID);
         oauth2RequestBuilder.getRequestBodyBuilder()
-                .setGrantType(OAuth2Constants.GrantType.JWT_ASSERTION)
+                .setGrantType(OAuth2Request.RequestBody.GrantType.JWT_ASSERTION)
                 .setAssertion("assertion")
                 .setIntent(OAuth2Constants.JwtAssertionIntents.CREATE)
-                .setResponseType(OAuth2Constants.ResponseType.TOKEN)
+                .setResponseType(OAuth2Request.RequestBody.ResponseType.TOKEN)
                 .setIsScoped(true)
                 .addScopes("read");
 

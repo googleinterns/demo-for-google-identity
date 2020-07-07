@@ -41,7 +41,7 @@ public class UserTokensTest {
                     .addScopes("read")
                     .setIsScoped(true)
                     .addRedirectUris(REDIRECT_URI)
-                    .addGrantTypes(OAuth2Constants.GrantType.AUTHORIZATION_CODE)
+                    .addGrantTypes(ClientDetails.GrantType.AUTHORIZATION_CODE)
                     .build();
 
     private static final String USERNAME = "111";

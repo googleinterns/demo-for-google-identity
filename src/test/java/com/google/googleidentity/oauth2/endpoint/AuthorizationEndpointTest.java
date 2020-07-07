@@ -77,7 +77,7 @@ public class AuthorizationEndpointTest {
                     .addScopes("read")
                     .setIsScoped(true)
                     .addRedirectUris(REDIRECT_URI)
-                    .addGrantTypes(OAuth2Constants.GrantType.AUTHORIZATION_CODE)
+                    .addGrantTypes(ClientDetails.GrantType.AUTHORIZATION_CODE)
                     .build();
 
     private static final String USERNAME = "usernames";
@@ -122,7 +122,8 @@ public class AuthorizationEndpointTest {
 
         when(request.getSession()).thenReturn(httpSession);
 
-        when(request.getParameter(OAuth2ParameterNames.RESPONSE_TYPE)).thenReturn("code");
+        when(request.getParameter(OAuth2ParameterNames.RESPONSE_TYPE))
+                .thenReturn(OAuth2Constants.ResponseType.CODE);
         when(request.getParameter(OAuth2ParameterNames.CLIENT_ID)).thenReturn(CLIENTID);
         when(request.getParameter(OAuth2ParameterNames.REDIRECT_URI)).thenReturn(REDIRECT_URI);
         when(request.getParameter(OAuth2ParameterNames.SCOPE)).thenReturn(null);
@@ -155,7 +156,8 @@ public class AuthorizationEndpointTest {
 
         when(request.getSession()).thenReturn(httpSession);
 
-        when(request.getParameter(OAuth2ParameterNames.RESPONSE_TYPE)).thenReturn("code");
+        when(request.getParameter(OAuth2ParameterNames.RESPONSE_TYPE))
+                .thenReturn(OAuth2Constants.ResponseType.CODE);
         when(request.getParameter(OAuth2ParameterNames.CLIENT_ID)).thenReturn(CLIENTID);
         when(request.getParameter(OAuth2ParameterNames.REDIRECT_URI)).thenReturn(REDIRECT_URI);
         when(request.getParameter(OAuth2ParameterNames.SCOPE)).thenReturn("read");
@@ -181,9 +183,12 @@ public class AuthorizationEndpointTest {
                                 OAuth2Request.RequestBody.newBuilder()
                                         .setIsScoped(true)
                                         .addAllScopes(CLIENT.getScopesList())
-                                        .setResponseType("code")
+                                        .setResponseType(
+                                                OAuth2Request.RequestBody.ResponseType.CODE)
                                         .setRefreshable(true)
-                                        .setGrantType("authorization_code")
+                                        .setGrantType(
+                                                OAuth2Request.RequestBody
+                                                        .GrantType.AUTHORIZATION_CODE)
                                         .build())
                         .setAuthorizationResponse(
                                 OAuth2Request.AuthorizationResponse.newBuilder()
