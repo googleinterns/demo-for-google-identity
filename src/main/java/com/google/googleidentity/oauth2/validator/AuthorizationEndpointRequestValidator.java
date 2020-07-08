@@ -27,6 +27,8 @@ import com.google.googleidentity.oauth2.exception.AccessDeniedException;
 import com.google.googleidentity.oauth2.exception.UnauthorizedClientException;
 import com.google.googleidentity.oauth2.exception.UnsupportedResponseTypeException;
 import com.google.googleidentity.oauth2.util.OAuth2Constants;
+import com.google.googleidentity.oauth2.util.OAuth2EnumMap;
+import com.google.googleidentity.oauth2.util.OAuth2Enums.GrantType;
 import com.google.googleidentity.oauth2.util.OAuth2ParameterNames;
 import com.google.googleidentity.oauth2.util.OAuth2Utils;
 
@@ -106,18 +108,8 @@ public class AuthorizationEndpointRequestValidator {
             throw new UnsupportedResponseTypeException();
         }
 
-        ClientDetails.GrantType grantType = ClientDetails.GrantType.NONE;
-
-        switch (OAuth2Utils.getGrantTypeFromResponseType(responseType)) {
-            case OAuth2Constants.GrantType.AUTHORIZATION_CODE:
-                grantType = ClientDetails.GrantType.AUTHORIZATION_CODE;
-                break;
-            case OAuth2Constants.GrantType.IMPLICIT:
-                grantType = ClientDetails.GrantType.IMPLICIT;
-            default:
-                // Never happen
-                break;
-        }
+        GrantType grantType = OAuth2EnumMap.GRANT_TYPE_MAP.get(
+            OAuth2Utils.getGrantTypeFromResponseType(responseType));
 
         if (!client.getGrantTypesList().contains(grantType)) {
             throw new UnauthorizedClientException();

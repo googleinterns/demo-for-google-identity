@@ -25,6 +25,7 @@ import com.google.googleidentity.oauth2.client.ClientSession;
 import com.google.googleidentity.oauth2.client.InMemoryClientDetailsService;
 import com.google.googleidentity.oauth2.exception.*;
 import com.google.googleidentity.oauth2.util.OAuth2Constants;
+import com.google.googleidentity.oauth2.util.OAuth2Enums.GrantType;
 import com.google.googleidentity.oauth2.util.OAuth2ParameterNames;
 import com.google.googleidentity.security.UserSession;
 import com.google.googleidentity.testtools.FakeHttpSession;
@@ -51,11 +52,11 @@ public class TokenEndpointRequestValidatorTest {
     private static final String REDIRECT_URI_REGEX= "http://www.google.com/";
     private static final String REDIRECT_URI= "http://www.google.com/123";
 
-    private static final ImmutableList<ClientDetails.GrantType> TESTGRANTTYPES = ImmutableList.of(
-            ClientDetails.GrantType.AUTHORIZATION_CODE,
-            ClientDetails.GrantType.IMPLICIT,
-            ClientDetails.GrantType.REFRESH_TOKEN,
-            ClientDetails.GrantType.JWT_ASSERTION);
+    private static final ImmutableList<GrantType> TESTGRANTTYPES = ImmutableList.of(
+            GrantType.AUTHORIZATION_CODE,
+            GrantType.IMPLICIT,
+            GrantType.REFRESH_TOKEN,
+            GrantType.JWT_ASSERTION);
 
     private static final ClientDetails CLIENT =
             ClientDetails.newBuilder()
@@ -76,7 +77,7 @@ public class TokenEndpointRequestValidatorTest {
                     .addScopes("read")
                     .setIsScoped(true)
                     .addRedirectUris(REDIRECT_URI_REGEX)
-                    .addGrantTypes(ClientDetails.GrantType.IMPLICIT)
+                    .addGrantTypes(GrantType.IMPLICIT)
                     .build();
 
     private static final String USERNAME = "111";

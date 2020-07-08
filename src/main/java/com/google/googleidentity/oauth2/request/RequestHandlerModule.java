@@ -16,12 +16,18 @@
 
 package com.google.googleidentity.oauth2.request;
 
+import com.google.googleidentity.oauth2.authorizationcode.AuthorizationCodeRequestHandler;
+import com.google.googleidentity.oauth2.util.OAuth2Enums.GrantType;
 import com.google.inject.AbstractModule;
+import com.google.inject.multibindings.MapBinder;
 
 public class RequestHandlerModule extends AbstractModule {
 
-    @Override
-    protected void configure() {
-        bind(RequestHandler.class).toProvider(DefaultRequestHandlerProvider.class);
-    }
+  @Override
+  protected void configure() {
+    MapBinder<GrantType, RequestHandler> mapBinder =
+        MapBinder.newMapBinder(binder(), GrantType.class, RequestHandler.class);
+    mapBinder.addBinding(GrantType.AUTHORIZATION_CODE).to(AuthorizationCodeRequestHandler.class);
+    bind(RequestHandler.class).to(MultipleRequestHandler.class);
+  }
 }

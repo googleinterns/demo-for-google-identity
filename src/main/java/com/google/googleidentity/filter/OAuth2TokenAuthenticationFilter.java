@@ -75,7 +75,7 @@ public class OAuth2TokenAuthenticationFilter implements Filter {
         if (!Strings.isNullOrEmpty(accessToken)) {
             Optional<OAuth2AccessToken> token = oauth2TokenService.readAccessToken(accessToken);
             if (token.isPresent() &&
-                    token.get().getExpiredTime() > Instant.now().getEpochSecond()) {
+                    Instant.ofEpochSecond(token.get().getExpiredTime()).isAfter(Instant.now())) {
                 UserSession userSession = OAuth2Utils.getUserSession((HttpServletRequest) request);
                 userSession.setUser(
                         userDetailsService.getUserByName(token.get().getUsername()).get());

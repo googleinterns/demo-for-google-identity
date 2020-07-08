@@ -25,11 +25,12 @@ import com.google.googleidentity.oauth2.exception.OAuth2ExceptionHandler;
 import com.google.googleidentity.oauth2.request.OAuth2Request;
 import com.google.googleidentity.oauth2.request.RequestHandler;
 import com.google.googleidentity.oauth2.util.OAuth2Constants;
+import com.google.googleidentity.oauth2.util.OAuth2EnumMap;
+import com.google.googleidentity.oauth2.util.OAuth2Enums.ResponseType;
 import com.google.googleidentity.oauth2.util.OAuth2ParameterNames;
 import com.google.googleidentity.oauth2.util.OAuth2Utils;
 import com.google.googleidentity.oauth2.validator.TokenEndpointRequestValidator;
 import com.google.inject.Inject;
-import com.google.inject.Provider;
 import com.google.inject.Singleton;
 
 import javax.servlet.ServletException;
@@ -41,7 +42,6 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.logging.Logger;
 
-import static com.google.googleidentity.oauth2.request.OAuth2Request.RequestBody.ResponseType;
 
 /**
  * Token exchange endpoint in OAuth2 Server
@@ -55,12 +55,12 @@ public class TokenEndpoint extends HttpServlet {
 
     private final ClientDetailsService clientDetailsService;
 
-    private final Provider<RequestHandler> requestHandler;
+    private final RequestHandler requestHandler;
 
     @Inject
     public TokenEndpoint(
             ClientDetailsService clientDetailsService,
-            Provider<RequestHandler> requestHandler) {
+            RequestHandler requestHandler) {
         this.clientDetailsService = clientDetailsService;
         this.requestHandler = requestHandler;
     }
@@ -92,7 +92,7 @@ public class TokenEndpoint extends HttpServlet {
         OAuth2Request oauth2Request = parseOAuth2RequestFromHttpRequest(request);
 
         try {
-            requestHandler.get().handle(response, oauth2Request);
+            requestHandler.handle(response, oauth2Request);
         } catch (OAuth2Exception exception) {
             log.info(
                     "Failed when process request in Token Endpoint" +
@@ -117,30 +117,13 @@ public class TokenEndpoint extends HttpServlet {
         oauth2RequestBuilder.getRequestAuthBuilder()
                 .setClientId(
                             OAuth2Utils.getClientSession(request).getClient().get().getClientId());
+        oauth2RequestBuilder.getRequestBodyBuilder()
+            .setGrantType(OAuth2EnumMap.GRANT_TYPE_MAP.get(grantType));
 
-        switch (grantType) {
-            case OAuth2Constants.GrantType.AUTHORIZATION_CODE:
-                oauth2RequestBuilder.getRequestBodyBuilder()
-                        .setGrantType(OAuth2Request.RequestBody.GrantType.AUTHORIZATION_CODE);
-                break;
-            case OAuth2Constants.GrantType.REFRESH_TOKEN:
-                oauth2RequestBuilder.getRequestBodyBuilder()
-                        .setGrantType(OAuth2Request.RequestBody.GrantType.REFRESH_TOKEN);
-                break;
-            case OAuth2Constants.GrantType.JWT_ASSERTION:
-                oauth2RequestBuilder.getRequestBodyBuilder()
-                        .setGrantType(OAuth2Request.RequestBody.GrantType.JWT_ASSERTION);
-                break;
-            default:
-                // Will never happen since we have validated it
-                break;
-        }
         oauth2RequestBuilder.getRequestBodyBuilder()
                 .setResponseType(ResponseType.TOKEN);
 
         if (grantType.equals(OAuth2Constants.GrantType.AUTHORIZATION_CODE)) {
-            oauth2RequestBuilder.getRequestBodyBuilder()
-                    .setGrantType(OAuth2Request.RequestBody.GrantType.AUTHORIZATION_CODE);
             oauth2RequestBuilder.getRequestAuthBuilder().setCode(
                     request.getParameter(OAuth2ParameterNames.CODE));
             try {
@@ -156,12 +139,10 @@ public class TokenEndpoint extends HttpServlet {
 
         } else if (grantType.equals(OAuth2Constants.GrantType.REFRESH_TOKEN)) {
             oauth2RequestBuilder.getRequestBodyBuilder()
-                    .setGrantType(OAuth2Request.RequestBody.GrantType.REFRESH_TOKEN)
                     .setRefreshToken(
                             request.getParameter(OAuth2ParameterNames.REFRESH_TOKEN));
         } else if (grantType.equals(OAuth2Constants.GrantType.JWT_ASSERTION)) {
             oauth2RequestBuilder.getRequestBodyBuilder()
-                    .setGrantType(OAuth2Request.RequestBody.GrantType.JWT_ASSERTION)
                     .setIntent(request.getParameter(OAuth2ParameterNames.INTENT))
                     .setAssertion(request.getParameter(OAuth2ParameterNames.ASSERTION));
             if (!Strings.isNullOrEmpty(request.getParameter(OAuth2ParameterNames.SCOPE))) {

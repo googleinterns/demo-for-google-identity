@@ -20,8 +20,12 @@ import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableSet;
 import com.google.googleidentity.oauth2.client.ClientDetails;
-import com.google.googleidentity.oauth2.exception.*;
+import com.google.googleidentity.oauth2.exception.InvalidRequestException;
+import com.google.googleidentity.oauth2.exception.OAuth2Exception;
+import com.google.googleidentity.oauth2.exception.UnauthorizedClientException;
+import com.google.googleidentity.oauth2.exception.UnsupportedGrantTypeException;
 import com.google.googleidentity.oauth2.util.OAuth2Constants;
+import com.google.googleidentity.oauth2.util.OAuth2Enums.GrantType;
 import com.google.googleidentity.oauth2.util.OAuth2ParameterNames;
 import com.google.googleidentity.oauth2.util.OAuth2Utils;
 
@@ -61,26 +65,26 @@ public final class TokenEndpointRequestValidator {
 
         switch (grantType) {
             case OAuth2Constants.GrantType.IMPLICIT:
-                if (!client.getGrantTypesList().contains(ClientDetails.GrantType.IMPLICIT)) {
+                if (!client.getGrantTypesList().contains(GrantType.IMPLICIT)) {
                     throw new UnauthorizedClientException();
                 }
                 throw new InvalidRequestException(
                         InvalidRequestException.ErrorCode.IMPLICIT_GRANT_IN_TOKEN_ENDPOINT);
             case OAuth2Constants.GrantType.AUTHORIZATION_CODE:
                 if (!client.getGrantTypesList()
-                        .contains(ClientDetails.GrantType.AUTHORIZATION_CODE)) {
+                        .contains(GrantType.AUTHORIZATION_CODE)) {
                     throw new UnauthorizedClientException();
                 }
                 validateAuthCodeRequest(request);
                 break;
             case OAuth2Constants.GrantType.REFRESH_TOKEN:
-                if (!client.getGrantTypesList().contains(ClientDetails.GrantType.REFRESH_TOKEN)) {
+                if (!client.getGrantTypesList().contains(GrantType.REFRESH_TOKEN)) {
                     throw new UnauthorizedClientException();
                 }
                 validateRefreshTokenRequest(request);
                 break;
             case OAuth2Constants.GrantType.JWT_ASSERTION:
-                if (!client.getGrantTypesList().contains(ClientDetails.GrantType.JWT_ASSERTION)) {
+                if (!client.getGrantTypesList().contains(GrantType.JWT_ASSERTION)) {
                     throw new UnauthorizedClientException();
                 }
                 validateJwtAssertion(request);

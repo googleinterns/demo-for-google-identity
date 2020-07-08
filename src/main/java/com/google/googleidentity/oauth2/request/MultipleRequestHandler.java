@@ -19,19 +19,21 @@ package com.google.googleidentity.oauth2.request;
 import com.google.googleidentity.oauth2.exception.OAuth2Exception;
 import com.google.googleidentity.oauth2.exception.UnsupportedGrantTypeException;
 
+import com.google.googleidentity.oauth2.util.OAuth2Enums.GrantType;
+import com.google.inject.Inject;
+import java.util.Map;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.Map;
 
-import static com.google.googleidentity.oauth2.request.OAuth2Request.RequestBody.GrantType;
 
 /**
  * Make multiple grant type available.
  */
 public class MultipleRequestHandler implements RequestHandler {
 
-    private Map<GrantType, RequestHandler> requestHandlerMap;
+    private final Map<GrantType, RequestHandler> requestHandlerMap;
 
+    @Inject
     public MultipleRequestHandler(Map<GrantType, RequestHandler> requestHandlerMap) {
         this.requestHandlerMap = requestHandlerMap;
     }

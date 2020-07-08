@@ -22,10 +22,10 @@ import com.google.common.hash.Hashing;
 import com.google.googleidentity.oauth2.client.ClientDetails;
 import com.google.googleidentity.oauth2.client.ClientDetailsService;
 import com.google.googleidentity.oauth2.client.InMemoryClientDetailsService;
+import com.google.googleidentity.oauth2.util.OAuth2Enums.GrantType;
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 import com.google.inject.Singleton;
-import static com.google.googleidentity.oauth2.client.ClientDetails.GrantType;
 
 
 public class TestClientModule extends AbstractModule {

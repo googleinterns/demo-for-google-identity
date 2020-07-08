@@ -22,10 +22,14 @@ import com.google.common.collect.ImmutableSet;
 import com.google.googleidentity.oauth2.client.ClientDetails;
 import com.google.googleidentity.oauth2.client.ClientDetailsService;
 import com.google.googleidentity.oauth2.client.ClientSession;
-import com.google.googleidentity.oauth2.exception.*;
+import com.google.googleidentity.oauth2.exception.OAuth2Exception;
+import com.google.googleidentity.oauth2.exception.OAuth2ExceptionHandler;
+import com.google.googleidentity.oauth2.exception.InvalidRequestException;
 import com.google.googleidentity.oauth2.request.OAuth2Request;
 import com.google.googleidentity.oauth2.request.RequestHandler;
 import com.google.googleidentity.oauth2.util.OAuth2Constants;
+import com.google.googleidentity.oauth2.util.OAuth2EnumMap;
+import com.google.googleidentity.oauth2.util.OAuth2Enums.GrantType;
 import com.google.googleidentity.oauth2.util.OAuth2ParameterNames;
 import com.google.googleidentity.oauth2.util.OAuth2Utils;
 import com.google.googleidentity.oauth2.validator.AuthorizationEndpointRequestValidator;
@@ -43,8 +47,6 @@ import java.net.URLDecoder;
 import java.util.Set;
 import java.util.logging.Logger;
 
-import static com.google.googleidentity.oauth2.request.OAuth2Request.RequestBody.GrantType;
-import static com.google.googleidentity.oauth2.request.OAuth2Request.RequestBody.ResponseType;
 
 /**
  * Demo AuthorizationEndpoint for OAuth2 Server
@@ -58,12 +60,12 @@ public final class AuthorizationEndpoint extends HttpServlet {
 
     private final ClientDetailsService clientDetailsService;
 
-    private final Provider<RequestHandler> requestHandler;
+    private final RequestHandler requestHandler;
 
     @Inject
     public AuthorizationEndpoint(
             ClientDetailsService clientDetailsService,
-            Provider<RequestHandler> requestHandler) {
+            RequestHandler requestHandler) {
         this.clientDetailsService = clientDetailsService;
         this.requestHandler = requestHandler;
     }
@@ -137,7 +139,7 @@ public final class AuthorizationEndpoint extends HttpServlet {
                 "Request should have been checked in validation");
 
         try {
-            requestHandler.get().handle(
+            requestHandler.handle(
                     response, OAuth2Utils.getClientSession(request).getRequest().get());
         } catch (OAuth2Exception exception) {
             log.info(
@@ -191,18 +193,10 @@ public final class AuthorizationEndpoint extends HttpServlet {
                         OAuth2Utils.getUserSession(request).getUser().get()
                                 .getUsername());
         oauth2RequestBuilder.getRequestBodyBuilder()
-                .setIsScoped(!scope.isEmpty())
-                .addAllScopes(scope);
-        switch (responseType) {
-            case OAuth2Constants.ResponseType.CODE:
-                oauth2RequestBuilder.getRequestBodyBuilder().setResponseType(ResponseType.CODE);
-                break;
-            case OAuth2Constants.ResponseType.TOKEN:
-                oauth2RequestBuilder.getRequestBodyBuilder().setResponseType(ResponseType.TOKEN);
-            default:
-                // Will never happen since we have validated it
-                break;
-        }
+            .setIsScoped(!scope.isEmpty())
+            .addAllScopes(scope)
+            .setResponseType(OAuth2EnumMap.RESPONSE_TYPE_MAP.get(responseType));
+
 
         switch (OAuth2Utils.getGrantTypeFromResponseType(responseType)) {
             case OAuth2Constants.GrantType.AUTHORIZATION_CODE:

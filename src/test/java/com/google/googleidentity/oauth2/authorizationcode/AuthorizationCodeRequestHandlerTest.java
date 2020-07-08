@@ -28,6 +28,8 @@ import com.google.googleidentity.oauth2.token.InMemoryOAuth2TokenService;
 import com.google.googleidentity.oauth2.token.OAuth2AccessToken;
 import com.google.googleidentity.oauth2.token.OAuth2RefreshToken;
 import com.google.googleidentity.oauth2.token.OAuth2TokenService;
+import com.google.googleidentity.oauth2.util.OAuth2Enums.GrantType;
+import com.google.googleidentity.oauth2.util.OAuth2Enums.ResponseType;
 import com.google.googleidentity.oauth2.util.OAuth2ParameterNames;
 import com.google.googleidentity.security.UserSession;
 import com.google.googleidentity.user.InMemoryUserDetailsService;
@@ -72,7 +74,7 @@ public class AuthorizationCodeRequestHandlerTest {
           .addScopes("read")
           .setIsScoped(true)
           .addRedirectUris(REDIRECT_URI)
-          .addGrantTypes(ClientDetails.GrantType.AUTHORIZATION_CODE)
+          .addGrantTypes(GrantType.AUTHORIZATION_CODE)
           .build();
   private static final String USERNAME = "username";
   private static final String PASSWORD = "password";
@@ -93,9 +95,9 @@ public class AuthorizationCodeRequestHandlerTest {
               OAuth2Request.RequestBody.newBuilder()
                   .setIsScoped(true)
                   .addAllScopes(CLIENT.getScopesList())
-                  .setResponseType(OAuth2Request.RequestBody.ResponseType.CODE)
+                  .setResponseType(ResponseType.CODE)
                   .setRefreshable(true)
-                  .setGrantType(OAuth2Request.RequestBody.GrantType.AUTHORIZATION_CODE)
+                  .setGrantType(GrantType.AUTHORIZATION_CODE)
                   .build())
           .setAuthorizationResponse(
               OAuth2Request.AuthorizationResponse.newBuilder()
@@ -114,9 +116,9 @@ public class AuthorizationCodeRequestHandlerTest {
               OAuth2Request.RequestBody.newBuilder()
                   .setIsScoped(true)
                   .addAllScopes(CLIENT.getScopesList())
-                  .setResponseType(OAuth2Request.RequestBody.ResponseType.TOKEN)
+                  .setResponseType(ResponseType.TOKEN)
                   .setRefreshable(true)
-                  .setGrantType(OAuth2Request.RequestBody.GrantType.AUTHORIZATION_CODE)
+                  .setGrantType(GrantType.AUTHORIZATION_CODE)
                   .build())
           .setAuthorizationResponse(
               OAuth2Request.AuthorizationResponse.newBuilder()

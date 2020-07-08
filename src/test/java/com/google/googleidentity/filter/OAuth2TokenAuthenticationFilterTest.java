@@ -23,7 +23,8 @@ import com.google.googleidentity.oauth2.request.OAuth2Request;
 import com.google.googleidentity.oauth2.token.InMemoryOAuth2TokenService;
 import com.google.googleidentity.oauth2.token.OAuth2AccessToken;
 import com.google.googleidentity.oauth2.token.OAuth2TokenService;
-import com.google.googleidentity.oauth2.util.OAuth2Constants;
+import com.google.googleidentity.oauth2.util.OAuth2Enums.GrantType;
+import com.google.googleidentity.oauth2.util.OAuth2Enums.ResponseType;
 import com.google.googleidentity.oauth2.util.OAuth2ParameterNames;
 import com.google.googleidentity.testtools.FakeHttpSession;
 import com.google.googleidentity.user.InMemoryUserDetailsService;
@@ -36,7 +37,6 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.Optional;
 
 import static com.google.common.truth.Truth8.assertThat;
 import static org.mockito.Mockito.when;
@@ -75,7 +75,7 @@ public class OAuth2TokenAuthenticationFilterTest {
                     .addScopes("read")
                     .setIsScoped(true)
                     .addRedirectUris(REDIRECT_URI)
-                    .addGrantTypes(ClientDetails.GrantType.AUTHORIZATION_CODE)
+                    .addGrantTypes(GrantType.AUTHORIZATION_CODE)
                     .build();
 
     private static final OAuth2Request TESTREQUEST0 =
@@ -89,10 +89,9 @@ public class OAuth2TokenAuthenticationFilterTest {
                             OAuth2Request.RequestBody.newBuilder()
                                     .setIsScoped(true)
                                     .addAllScopes(CLIENT.getScopesList())
-                                    .setResponseType(OAuth2Request.RequestBody.ResponseType.TOKEN)
+                                    .setResponseType(ResponseType.TOKEN)
                                     .setRefreshable(true)
-                                    .setGrantType(
-                                            OAuth2Request.RequestBody.GrantType.AUTHORIZATION_CODE)
+                                    .setGrantType(GrantType.AUTHORIZATION_CODE)
                                     .build())
                     .build();
 

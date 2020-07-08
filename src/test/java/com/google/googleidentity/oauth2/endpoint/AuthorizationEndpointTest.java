@@ -18,23 +18,27 @@ package com.google.googleidentity.oauth2.endpoint;
 
 import com.google.common.base.Charsets;
 import com.google.common.hash.Hashing;
+import com.google.googleidentity.oauth2.authorizationcode.AuthorizationCodeRequestHandler;
 import com.google.googleidentity.oauth2.authorizationcode.AuthorizationCodeService;
 import com.google.googleidentity.oauth2.authorizationcode.InMemoryCodeStore;
 import com.google.googleidentity.oauth2.client.ClientDetails;
 import com.google.googleidentity.oauth2.client.ClientDetailsService;
 import com.google.googleidentity.oauth2.client.InMemoryClientDetailsService;
-import com.google.googleidentity.oauth2.request.DefaultRequestHandlerProvider;
+import com.google.googleidentity.oauth2.request.MultipleRequestHandler;
 import com.google.googleidentity.oauth2.request.RequestHandler;
 import com.google.googleidentity.oauth2.request.OAuth2Request;
 import com.google.googleidentity.oauth2.token.InMemoryOAuth2TokenService;
 import com.google.googleidentity.oauth2.util.OAuth2Constants;
+import com.google.googleidentity.oauth2.util.OAuth2Enums.GrantType;
+import com.google.googleidentity.oauth2.util.OAuth2Enums.ResponseType;
 import com.google.googleidentity.oauth2.util.OAuth2ParameterNames;
 import com.google.googleidentity.security.UserSession;
 import com.google.googleidentity.testtools.FakeHttpSession;
 import com.google.googleidentity.user.InMemoryUserDetailsService;
 import com.google.googleidentity.user.UserDetails;
 import com.google.googleidentity.user.UserDetailsService;
-import com.google.inject.Provider;
+import java.util.HashMap;
+import java.util.Map;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -77,7 +81,7 @@ public class AuthorizationEndpointTest {
                     .addScopes("read")
                     .setIsScoped(true)
                     .addRedirectUris(REDIRECT_URI)
-                    .addGrantTypes(ClientDetails.GrantType.AUTHORIZATION_CODE)
+                    .addGrantTypes(GrantType.AUTHORIZATION_CODE)
                     .build();
 
     private static final String USERNAME = "usernames";
@@ -100,13 +104,16 @@ public class AuthorizationEndpointTest {
         userDetailsService.addUser(USER);
         userSession = new UserSession();
         userSession.setUser(USER);
-        Provider<RequestHandler> provider =
-                new DefaultRequestHandlerProvider(
-                        new AuthorizationCodeService(new InMemoryCodeStore()),
-                        new InMemoryOAuth2TokenService(),
-                        userDetailsService,
-                        clientDetailsService);
-        authorizationEndpoint = new AuthorizationEndpoint(clientDetailsService, provider);
+        Map<GrantType, RequestHandler> map = new HashMap<>();
+        map.put(
+            GrantType.AUTHORIZATION_CODE,
+            new AuthorizationCodeRequestHandler(
+                new AuthorizationCodeService(new InMemoryCodeStore()),
+                new InMemoryOAuth2TokenService()));
+        authorizationEndpoint =
+            new AuthorizationEndpoint(
+                clientDetailsService,
+                new MultipleRequestHandler(map));
     }
 
 
@@ -183,12 +190,9 @@ public class AuthorizationEndpointTest {
                                 OAuth2Request.RequestBody.newBuilder()
                                         .setIsScoped(true)
                                         .addAllScopes(CLIENT.getScopesList())
-                                        .setResponseType(
-                                                OAuth2Request.RequestBody.ResponseType.CODE)
+                                        .setResponseType(ResponseType.CODE)
                                         .setRefreshable(true)
-                                        .setGrantType(
-                                                OAuth2Request.RequestBody
-                                                        .GrantType.AUTHORIZATION_CODE)
+                                        .setGrantType(GrantType.AUTHORIZATION_CODE)
                                         .build())
                         .setAuthorizationResponse(
                                 OAuth2Request.AuthorizationResponse.newBuilder()

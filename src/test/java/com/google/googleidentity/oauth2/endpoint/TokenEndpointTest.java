@@ -20,6 +20,7 @@ import com.google.common.base.Charsets;
 import com.google.common.collect.ImmutableList;
 import com.google.common.hash.Hashing;
 import com.google.common.truth.Truth;
+import com.google.googleidentity.oauth2.authorizationcode.AuthorizationCodeRequestHandler;
 import com.google.googleidentity.oauth2.authorizationcode.AuthorizationCodeService;
 import com.google.googleidentity.oauth2.authorizationcode.InMemoryCodeStore;
 import com.google.googleidentity.oauth2.client.ClientDetails;
@@ -28,18 +29,21 @@ import com.google.googleidentity.oauth2.client.ClientSession;
 import com.google.googleidentity.oauth2.client.InMemoryClientDetailsService;
 import com.google.googleidentity.oauth2.exception.InvalidRequestException;
 import com.google.googleidentity.oauth2.exception.OAuth2ExceptionHandler;
-import com.google.googleidentity.oauth2.request.DefaultRequestHandlerProvider;
+import com.google.googleidentity.oauth2.request.MultipleRequestHandler;
 import com.google.googleidentity.oauth2.request.OAuth2Request;
 import com.google.googleidentity.oauth2.request.RequestHandler;
 import com.google.googleidentity.oauth2.token.InMemoryOAuth2TokenService;
 import com.google.googleidentity.oauth2.util.OAuth2Constants;
+import com.google.googleidentity.oauth2.util.OAuth2Enums.GrantType;
+import com.google.googleidentity.oauth2.util.OAuth2Enums.ResponseType;
 import com.google.googleidentity.oauth2.util.OAuth2ParameterNames;
 import com.google.googleidentity.security.UserSession;
 import com.google.googleidentity.testtools.FakeHttpSession;
 import com.google.googleidentity.user.InMemoryUserDetailsService;
 import com.google.googleidentity.user.UserDetails;
 import com.google.googleidentity.user.UserDetailsService;
-import com.google.inject.Provider;
+import java.util.HashMap;
+import java.util.Map;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -73,11 +77,11 @@ public class TokenEndpointTest {
 
     private static final String LINE = System.lineSeparator();
 
-    private static final ImmutableList<ClientDetails.GrantType> TESTGRANTTYPES = ImmutableList.of(
-            ClientDetails.GrantType.AUTHORIZATION_CODE,
-            ClientDetails.GrantType.IMPLICIT,
-            ClientDetails.GrantType.REFRESH_TOKEN,
-            ClientDetails.GrantType.JWT_ASSERTION);
+    private static final ImmutableList<GrantType> TESTGRANTTYPES = ImmutableList.of(
+            GrantType.AUTHORIZATION_CODE,
+            GrantType.IMPLICIT,
+            GrantType.REFRESH_TOKEN,
+            GrantType.JWT_ASSERTION);
 
     private static final ClientDetails CLIENT =
             ClientDetails.newBuilder()
@@ -114,13 +118,15 @@ public class TokenEndpointTest {
         clientSession = new ClientSession();
         clientSession.setClient(CLIENT);
         System.setProperty("AUTH_CODE_LENGTH", "10");
-        Provider<RequestHandler> provider =
-                new DefaultRequestHandlerProvider(
-                        new AuthorizationCodeService(new InMemoryCodeStore()),
-                        new InMemoryOAuth2TokenService(),
-                        userDetailsService,
-                        clientDetailsService);
-        tokenEndpoint = new TokenEndpoint(clientDetailsService, provider);
+        Map<GrantType, RequestHandler> map = new HashMap<>();
+        map.put(
+            GrantType.AUTHORIZATION_CODE,
+            new AuthorizationCodeRequestHandler(
+                new AuthorizationCodeService(new InMemoryCodeStore()),
+                new InMemoryOAuth2TokenService()));
+        tokenEndpoint = new TokenEndpoint(
+            clientDetailsService,
+            new MultipleRequestHandler(map));
     }
 
     @Test
@@ -165,8 +171,8 @@ public class TokenEndpointTest {
                 .setClientId(CLIENTID)
                 .setCode("auth_code");
         oauth2RequestBuilder.getRequestBodyBuilder()
-                .setGrantType(OAuth2Request.RequestBody.GrantType.AUTHORIZATION_CODE)
-                .setResponseType(OAuth2Request.RequestBody.ResponseType.TOKEN);
+                .setGrantType(GrantType.AUTHORIZATION_CODE)
+                .setResponseType(ResponseType.TOKEN);
         oauth2RequestBuilder.getAuthorizationResponseBuilder().setRedirectUri(REDIRECT_URI);
 
         assertThat(tokenEndpoint.parseOAuth2RequestFromHttpRequest(request))
@@ -191,8 +197,8 @@ public class TokenEndpointTest {
         oauth2RequestBuilder.getRequestAuthBuilder()
                 .setClientId(CLIENTID);
         oauth2RequestBuilder.getRequestBodyBuilder()
-                .setGrantType(OAuth2Request.RequestBody.GrantType.REFRESH_TOKEN)
-                .setResponseType(OAuth2Request.RequestBody.ResponseType.TOKEN)
+                .setGrantType(GrantType.REFRESH_TOKEN)
+                .setResponseType(ResponseType.TOKEN)
                 .setRefreshToken("refresh_token");
 
         assertThat(tokenEndpoint.parseOAuth2RequestFromHttpRequest(request))
@@ -218,10 +224,10 @@ public class TokenEndpointTest {
         oauth2RequestBuilder.getRequestAuthBuilder()
                 .setClientId(CLIENTID);
         oauth2RequestBuilder.getRequestBodyBuilder()
-                .setGrantType(OAuth2Request.RequestBody.GrantType.JWT_ASSERTION)
+                .setGrantType(GrantType.JWT_ASSERTION)
                 .setAssertion("assertion")
                 .setIntent(OAuth2Constants.JwtAssertionIntents.CREATE)
-                .setResponseType(OAuth2Request.RequestBody.ResponseType.TOKEN)
+                .setResponseType(ResponseType.TOKEN)
                 .setIsScoped(true)
                 .addScopes("read");
 

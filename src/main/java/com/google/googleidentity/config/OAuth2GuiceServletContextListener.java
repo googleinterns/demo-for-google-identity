@@ -18,7 +18,6 @@ package com.google.googleidentity.config;
 
 import com.google.googleidentity.oauth2.client.test.TestClientModule;
 import com.google.googleidentity.oauth2.config.OAuth2ServerModule;
-import com.google.googleidentity.oauth2.token.TokenModule;
 import com.google.googleidentity.user.test.TestUserModule;
 import com.google.inject.Guice;
 import com.google.inject.Injector;

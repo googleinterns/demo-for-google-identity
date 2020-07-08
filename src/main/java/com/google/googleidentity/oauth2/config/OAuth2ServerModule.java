@@ -17,7 +17,6 @@
 package com.google.googleidentity.oauth2.config;
 
 import com.google.googleidentity.oauth2.authorizationcode.AuthorizationCodeModule;
-import com.google.googleidentity.oauth2.request.RequestHandler;
 import com.google.googleidentity.oauth2.request.RequestHandlerModule;
 import com.google.googleidentity.oauth2.token.TokenModule;
 import com.google.inject.AbstractModule;
