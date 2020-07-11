@@ -104,6 +104,6 @@ public final class AuthorizationCodeService {
     System.arraycopy(prefixBytes, 0, authCodeBytes, 0, numPrefixBytesToCopy);
 
     // Here we truncate the result since the encode hex may be longer the codeLength.
-    return BaseEncoding.base64Url().encode(authCodeBytes).substring(0, codeLength);
+    return BaseEncoding.base64Url().withPadChar('*').encode(authCodeBytes).substring(0, codeLength);
   }
 }

@@ -42,7 +42,7 @@ final class UserClientTokenInfo {
   public static UserClientTokenInfo decryptTokenString(Key aesKey, String tokenString) {
     try {
       Cipher cipher = Cipher.getInstance("AES");
-      byte[] bytesToDecrypt = BaseEncoding.base64Url().decode(tokenString);
+      byte[] bytesToDecrypt = BaseEncoding.base64Url().withPadChar('*').decode(tokenString);
       cipher.init(Cipher.DECRYPT_MODE, aesKey);
       byte[] decryptedBytes = cipher.doFinal(bytesToDecrypt);
       String tokenInfoString = new String(decryptedBytes, StandardCharsets.UTF_8);
@@ -83,7 +83,7 @@ final class UserClientTokenInfo {
       cipher.init(Cipher.ENCRYPT_MODE, aesKey);
       byte[] bytesToEncrypt = tokenInfo.getBytes(StandardCharsets.UTF_8);
       byte[] encryptedBytes = cipher.doFinal(bytesToEncrypt);
-      return BaseEncoding.base64Url().encode(encryptedBytes);
+      return BaseEncoding.base64Url().withPadChar('*').encode(encryptedBytes);
     } catch (Exception e) {
       log.log(Level.INFO, "Error when encrypting tokenString!", e);
       return null;
