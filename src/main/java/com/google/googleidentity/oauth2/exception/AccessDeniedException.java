@@ -18,18 +18,17 @@ package com.google.googleidentity.oauth2.exception;
 
 public final class AccessDeniedException extends OAuth2Exception {
 
-    private static final String ACCESS_DENIED = "access_denied";
+  private static final String ACCESS_DENIED = "access_denied";
 
-    public AccessDeniedException() {
-        super();
-    }
+  public AccessDeniedException() {
+    super();
+  }
 
-    public String getErrorType(){
-        return ACCESS_DENIED;
-    }
+  public String getErrorType() {
+    return ACCESS_DENIED;
+  }
 
-    public String getErrorDescription(){
-        return "The client is not allowed to use this method!";
-    }
-
+  public String getErrorDescription() {
+    return "The client is not allowed to use this method!";
+  }
 }

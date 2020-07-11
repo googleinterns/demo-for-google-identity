@@ -26,68 +26,56 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-/**
- * Test {@link InMemoryCodeStore}
- */
+/** Test {@link InMemoryCodeStore} */
 public class InMemoryCodeStoreTest {
 
-    private static final String TEST_CODE = "123";
+  private static final String TEST_CODE = "123";
 
-    private static final OAuth2Request oauth2Request =
-            OAuth2Request.newBuilder()
-                    .setRequestAuth(
-                            OAuth2Request.RequestAuth.newBuilder()
-                                    .setClientId(TEST_CODE))
-                    .setRequestBody(
-                            OAuth2Request.RequestBody.newBuilder()
-                                    .setResponseType(ResponseType.CODE))
-                    .setAuthorizationResponse(
-                            OAuth2Request.AuthorizationResponse.newBuilder()
-                                    .setState(TEST_CODE))
-                    .build();
+  private static final OAuth2Request oauth2Request =
+      OAuth2Request.newBuilder()
+          .setRequestAuth(OAuth2Request.RequestAuth.newBuilder().setClientId(TEST_CODE))
+          .setRequestBody(OAuth2Request.RequestBody.newBuilder().setResponseType(ResponseType.CODE))
+          .setAuthorizationResponse(
+              OAuth2Request.AuthorizationResponse.newBuilder().setState(TEST_CODE))
+          .build();
 
-    @Test
-    void testInMemoryCodeStore_duplicateCode_canNotStore() {
+  @Test
+  void testInMemoryCodeStore_duplicateCode_canNotStore() {
 
-        InMemoryCodeStore codeStore = new InMemoryCodeStore();
+    InMemoryCodeStore codeStore = new InMemoryCodeStore();
 
-        assertTrue(codeStore.setCode(TEST_CODE, oauth2Request));
+    assertTrue(codeStore.setCode(TEST_CODE, oauth2Request));
 
-        assertFalse(codeStore.setCode(TEST_CODE, oauth2Request));
-    }
+    assertFalse(codeStore.setCode(TEST_CODE, oauth2Request));
+  }
 
-    @Test
-    void testInMemoryCodeStore_correctStore_correctConsume() {
+  @Test
+  void testInMemoryCodeStore_correctStore_correctConsume() {
 
-        InMemoryCodeStore codeStore = new InMemoryCodeStore();
+    InMemoryCodeStore codeStore = new InMemoryCodeStore();
 
-        assertTrue(codeStore.setCode(TEST_CODE, oauth2Request));
+    assertTrue(codeStore.setCode(TEST_CODE, oauth2Request));
 
-        assertThat(codeStore.consumeCode(TEST_CODE))
-                .isEqualTo(Optional.of(oauth2Request));
-    }
+    assertThat(codeStore.consumeCode(TEST_CODE)).isEqualTo(Optional.of(oauth2Request));
+  }
 
-    @Test
-    void testInMemoryCodeStore_noCode_consumeNull() {
+  @Test
+  void testInMemoryCodeStore_noCode_consumeNull() {
 
-        InMemoryCodeStore codeStore = new InMemoryCodeStore();
+    InMemoryCodeStore codeStore = new InMemoryCodeStore();
 
-        assertThat(codeStore.consumeCode(TEST_CODE))
-                .isEqualTo(Optional.empty());
-    }
+    assertThat(codeStore.consumeCode(TEST_CODE)).isEqualTo(Optional.empty());
+  }
 
-    @Test
-    void testInMemoryCodeStore_CorrectConsume_codeDeleted() {
+  @Test
+  void testInMemoryCodeStore_CorrectConsume_codeDeleted() {
 
-        InMemoryCodeStore codeStore = new InMemoryCodeStore();
+    InMemoryCodeStore codeStore = new InMemoryCodeStore();
 
-        assertTrue(codeStore.setCode(TEST_CODE, oauth2Request));
+    assertTrue(codeStore.setCode(TEST_CODE, oauth2Request));
 
-        assertThat(codeStore.consumeCode(TEST_CODE))
-                .isEqualTo(Optional.of(oauth2Request));
+    assertThat(codeStore.consumeCode(TEST_CODE)).isEqualTo(Optional.of(oauth2Request));
 
-        assertThat(codeStore.consumeCode(TEST_CODE))
-                .isEqualTo(Optional.empty());
-    }
-
+    assertThat(codeStore.consumeCode(TEST_CODE)).isEqualTo(Optional.empty());
+  }
 }

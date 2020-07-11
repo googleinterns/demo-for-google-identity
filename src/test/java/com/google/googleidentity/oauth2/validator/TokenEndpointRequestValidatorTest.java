@@ -42,365 +42,329 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public class TokenEndpointRequestValidatorTest {
-    private ClientSession clientSession;
-
-    private ClientDetailsService clientDetailsService;
-
-
-    private static final String CLIENTID = "google";
-    private static final String SECRET = "secret";
-    private static final String REDIRECT_URI_REGEX= "http://www.google.com/";
-    private static final String REDIRECT_URI= "http://www.google.com/123";
-
-    private static final ImmutableList<GrantType> TESTGRANTTYPES = ImmutableList.of(
-            GrantType.AUTHORIZATION_CODE,
-            GrantType.IMPLICIT,
-            GrantType.REFRESH_TOKEN,
-            GrantType.JWT_ASSERTION);
-
-    private static final ClientDetails CLIENT =
-            ClientDetails.newBuilder()
-                    .setClientId(CLIENTID)
-                    .setSecret(Hashing.sha256()
-                            .hashString(SECRET, Charsets.UTF_8).toString())
-                    .addScopes("read")
-                    .setIsScoped(true)
-                    .addRedirectUris(REDIRECT_URI_REGEX)
-                    .addAllGrantTypes(TESTGRANTTYPES)
-                    .build();
+  private static final String CLIENTID = "google";
+  private static final String SECRET = "secret";
+  private static final String REDIRECT_URI_REGEX = "http://www.google.com/";
+  private static final String REDIRECT_URI = "http://www.google.com/123";
+  private static final ImmutableList<GrantType> TESTGRANTTYPES =
+      ImmutableList.of(
+          GrantType.AUTHORIZATION_CODE,
+          GrantType.IMPLICIT,
+          GrantType.REFRESH_TOKEN,
+          GrantType.JWT_ASSERTION);
+  private static final ClientDetails CLIENT =
+      ClientDetails.newBuilder()
+          .setClientId(CLIENTID)
+          .setSecret(Hashing.sha256().hashString(SECRET, Charsets.UTF_8).toString())
+          .addScopes("read")
+          .setIsScoped(true)
+          .addRedirectUris(REDIRECT_URI_REGEX)
+          .addAllGrantTypes(TESTGRANTTYPES)
+          .build();
+  private static final ClientDetails CLIENT1 =
+      ClientDetails.newBuilder()
+          .setClientId(CLIENTID)
+          .setSecret(Hashing.sha256().hashString(SECRET, Charsets.UTF_8).toString())
+          .addScopes("read")
+          .setIsScoped(true)
+          .addRedirectUris(REDIRECT_URI_REGEX)
+          .addGrantTypes(GrantType.IMPLICIT)
+          .build();
+  private static final String USERNAME = "username";
+  private static final String PASSWORD = "password";
+  private static final UserDetails USER =
+      UserDetails.newBuilder()
+          .setUsername(USERNAME)
+          .setPassword(Hashing.sha256().hashString(PASSWORD, Charsets.UTF_8).toString())
+          .build();
+  private ClientSession clientSession;
+  private ClientDetailsService clientDetailsService;
+
+  @Before
+  public void init() {
+    clientDetailsService = new InMemoryClientDetailsService();
+    clientDetailsService.addClient(CLIENT);
+    UserSession userSession = new UserSession();
+    userSession.setUser(USER);
+    clientSession = new ClientSession();
+    clientSession.setClient(CLIENT);
+  }
+
+  @Test
+  public void test_validatePost_unsupportedGrantTypes_throwUnsupportedGrantTypeException() {
+
+    HttpServletRequest request = mock(HttpServletRequest.class);
+    FakeHttpSession httpSession = new FakeHttpSession();
+
+    httpSession.setAttribute("client_session", clientSession);
+
+    when(request.getParameter(OAuth2ParameterNames.GRANT_TYPE)).thenReturn("not_support");
+    when(request.getParameter(OAuth2ParameterNames.CLIENT_ID)).thenReturn(CLIENTID);
+    when(request.getParameter(OAuth2ParameterNames.REDIRECT_URI)).thenReturn(REDIRECT_URI);
+    when(request.getParameter(OAuth2ParameterNames.CODE)).thenReturn("auth_code");
+    when(request.getParameter(OAuth2ParameterNames.SCOPE)).thenReturn("read");
+    when(request.getSession()).thenReturn(httpSession);
+
+    OAuth2Exception e =
+        assertThrows(
+            OAuth2Exception.class, () -> TokenEndpointRequestValidator.validatePost(request));
+
+    assertThat(e).isInstanceOf(UnsupportedGrantTypeException.class);
+  }
+
+  @Test
+  public void test_validatePost_ImplicitGrantType_throwInvalidRequestException() {
+
+    HttpServletRequest request = mock(HttpServletRequest.class);
+    FakeHttpSession httpSession = new FakeHttpSession();
+
+    httpSession.setAttribute("client_session", clientSession);
+
+    when(request.getParameter(OAuth2ParameterNames.GRANT_TYPE))
+        .thenReturn(OAuth2Constants.GrantType.IMPLICIT);
+    when(request.getParameter(OAuth2ParameterNames.CLIENT_ID)).thenReturn(CLIENTID);
+    when(request.getParameter(OAuth2ParameterNames.REDIRECT_URI)).thenReturn(REDIRECT_URI);
+    when(request.getParameter(OAuth2ParameterNames.CODE)).thenReturn("auth_code");
+    when(request.getParameter(OAuth2ParameterNames.SCOPE)).thenReturn("read");
+    when(request.getSession()).thenReturn(httpSession);
+
+    OAuth2Exception e =
+        assertThrows(
+            OAuth2Exception.class, () -> TokenEndpointRequestValidator.validatePost(request));
+
+    assertThat(e).isInstanceOf(InvalidRequestException.class);
+
+    assertThat(e.getErrorDescription())
+        .isEqualTo("Implicit flow is not supported at token endpoint!");
+  }
+
+  @Test
+  public void test_validatePost_userCannotUserTheGrantType_throwUnauthorizedClientException() {
+
+    HttpServletRequest request = mock(HttpServletRequest.class);
+    FakeHttpSession httpSession = new FakeHttpSession();
 
-    private static final ClientDetails CLIENT1 =
-            ClientDetails.newBuilder()
-                    .setClientId(CLIENTID)
-                    .setSecret(Hashing.sha256()
-                            .hashString(SECRET, Charsets.UTF_8).toString())
-                    .addScopes("read")
-                    .setIsScoped(true)
-                    .addRedirectUris(REDIRECT_URI_REGEX)
-                    .addGrantTypes(GrantType.IMPLICIT)
-                    .build();
-
-    private static final String USERNAME = "111";
-    private static final String PASSWORD = "111";
+    ClientSession clientSession1 = new ClientSession();
 
-    private static final UserDetails USER =
-            UserDetails.newBuilder()
-                    .setUsername(USERNAME)
-                    .setPassword(Hashing.sha256()
-                            .hashString(PASSWORD, Charsets.UTF_8).toString())
-                    .build();
+    clientSession1.setClient(CLIENT1);
 
-    @Before
-    public void init(){
-        clientDetailsService = new InMemoryClientDetailsService();
-        clientDetailsService.addClient(CLIENT);
-        UserSession userSession = new UserSession();
-        userSession.setUser(USER);
-        clientSession = new ClientSession();
-        clientSession.setClient(CLIENT);
-    }
-
-    @Test
-    public void test_validatePost_unsupportedGrantTypes_throwUnsupportedGrantTypeException() {
-
-        HttpServletRequest request = mock(HttpServletRequest.class);
-        FakeHttpSession httpSession = new FakeHttpSession();
+    httpSession.setAttribute("client_session", clientSession1);
 
-        httpSession.setAttribute("client_session", clientSession);
+    when(request.getParameter(OAuth2ParameterNames.GRANT_TYPE))
+        .thenReturn(OAuth2Constants.GrantType.AUTHORIZATION_CODE);
+    when(request.getParameter(OAuth2ParameterNames.CLIENT_ID)).thenReturn(CLIENTID);
+    when(request.getParameter(OAuth2ParameterNames.REDIRECT_URI)).thenReturn(REDIRECT_URI);
+    when(request.getParameter(OAuth2ParameterNames.CODE)).thenReturn("auth_code");
+    when(request.getParameter(OAuth2ParameterNames.SCOPE)).thenReturn("read");
+    when(request.getSession()).thenReturn(httpSession);
 
-        when(request.getParameter(OAuth2ParameterNames.GRANT_TYPE)).thenReturn("not_support");
-        when(request.getParameter(OAuth2ParameterNames.CLIENT_ID)).thenReturn(CLIENTID);
-        when(request.getParameter(OAuth2ParameterNames.REDIRECT_URI)).thenReturn(REDIRECT_URI);
-        when(request.getParameter(OAuth2ParameterNames.CODE)).thenReturn("auth_code");
-        when(request.getParameter(OAuth2ParameterNames.SCOPE)).thenReturn("read");
-        when(request.getSession()).thenReturn(httpSession);
+    OAuth2Exception e =
+        assertThrows(
+            OAuth2Exception.class, () -> TokenEndpointRequestValidator.validatePost(request));
 
-        OAuth2Exception e = assertThrows(
-                OAuth2Exception.class,
-                ()-> TokenEndpointRequestValidator
-                        .validatePost(request));
+    assertThat(e).isInstanceOf(UnauthorizedClientException.class);
+  }
 
-        assertThat(e).isInstanceOf(UnsupportedGrantTypeException.class);
+  @Test
+  public void test_validateAuthCodeRequest_noRedirectUri_throwInvalidRequestException() {
 
-    }
+    HttpServletRequest request = mock(HttpServletRequest.class);
+    FakeHttpSession httpSession = new FakeHttpSession();
 
+    httpSession.setAttribute("client_session", clientSession);
 
-    @Test
-    public void test_validatePost_ImplicitGrantType_throwInvalidRequestException() {
+    when(request.getParameter(OAuth2ParameterNames.GRANT_TYPE))
+        .thenReturn(OAuth2Constants.GrantType.AUTHORIZATION_CODE);
+    when(request.getParameter(OAuth2ParameterNames.CLIENT_ID)).thenReturn(CLIENTID);
+    when(request.getParameter(OAuth2ParameterNames.REDIRECT_URI)).thenReturn(null);
+    when(request.getParameter(OAuth2ParameterNames.CODE)).thenReturn("auth_code");
+    when(request.getParameter(OAuth2ParameterNames.SCOPE)).thenReturn("read");
+    when(request.getSession()).thenReturn(httpSession);
 
-        HttpServletRequest request = mock(HttpServletRequest.class);
-        FakeHttpSession httpSession = new FakeHttpSession();
+    OAuth2Exception e =
+        assertThrows(
+            OAuth2Exception.class, () -> TokenEndpointRequestValidator.validatePost(request));
 
-        httpSession.setAttribute("client_session", clientSession);
+    assertThat(e).isInstanceOf(InvalidRequestException.class);
 
-        when(request.getParameter(OAuth2ParameterNames.GRANT_TYPE))
-                .thenReturn(OAuth2Constants.GrantType.IMPLICIT);
-        when(request.getParameter(OAuth2ParameterNames.CLIENT_ID)).thenReturn(CLIENTID);
-        when(request.getParameter(OAuth2ParameterNames.REDIRECT_URI)).thenReturn(REDIRECT_URI);
-        when(request.getParameter(OAuth2ParameterNames.CODE)).thenReturn("auth_code");
-        when(request.getParameter(OAuth2ParameterNames.SCOPE)).thenReturn("read");
-        when(request.getSession()).thenReturn(httpSession);
+    assertThat(e.getErrorDescription()).isEqualTo("No Redirect Uri!");
+  }
 
-        OAuth2Exception e = assertThrows(
-                OAuth2Exception.class,
-                ()-> TokenEndpointRequestValidator
-                        .validatePost(request));
+  @Test
+  public void test_validateAuthCodeRequest_noCode_throwInvalidRequestException() {
 
-        assertThat(e).isInstanceOf(InvalidRequestException.class);
+    HttpServletRequest request = mock(HttpServletRequest.class);
+    FakeHttpSession httpSession = new FakeHttpSession();
 
-        assertThat(e.getErrorDescription()).isEqualTo(
-                "Implicit flow is not supported at token endpoint!");
+    httpSession.setAttribute("client_session", clientSession);
 
-    }
+    when(request.getParameter(OAuth2ParameterNames.GRANT_TYPE))
+        .thenReturn(OAuth2Constants.GrantType.AUTHORIZATION_CODE);
+    when(request.getParameter(OAuth2ParameterNames.CLIENT_ID)).thenReturn(CLIENTID);
+    when(request.getParameter(OAuth2ParameterNames.REDIRECT_URI)).thenReturn(REDIRECT_URI);
+    when(request.getParameter(OAuth2ParameterNames.CODE)).thenReturn(null);
+    when(request.getParameter(OAuth2ParameterNames.SCOPE)).thenReturn("read");
+    when(request.getSession()).thenReturn(httpSession);
 
+    OAuth2Exception e =
+        assertThrows(
+            OAuth2Exception.class, () -> TokenEndpointRequestValidator.validatePost(request));
 
-    @Test
-    public void test_validatePost_userCannotUserTheGrantType_throwUnauthorizedClientException() {
+    assertThat(e).isInstanceOf(InvalidRequestException.class);
 
-        HttpServletRequest request = mock(HttpServletRequest.class);
-        FakeHttpSession httpSession = new FakeHttpSession();
+    assertThat(e.getErrorDescription()).isEqualTo("No authorization code!");
+  }
 
-        ClientSession clientSession1 = new ClientSession();
+  @Test
+  public void test_validateAuthCodeRequest_Correct_doNotThrowException() {
 
-        clientSession1.setClient(CLIENT1);
+    HttpServletRequest request = mock(HttpServletRequest.class);
+    FakeHttpSession httpSession = new FakeHttpSession();
 
-        httpSession.setAttribute("client_session", clientSession1);
+    httpSession.setAttribute("client_session", clientSession);
 
-        when(request.getParameter(OAuth2ParameterNames.GRANT_TYPE))
-                .thenReturn(OAuth2Constants.GrantType.AUTHORIZATION_CODE);
-        when(request.getParameter(OAuth2ParameterNames.CLIENT_ID)).thenReturn(CLIENTID);
-        when(request.getParameter(OAuth2ParameterNames.REDIRECT_URI)).thenReturn(REDIRECT_URI);
-        when(request.getParameter(OAuth2ParameterNames.CODE)).thenReturn("auth_code");
-        when(request.getParameter(OAuth2ParameterNames.SCOPE)).thenReturn("read");
-        when(request.getSession()).thenReturn(httpSession);
+    when(request.getParameter(OAuth2ParameterNames.GRANT_TYPE))
+        .thenReturn(OAuth2Constants.GrantType.AUTHORIZATION_CODE);
+    when(request.getParameter(OAuth2ParameterNames.CLIENT_ID)).thenReturn(CLIENTID);
+    when(request.getParameter(OAuth2ParameterNames.REDIRECT_URI)).thenReturn(REDIRECT_URI);
+    when(request.getParameter(OAuth2ParameterNames.CODE)).thenReturn("auth_code");
+    when(request.getParameter(OAuth2ParameterNames.SCOPE)).thenReturn("read");
+    when(request.getSession()).thenReturn(httpSession);
 
-        OAuth2Exception e = assertThrows(
-                OAuth2Exception.class,
-                ()-> TokenEndpointRequestValidator
-                        .validatePost(request));
+    assertDoesNotThrow(() -> TokenEndpointRequestValidator.validatePost(request));
+  }
 
-        assertThat(e).isInstanceOf(UnauthorizedClientException.class);
-    }
+  @Test
+  public void test_validateRefreshTokenRequest_noRefreshToken_throwInvalidRequestException() {
 
-    @Test
-    public void test_validateAuthCodeRequest_noRedirectUri_throwInvalidRequestException() {
+    HttpServletRequest request = mock(HttpServletRequest.class);
+    FakeHttpSession httpSession = new FakeHttpSession();
 
-        HttpServletRequest request = mock(HttpServletRequest.class);
-        FakeHttpSession httpSession = new FakeHttpSession();
+    httpSession.setAttribute("client_session", clientSession);
 
-        httpSession.setAttribute("client_session", clientSession);
+    when(request.getParameter(OAuth2ParameterNames.GRANT_TYPE))
+        .thenReturn(OAuth2Constants.GrantType.REFRESH_TOKEN);
+    when(request.getParameter(OAuth2ParameterNames.REFRESH_TOKEN)).thenReturn(null);
+    when(request.getParameter(OAuth2ParameterNames.CLIENT_ID)).thenReturn(CLIENTID);
+    when(request.getParameter(OAuth2ParameterNames.SCOPE)).thenReturn("read");
+    when(request.getSession()).thenReturn(httpSession);
 
-        when(request.getParameter(OAuth2ParameterNames.GRANT_TYPE))
-                .thenReturn(OAuth2Constants.GrantType.AUTHORIZATION_CODE);
-        when(request.getParameter(OAuth2ParameterNames.CLIENT_ID)).thenReturn(CLIENTID);
-        when(request.getParameter(OAuth2ParameterNames.REDIRECT_URI)).thenReturn(null);
-        when(request.getParameter(OAuth2ParameterNames.CODE)).thenReturn("auth_code");
-        when(request.getParameter(OAuth2ParameterNames.SCOPE)).thenReturn("read");
-        when(request.getSession()).thenReturn(httpSession);
+    OAuth2Exception e =
+        assertThrows(
+            OAuth2Exception.class, () -> TokenEndpointRequestValidator.validatePost(request));
 
-        OAuth2Exception e = assertThrows(
-                OAuth2Exception.class,
-                ()-> TokenEndpointRequestValidator
-                        .validatePost(request));
+    assertThat(e).isInstanceOf(InvalidRequestException.class);
 
-        assertThat(e).isInstanceOf(InvalidRequestException.class);
+    assertThat(e.getErrorDescription()).isEqualTo("No refresh_token!");
+  }
 
-        assertThat(e.getErrorDescription()).isEqualTo("No Redirect Uri!");
+  @Test
+  public void test_validateRefreshTokenRequest_Correct_doNotThrowException() {
 
-    }
+    HttpServletRequest request = mock(HttpServletRequest.class);
+    FakeHttpSession httpSession = new FakeHttpSession();
 
+    httpSession.setAttribute("client_session", clientSession);
 
-    @Test
-    public void test_validateAuthCodeRequest_noCode_throwInvalidRequestException() {
+    when(request.getParameter(OAuth2ParameterNames.GRANT_TYPE))
+        .thenReturn(OAuth2Constants.GrantType.REFRESH_TOKEN);
+    when(request.getParameter(OAuth2ParameterNames.REFRESH_TOKEN)).thenReturn("refresh_token");
+    when(request.getParameter(OAuth2ParameterNames.CLIENT_ID)).thenReturn(CLIENTID);
+    when(request.getParameter(OAuth2ParameterNames.SCOPE)).thenReturn("read");
+    when(request.getSession()).thenReturn(httpSession);
 
-        HttpServletRequest request = mock(HttpServletRequest.class);
-        FakeHttpSession httpSession = new FakeHttpSession();
+    assertDoesNotThrow(() -> TokenEndpointRequestValidator.validatePost(request));
+  }
 
-        httpSession.setAttribute("client_session", clientSession);
+  @Test
+  public void test_validateJwtAssertion_noIntent_throwInvalidRequestException() {
 
-        when(request.getParameter(OAuth2ParameterNames.GRANT_TYPE))
-                .thenReturn(OAuth2Constants.GrantType.AUTHORIZATION_CODE);
-        when(request.getParameter(OAuth2ParameterNames.CLIENT_ID)).thenReturn(CLIENTID);
-        when(request.getParameter(OAuth2ParameterNames.REDIRECT_URI)).thenReturn(REDIRECT_URI);
-        when(request.getParameter(OAuth2ParameterNames.CODE)).thenReturn(null);
-        when(request.getParameter(OAuth2ParameterNames.SCOPE)).thenReturn("read");
-        when(request.getSession()).thenReturn(httpSession);
+    HttpServletRequest request = mock(HttpServletRequest.class);
+    FakeHttpSession httpSession = new FakeHttpSession();
 
-        OAuth2Exception e = assertThrows(
-                OAuth2Exception.class,
-                ()-> TokenEndpointRequestValidator
-                        .validatePost(request));
+    httpSession.setAttribute("client_session", clientSession);
 
-        assertThat(e).isInstanceOf(InvalidRequestException.class);
+    when(request.getParameter(OAuth2ParameterNames.GRANT_TYPE))
+        .thenReturn(OAuth2Constants.GrantType.JWT_ASSERTION);
+    when(request.getParameter(OAuth2ParameterNames.INTENT)).thenReturn(null);
+    when(request.getParameter(OAuth2ParameterNames.ASSERTION)).thenReturn("assertion");
+    when(request.getParameter(OAuth2ParameterNames.SCOPE)).thenReturn("read");
+    when(request.getSession()).thenReturn(httpSession);
 
-        assertThat(e.getErrorDescription()).isEqualTo("No authorization code!");
+    OAuth2Exception e =
+        assertThrows(
+            OAuth2Exception.class, () -> TokenEndpointRequestValidator.validatePost(request));
 
-    }
+    assertThat(e).isInstanceOf(InvalidRequestException.class);
 
-    @Test
-    public void test_validateAuthCodeRequest_Correct_doNotThrowException() {
+    assertThat(e.getErrorDescription()).isEqualTo("No Intent!");
+  }
 
-        HttpServletRequest request = mock(HttpServletRequest.class);
-        FakeHttpSession httpSession = new FakeHttpSession();
+  @Test
+  public void test_validateJwtAssertion_unsupportedIntent_throwInvalidRequestException() {
 
-        httpSession.setAttribute("client_session", clientSession);
+    HttpServletRequest request = mock(HttpServletRequest.class);
+    FakeHttpSession httpSession = new FakeHttpSession();
 
-        when(request.getParameter(OAuth2ParameterNames.GRANT_TYPE))
-                .thenReturn(OAuth2Constants.GrantType.AUTHORIZATION_CODE);
-        when(request.getParameter(OAuth2ParameterNames.CLIENT_ID)).thenReturn(CLIENTID);
-        when(request.getParameter(OAuth2ParameterNames.REDIRECT_URI)).thenReturn(REDIRECT_URI);
-        when(request.getParameter(OAuth2ParameterNames.CODE)).thenReturn("auth_code");
-        when(request.getParameter(OAuth2ParameterNames.SCOPE)).thenReturn("read");
-        when(request.getSession()).thenReturn(httpSession);
+    httpSession.setAttribute("client_session", clientSession);
 
-        assertDoesNotThrow(()-> TokenEndpointRequestValidator.validatePost(request));
+    when(request.getParameter(OAuth2ParameterNames.GRANT_TYPE))
+        .thenReturn(OAuth2Constants.GrantType.JWT_ASSERTION);
+    when(request.getParameter(OAuth2ParameterNames.INTENT)).thenReturn("unsupported");
+    when(request.getParameter(OAuth2ParameterNames.ASSERTION)).thenReturn("assertion");
+    when(request.getParameter(OAuth2ParameterNames.SCOPE)).thenReturn("read");
+    when(request.getSession()).thenReturn(httpSession);
 
-    }
+    OAuth2Exception e =
+        assertThrows(
+            OAuth2Exception.class, () -> TokenEndpointRequestValidator.validatePost(request));
 
-    @Test
-    public void test_validateRefreshTokenRequest_noRefreshToken_throwInvalidRequestException() {
+    assertThat(e).isInstanceOf(InvalidRequestException.class);
 
-        HttpServletRequest request = mock(HttpServletRequest.class);
-        FakeHttpSession httpSession = new FakeHttpSession();
+    assertThat(e.getErrorDescription()).isEqualTo("Unsupported intent!");
+  }
 
-        httpSession.setAttribute("client_session", clientSession);
+  @Test
+  public void test_validateJwtAssertion_noAssertion_throwInvalidRequestException() {
 
-        when(request.getParameter(OAuth2ParameterNames.GRANT_TYPE))
-                .thenReturn(OAuth2Constants.GrantType.REFRESH_TOKEN);
-        when(request.getParameter(OAuth2ParameterNames.REFRESH_TOKEN)).thenReturn(null);
-        when(request.getParameter(OAuth2ParameterNames.CLIENT_ID)).thenReturn(CLIENTID);
-        when(request.getParameter(OAuth2ParameterNames.SCOPE)).thenReturn("read");
-        when(request.getSession()).thenReturn(httpSession);
+    HttpServletRequest request = mock(HttpServletRequest.class);
+    FakeHttpSession httpSession = new FakeHttpSession();
 
-        OAuth2Exception e = assertThrows(
-                OAuth2Exception.class,
-                ()-> TokenEndpointRequestValidator
-                        .validatePost(request));
+    httpSession.setAttribute("client_session", clientSession);
 
-        assertThat(e).isInstanceOf(InvalidRequestException.class);
+    when(request.getParameter(OAuth2ParameterNames.GRANT_TYPE))
+        .thenReturn(OAuth2Constants.GrantType.JWT_ASSERTION);
+    when(request.getParameter(OAuth2ParameterNames.INTENT))
+        .thenReturn(OAuth2Constants.JwtAssertionIntents.CREATE);
+    when(request.getParameter(OAuth2ParameterNames.ASSERTION)).thenReturn(null);
+    when(request.getParameter(OAuth2ParameterNames.SCOPE)).thenReturn("read");
+    when(request.getSession()).thenReturn(httpSession);
 
-        assertThat(e.getErrorDescription()).isEqualTo("No refresh_token!");
+    OAuth2Exception e =
+        assertThrows(
+            OAuth2Exception.class, () -> TokenEndpointRequestValidator.validatePost(request));
 
-    }
+    assertThat(e).isInstanceOf(InvalidRequestException.class);
 
-    @Test
-    public void test_validateRefreshTokenRequest_Correct_doNotThrowException() {
+    assertThat(e.getErrorDescription()).isEqualTo("No assertion!");
+  }
 
-        HttpServletRequest request = mock(HttpServletRequest.class);
-        FakeHttpSession httpSession = new FakeHttpSession();
+  @Test
+  public void test_validateJwtAssertion_Correct_doNotThrowException() {
 
-        httpSession.setAttribute("client_session", clientSession);
+    HttpServletRequest request = mock(HttpServletRequest.class);
+    FakeHttpSession httpSession = new FakeHttpSession();
 
-        when(request.getParameter(OAuth2ParameterNames.GRANT_TYPE))
-                .thenReturn(OAuth2Constants.GrantType.REFRESH_TOKEN);
-        when(request.getParameter(OAuth2ParameterNames.REFRESH_TOKEN)).thenReturn("refresh_token");
-        when(request.getParameter(OAuth2ParameterNames.CLIENT_ID)).thenReturn(CLIENTID);
-        when(request.getParameter(OAuth2ParameterNames.SCOPE)).thenReturn("read");
-        when(request.getSession()).thenReturn(httpSession);
+    httpSession.setAttribute("client_session", clientSession);
 
-        assertDoesNotThrow(()-> TokenEndpointRequestValidator.validatePost(request));
+    when(request.getParameter(OAuth2ParameterNames.GRANT_TYPE))
+        .thenReturn(OAuth2Constants.GrantType.JWT_ASSERTION);
+    when(request.getParameter(OAuth2ParameterNames.INTENT))
+        .thenReturn(OAuth2Constants.JwtAssertionIntents.CREATE);
+    when(request.getParameter(OAuth2ParameterNames.ASSERTION)).thenReturn("assertion");
+    when(request.getParameter(OAuth2ParameterNames.SCOPE)).thenReturn("read");
+    when(request.getSession()).thenReturn(httpSession);
 
-    }
-
-
-    @Test
-    public void test_validateJwtAssertion_noIntent_throwInvalidRequestException() {
-
-        HttpServletRequest request = mock(HttpServletRequest.class);
-        FakeHttpSession httpSession = new FakeHttpSession();
-
-        httpSession.setAttribute("client_session", clientSession);
-
-        when(request.getParameter(OAuth2ParameterNames.GRANT_TYPE))
-                .thenReturn(OAuth2Constants.GrantType.JWT_ASSERTION);
-        when(request.getParameter(OAuth2ParameterNames.INTENT)).thenReturn(null);
-        when(request.getParameter(OAuth2ParameterNames.ASSERTION)).thenReturn("assertion");
-        when(request.getParameter(OAuth2ParameterNames.SCOPE)).thenReturn("read");
-        when(request.getSession()).thenReturn(httpSession);
-
-        OAuth2Exception e = assertThrows(
-                OAuth2Exception.class,
-                ()-> TokenEndpointRequestValidator
-                        .validatePost(request));
-
-        assertThat(e).isInstanceOf(InvalidRequestException.class);
-
-        assertThat(e.getErrorDescription()).isEqualTo("No Intent!");
-
-    }
-
-    @Test
-    public void test_validateJwtAssertion_unsupportedIntent_throwInvalidRequestException() {
-
-        HttpServletRequest request = mock(HttpServletRequest.class);
-        FakeHttpSession httpSession = new FakeHttpSession();
-
-        httpSession.setAttribute("client_session", clientSession);
-
-        when(request.getParameter(OAuth2ParameterNames.GRANT_TYPE))
-                .thenReturn(OAuth2Constants.GrantType.JWT_ASSERTION);
-        when(request.getParameter(OAuth2ParameterNames.INTENT)).thenReturn("unsupported");
-        when(request.getParameter(OAuth2ParameterNames.ASSERTION)).thenReturn("assertion");
-        when(request.getParameter(OAuth2ParameterNames.SCOPE)).thenReturn("read");
-        when(request.getSession()).thenReturn(httpSession);
-
-        OAuth2Exception e = assertThrows(
-                OAuth2Exception.class,
-                ()-> TokenEndpointRequestValidator
-                        .validatePost(request));
-
-        assertThat(e).isInstanceOf(InvalidRequestException.class);
-
-        assertThat(e.getErrorDescription()).isEqualTo("Unsupported intent!");
-
-    }
-
-
-    @Test
-    public void test_validateJwtAssertion_noAssertion_throwInvalidRequestException() {
-
-        HttpServletRequest request = mock(HttpServletRequest.class);
-        FakeHttpSession httpSession = new FakeHttpSession();
-
-        httpSession.setAttribute("client_session", clientSession);
-
-        when(request.getParameter(OAuth2ParameterNames.GRANT_TYPE))
-                .thenReturn(OAuth2Constants.GrantType.JWT_ASSERTION);
-        when(request.getParameter(OAuth2ParameterNames.INTENT))
-                .thenReturn(OAuth2Constants.JwtAssertionIntents.CREATE);
-        when(request.getParameter(OAuth2ParameterNames.ASSERTION)).thenReturn(null);
-        when(request.getParameter(OAuth2ParameterNames.SCOPE)).thenReturn("read");
-        when(request.getSession()).thenReturn(httpSession);
-
-        OAuth2Exception e = assertThrows(
-                OAuth2Exception.class,
-                ()-> TokenEndpointRequestValidator
-                        .validatePost(request));
-
-        assertThat(e).isInstanceOf(InvalidRequestException.class);
-
-        assertThat(e.getErrorDescription()).isEqualTo("No assertion!");
-
-    }
-
-    @Test
-    public void test_validateJwtAssertion_Correct_doNotThrowException() {
-
-        HttpServletRequest request = mock(HttpServletRequest.class);
-        FakeHttpSession httpSession = new FakeHttpSession();
-
-        httpSession.setAttribute("client_session", clientSession);
-
-        when(request.getParameter(OAuth2ParameterNames.GRANT_TYPE))
-                .thenReturn(OAuth2Constants.GrantType.JWT_ASSERTION);
-        when(request.getParameter(OAuth2ParameterNames.INTENT))
-                .thenReturn(OAuth2Constants.JwtAssertionIntents.CREATE);
-        when(request.getParameter(OAuth2ParameterNames.ASSERTION)).thenReturn("assertion");
-        when(request.getParameter(OAuth2ParameterNames.SCOPE)).thenReturn("read");
-        when(request.getSession()).thenReturn(httpSession);
-
-        assertDoesNotThrow(()-> TokenEndpointRequestValidator.validatePost(request));
-
-    }
-
+    assertDoesNotThrow(() -> TokenEndpointRequestValidator.validatePost(request));
+  }
 }

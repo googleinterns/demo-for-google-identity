@@ -47,314 +47,299 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-
 public class AuthorizationEndpointRequestValidatorTest {
 
-    private ClientSession clientSession;
-
-    private ClientDetailsService clientDetailsService;
-
-
-    private static final String CLIENTID = "client";
-    private static final String SECRET = "secret";
-    private static final String REDIRECT_URI_REGEX= "http://www.google.com/";
-    private static final String REDIRECT_URI= "http://www.google.com/123";
-
-    private static final ClientDetails CLIENT =
-            ClientDetails.newBuilder()
-                    .setClientId(CLIENTID)
-                    .setSecret(Hashing.sha256()
-                            .hashString(SECRET, Charsets.UTF_8).toString())
-                    .addScopes("read")
-                    .setIsScoped(true)
-                    .addRedirectUris(REDIRECT_URI_REGEX)
-                    .addGrantTypes(GrantType.AUTHORIZATION_CODE)
-                    .build();
+  private static final String CLIENTID = "client";
+  private static final String SECRET = "secret";
+  private static final String REDIRECT_URI_REGEX = "http://www.google.com/";
+  private static final String REDIRECT_URI = "http://www.google.com/123";
+  private static final ClientDetails CLIENT =
+      ClientDetails.newBuilder()
+          .setClientId(CLIENTID)
+          .setSecret(Hashing.sha256().hashString(SECRET, Charsets.UTF_8).toString())
+          .addScopes("read")
+          .setIsScoped(true)
+          .addRedirectUris(REDIRECT_URI_REGEX)
+          .addGrantTypes(GrantType.AUTHORIZATION_CODE)
+          .build();
+  private static final String USERNAME = "usernames";
+  private static final String PASSWORD = "password";
+  private static final UserDetails USER =
+      UserDetails.newBuilder()
+          .setUsername(USERNAME)
+          .setPassword(Hashing.sha256().hashString(PASSWORD, Charsets.UTF_8).toString())
+          .build();
+  private ClientSession clientSession;
+  private ClientDetailsService clientDetailsService;
+
+  @Before
+  public void init() {
+    clientDetailsService = new InMemoryClientDetailsService();
+    clientDetailsService.addClient(CLIENT);
+    UserSession userSession = new UserSession();
+    userSession.setUser(USER);
+    clientSession = new ClientSession();
+  }
+
+  @Test
+  public void test_validateClientAndRedirectUri_NoClientID_throwInvalidRequestException() {
+
+    HttpServletRequest request = mock(HttpServletRequest.class);
+
+    when(request.getParameter(OAuth2ParameterNames.RESPONSE_TYPE))
+        .thenReturn(OAuth2Constants.ResponseType.CODE);
+    when(request.getParameter(OAuth2ParameterNames.CLIENT_ID)).thenReturn(null);
+    when(request.getParameter(OAuth2ParameterNames.REDIRECT_URI)).thenReturn(REDIRECT_URI);
+    when(request.getParameter(OAuth2ParameterNames.SCOPE)).thenReturn("read");
+    when(request.getParameter(OAuth2ParameterNames.STATE)).thenReturn("111");
+
+    OAuth2Exception e =
+        assertThrows(
+            OAuth2Exception.class,
+            () ->
+                AuthorizationEndpointRequestValidator.validateClientAndRedirectUri(
+                    request, clientDetailsService));
+
+    assertThat(e).isInstanceOf(InvalidRequestException.class);
+    assertThat(e.getErrorDescription()).isEqualTo("No Client ID!");
+  }
+
+  @Test
+  public void test_validateClientAndRedirectUri_NonExistedClientID_throwInvalidRequestException() {
+
+    HttpServletRequest request = mock(HttpServletRequest.class);
+
+    when(request.getParameter(OAuth2ParameterNames.RESPONSE_TYPE))
+        .thenReturn(OAuth2Constants.ResponseType.CODE);
+    when(request.getParameter(OAuth2ParameterNames.CLIENT_ID)).thenReturn("non_existed");
+    when(request.getParameter(OAuth2ParameterNames.REDIRECT_URI)).thenReturn(REDIRECT_URI);
+    when(request.getParameter(OAuth2ParameterNames.SCOPE)).thenReturn("read");
+    when(request.getParameter(OAuth2ParameterNames.STATE)).thenReturn("111");
+
+    OAuth2Exception e =
+        assertThrows(
+            OAuth2Exception.class,
+            () ->
+                AuthorizationEndpointRequestValidator.validateClientAndRedirectUri(
+                    request, clientDetailsService));
+
+    assertThat(e).isInstanceOf(InvalidRequestException.class);
+    assertThat(e.getErrorDescription()).isEqualTo("Client ID does not exist!");
+  }
+
+  @Test
+  public void test_validateClientAndRedirectUri_NoRedirectUri_throwInvalidRequestException() {
+
+    HttpServletRequest request = mock(HttpServletRequest.class);
+
+    when(request.getParameter(OAuth2ParameterNames.RESPONSE_TYPE))
+        .thenReturn(OAuth2Constants.ResponseType.CODE);
+    when(request.getParameter(OAuth2ParameterNames.CLIENT_ID)).thenReturn(CLIENTID);
+    when(request.getParameter(OAuth2ParameterNames.REDIRECT_URI)).thenReturn(null);
+    when(request.getParameter(OAuth2ParameterNames.SCOPE)).thenReturn("read");
+    when(request.getParameter(OAuth2ParameterNames.STATE)).thenReturn("111");
+
+    OAuth2Exception e =
+        assertThrows(
+            OAuth2Exception.class,
+            () ->
+                AuthorizationEndpointRequestValidator.validateClientAndRedirectUri(
+                    request, clientDetailsService));
+
+    assertThat(e).isInstanceOf(InvalidRequestException.class);
+    assertThat(e.getErrorDescription()).isEqualTo("No Redirect Uri!");
+  }
+
+  @Test
+  public void test_validateClientAndRedirectUri_WrongRedirectUri_throwInvalidRequestException() {
 
-    private static final String USERNAME = "usernames";
-    private static final String PASSWORD = "password";
-
-    private static final UserDetails USER =
-            UserDetails.newBuilder()
-                    .setUsername(USERNAME)
-                    .setPassword(Hashing.sha256()
-                            .hashString(PASSWORD, Charsets.UTF_8).toString())
-                    .build();
+    HttpServletRequest request = mock(HttpServletRequest.class);
+
+    when(request.getParameter(OAuth2ParameterNames.RESPONSE_TYPE))
+        .thenReturn(OAuth2Constants.ResponseType.CODE);
+    when(request.getParameter(OAuth2ParameterNames.CLIENT_ID)).thenReturn(CLIENTID);
+    when(request.getParameter(OAuth2ParameterNames.REDIRECT_URI)).thenReturn("wrong_uri");
+    when(request.getParameter(OAuth2ParameterNames.SCOPE)).thenReturn("read");
+    when(request.getParameter(OAuth2ParameterNames.STATE)).thenReturn("111");
 
-    @Before
-    public void init(){
-        clientDetailsService = new InMemoryClientDetailsService();
-        clientDetailsService.addClient(CLIENT);
-        UserSession userSession = new UserSession();
-        userSession.setUser(USER);
-        clientSession = new ClientSession();
-    }
+    OAuth2Exception e =
+        assertThrows(
+            OAuth2Exception.class,
+            () ->
+                AuthorizationEndpointRequestValidator.validateClientAndRedirectUri(
+                    request, clientDetailsService));
 
-    @Test
-    public void test_validateClientAndRedirectUri_NoClientID_throwInvalidRequestException() {
+    assertThat(e).isInstanceOf(InvalidRequestException.class);
+    assertThat(e.getErrorDescription()).isEqualTo("Redirect Uri Mismatch!");
+  }
 
-        HttpServletRequest request = mock(HttpServletRequest.class);
+  @Test
+  public void test_validateGet_NoResponseType_throwInvalidRequestException() {
 
-        when(request.getParameter(OAuth2ParameterNames.RESPONSE_TYPE))
-                .thenReturn(OAuth2Constants.ResponseType.CODE);
-        when(request.getParameter(OAuth2ParameterNames.CLIENT_ID)).thenReturn(null);
-        when(request.getParameter(OAuth2ParameterNames.REDIRECT_URI)).thenReturn(REDIRECT_URI);
-        when(request.getParameter(OAuth2ParameterNames.SCOPE)).thenReturn("read");
-        when(request.getParameter(OAuth2ParameterNames.STATE)).thenReturn("111");
+    HttpServletRequest request = mock(HttpServletRequest.class);
 
-        OAuth2Exception e = assertThrows(
-                OAuth2Exception.class,
-                ()-> AuthorizationEndpointRequestValidator
-                        .validateClientAndRedirectUri(request, clientDetailsService));
+    when(request.getParameter(OAuth2ParameterNames.RESPONSE_TYPE)).thenReturn(null);
+    when(request.getParameter(OAuth2ParameterNames.CLIENT_ID)).thenReturn(CLIENTID);
+    when(request.getParameter(OAuth2ParameterNames.REDIRECT_URI)).thenReturn(REDIRECT_URI);
+    when(request.getParameter(OAuth2ParameterNames.SCOPE)).thenReturn("read");
+    when(request.getParameter(OAuth2ParameterNames.STATE)).thenReturn("111");
 
-        assertThat(e).isInstanceOf(InvalidRequestException.class);
-        assertThat(e.getErrorDescription()).isEqualTo("No Client ID!");
+    OAuth2Exception e =
+        assertThrows(
+            OAuth2Exception.class,
+            () -> AuthorizationEndpointRequestValidator.validateGET(request, clientDetailsService));
 
-    }
+    assertThat(e).isInstanceOf(InvalidRequestException.class);
+    assertThat(e.getErrorDescription()).isEqualTo("No Response Type!");
+  }
 
-    @Test
-    public void test_validateClientAndRedirectUri_NonExistedClientID_throwInvalidRequestException() {
+  @Test
+  public void test_validateGet_UnsupportedResponseType_throwUnsupportedResponseTypeException() {
 
-        HttpServletRequest request = mock(HttpServletRequest.class);
+    HttpServletRequest request = mock(HttpServletRequest.class);
 
-        when(request.getParameter(OAuth2ParameterNames.RESPONSE_TYPE))
-                .thenReturn(OAuth2Constants.ResponseType.CODE);
-        when(request.getParameter(OAuth2ParameterNames.CLIENT_ID)).thenReturn("non_existed");
-        when(request.getParameter(OAuth2ParameterNames.REDIRECT_URI)).thenReturn(REDIRECT_URI);
-        when(request.getParameter(OAuth2ParameterNames.SCOPE)).thenReturn("read");
-        when(request.getParameter(OAuth2ParameterNames.STATE)).thenReturn("111");
+    when(request.getParameter(OAuth2ParameterNames.RESPONSE_TYPE)).thenReturn("unsupported");
+    when(request.getParameter(OAuth2ParameterNames.CLIENT_ID)).thenReturn(CLIENTID);
+    when(request.getParameter(OAuth2ParameterNames.REDIRECT_URI)).thenReturn(REDIRECT_URI);
+    when(request.getParameter(OAuth2ParameterNames.SCOPE)).thenReturn("read");
+    when(request.getParameter(OAuth2ParameterNames.STATE)).thenReturn("111");
 
-        OAuth2Exception e = assertThrows(
-                OAuth2Exception.class,
-                ()-> AuthorizationEndpointRequestValidator
-                        .validateClientAndRedirectUri(request, clientDetailsService));
+    OAuth2Exception e =
+        assertThrows(
+            OAuth2Exception.class,
+            () -> AuthorizationEndpointRequestValidator.validateGET(request, clientDetailsService));
 
-        assertThat(e).isInstanceOf(InvalidRequestException.class);
-        assertThat(e.getErrorDescription()).isEqualTo("Client ID does not exist!");
+    assertThat(e).isInstanceOf(UnsupportedResponseTypeException.class);
+  }
 
-    }
+  @Test
+  public void test_validateGet_UnauthorizedGrantType_throwUnauthorizedClientException() {
 
-    @Test
-    public void test_validateClientAndRedirectUri_NoRedirectUri_throwInvalidRequestException() {
+    HttpServletRequest request = mock(HttpServletRequest.class);
 
-        HttpServletRequest request = mock(HttpServletRequest.class);
+    when(request.getParameter(OAuth2ParameterNames.RESPONSE_TYPE))
+        .thenReturn(OAuth2Constants.ResponseType.TOKEN);
+    when(request.getParameter(OAuth2ParameterNames.CLIENT_ID)).thenReturn(CLIENTID);
+    when(request.getParameter(OAuth2ParameterNames.REDIRECT_URI)).thenReturn(REDIRECT_URI);
+    when(request.getParameter(OAuth2ParameterNames.SCOPE)).thenReturn("invalid");
+    when(request.getParameter(OAuth2ParameterNames.STATE)).thenReturn("111");
 
-        when(request.getParameter(OAuth2ParameterNames.RESPONSE_TYPE))
-                .thenReturn(OAuth2Constants.ResponseType.CODE);
-        when(request.getParameter(OAuth2ParameterNames.CLIENT_ID)).thenReturn(CLIENTID);
-        when(request.getParameter(OAuth2ParameterNames.REDIRECT_URI)).thenReturn(null);
-        when(request.getParameter(OAuth2ParameterNames.SCOPE)).thenReturn("read");
-        when(request.getParameter(OAuth2ParameterNames.STATE)).thenReturn("111");
+    OAuth2Exception e =
+        assertThrows(
+            OAuth2Exception.class,
+            () -> AuthorizationEndpointRequestValidator.validateGET(request, clientDetailsService));
 
-        OAuth2Exception e = assertThrows(
-                OAuth2Exception.class,
-                ()-> AuthorizationEndpointRequestValidator
-                        .validateClientAndRedirectUri(request, clientDetailsService));
+    assertThat(e).isInstanceOf(UnauthorizedClientException.class);
+  }
 
-        assertThat(e).isInstanceOf(InvalidRequestException.class);
-        assertThat(e.getErrorDescription()).isEqualTo("No Redirect Uri!");
+  @Test
+  public void test_validateGet_InvalidScope_throwInvalidScopeException() {
 
-    }
+    HttpServletRequest request = mock(HttpServletRequest.class);
 
+    when(request.getParameter(OAuth2ParameterNames.RESPONSE_TYPE))
+        .thenReturn(OAuth2Constants.ResponseType.CODE);
+    when(request.getParameter(OAuth2ParameterNames.CLIENT_ID)).thenReturn(CLIENTID);
+    when(request.getParameter(OAuth2ParameterNames.REDIRECT_URI)).thenReturn(REDIRECT_URI);
+    when(request.getParameter(OAuth2ParameterNames.SCOPE)).thenReturn("invalid");
+    when(request.getParameter(OAuth2ParameterNames.STATE)).thenReturn("111");
 
-    @Test
-    public void test_validateClientAndRedirectUri_WrongRedirectUri_throwInvalidRequestException() {
+    OAuth2Exception e =
+        assertThrows(
+            OAuth2Exception.class,
+            () -> AuthorizationEndpointRequestValidator.validateGET(request, clientDetailsService));
 
-        HttpServletRequest request = mock(HttpServletRequest.class);
+    assertThat(e).isInstanceOf(InvalidScopeException.class);
+  }
 
-        when(request.getParameter(OAuth2ParameterNames.RESPONSE_TYPE))
-                .thenReturn(OAuth2Constants.ResponseType.CODE);
-        when(request.getParameter(OAuth2ParameterNames.CLIENT_ID)).thenReturn(CLIENTID);
-        when(request.getParameter(OAuth2ParameterNames.REDIRECT_URI)).thenReturn("wrong_uri");
-        when(request.getParameter(OAuth2ParameterNames.SCOPE)).thenReturn("read");
-        when(request.getParameter(OAuth2ParameterNames.STATE)).thenReturn("111");
+  @Test
+  public void test_validateGet_allRight_noException() {
 
-        OAuth2Exception e = assertThrows(
-                OAuth2Exception.class,
-                ()-> AuthorizationEndpointRequestValidator
-                        .validateClientAndRedirectUri(request, clientDetailsService));
+    HttpServletRequest request = mock(HttpServletRequest.class);
 
-        assertThat(e).isInstanceOf(InvalidRequestException.class);
-        assertThat(e.getErrorDescription()).isEqualTo("Redirect Uri Mismatch!");
+    when(request.getParameter(OAuth2ParameterNames.RESPONSE_TYPE))
+        .thenReturn(OAuth2Constants.ResponseType.CODE);
+    when(request.getParameter(OAuth2ParameterNames.CLIENT_ID)).thenReturn(CLIENTID);
+    when(request.getParameter(OAuth2ParameterNames.REDIRECT_URI)).thenReturn(REDIRECT_URI);
+    when(request.getParameter(OAuth2ParameterNames.SCOPE)).thenReturn("read");
+    when(request.getParameter(OAuth2ParameterNames.STATE)).thenReturn("111");
 
-    }
+    assertDoesNotThrow(
+        () -> AuthorizationEndpointRequestValidator.validateGET(request, clientDetailsService));
+  }
 
-    @Test
-    public void test_validateGet_NoResponseType_throwInvalidRequestException() {
+  @Test
+  public void test_validatePost_NoRequestInSession_throwInvalidRequestException() {
 
-        HttpServletRequest request = mock(HttpServletRequest.class);
+    HttpServletRequest request = mock(HttpServletRequest.class);
 
-        when(request.getParameter(OAuth2ParameterNames.RESPONSE_TYPE)).thenReturn(null);
-        when(request.getParameter(OAuth2ParameterNames.CLIENT_ID)).thenReturn(CLIENTID);
-        when(request.getParameter(OAuth2ParameterNames.REDIRECT_URI)).thenReturn(REDIRECT_URI);
-        when(request.getParameter(OAuth2ParameterNames.SCOPE)).thenReturn("read");
-        when(request.getParameter(OAuth2ParameterNames.STATE)).thenReturn("111");
+    when(request.getParameter("user_approve")).thenReturn("true");
+    FakeHttpSession httpSession = new FakeHttpSession();
+    when(request.getSession()).thenReturn(httpSession);
 
-        OAuth2Exception e = assertThrows(
-                OAuth2Exception.class,
-                ()-> AuthorizationEndpointRequestValidator
-                        .validateGET(request, clientDetailsService));
+    OAuth2Exception e =
+        assertThrows(
+            OAuth2Exception.class,
+            () -> AuthorizationEndpointRequestValidator.validatePOST(request));
 
-        assertThat(e).isInstanceOf(InvalidRequestException.class);
-        assertThat(e.getErrorDescription()).isEqualTo("No Response Type!");
-    }
+    assertThat(e).isInstanceOf(InvalidRequestException.class);
+    assertThat(e.getErrorDescription()).isEqualTo("No request need to approve!");
+  }
 
-    @Test
-    public void test_validateGet_UnsupportedResponseType_throwUnsupportedResponseTypeException() {
+  @Test
+  public void test_validatePost_userDeny_throwInvalidRequestException() {
 
-        HttpServletRequest request = mock(HttpServletRequest.class);
+    HttpServletRequest request = mock(HttpServletRequest.class);
 
-        when(request.getParameter(OAuth2ParameterNames.RESPONSE_TYPE)).thenReturn("unsupported");
-        when(request.getParameter(OAuth2ParameterNames.CLIENT_ID)).thenReturn(CLIENTID);
-        when(request.getParameter(OAuth2ParameterNames.REDIRECT_URI)).thenReturn(REDIRECT_URI);
-        when(request.getParameter(OAuth2ParameterNames.SCOPE)).thenReturn("read");
-        when(request.getParameter(OAuth2ParameterNames.STATE)).thenReturn("111");
+    when(request.getParameter("user_approve")).thenReturn("false");
+    FakeHttpSession httpSession = new FakeHttpSession();
+    when(request.getSession()).thenReturn(httpSession);
 
-        OAuth2Exception e = assertThrows(
-                OAuth2Exception.class,
-                ()-> AuthorizationEndpointRequestValidator
-                        .validateGET(request, clientDetailsService));
+    clientSession.setRequest(OAuth2Request.newBuilder().build());
+    httpSession.setAttribute("client_session", clientSession);
 
-        assertThat(e).isInstanceOf(UnsupportedResponseTypeException.class);
-    }
+    OAuth2Exception e =
+        assertThrows(
+            OAuth2Exception.class,
+            () -> AuthorizationEndpointRequestValidator.validatePOST(request));
 
-    @Test
-    public void test_validateGet_UnauthorizedGrantType_throwUnauthorizedClientException() {
+    assertThat(e).isInstanceOf(AccessDeniedException.class);
+  }
 
-        HttpServletRequest request = mock(HttpServletRequest.class);
+  @Test
+  public void test_validatePost_userConsentMissing_throwInvalidRequestException() {
 
-        when(request.getParameter(OAuth2ParameterNames.RESPONSE_TYPE))
-                .thenReturn(OAuth2Constants.ResponseType.TOKEN);
-        when(request.getParameter(OAuth2ParameterNames.CLIENT_ID)).thenReturn(CLIENTID);
-        when(request.getParameter(OAuth2ParameterNames.REDIRECT_URI)).thenReturn(REDIRECT_URI);
-        when(request.getParameter(OAuth2ParameterNames.SCOPE)).thenReturn("invalid");
-        when(request.getParameter(OAuth2ParameterNames.STATE)).thenReturn("111");
+    HttpServletRequest request = mock(HttpServletRequest.class);
 
-        OAuth2Exception e = assertThrows(
-                OAuth2Exception.class,
-                ()-> AuthorizationEndpointRequestValidator
-                        .validateGET(request, clientDetailsService));
+    when(request.getParameter("user_approve")).thenReturn(null);
+    FakeHttpSession httpSession = new FakeHttpSession();
+    when(request.getSession()).thenReturn(httpSession);
 
-        assertThat(e).isInstanceOf(UnauthorizedClientException.class);
-    }
+    clientSession.setRequest(OAuth2Request.newBuilder().build());
+    httpSession.setAttribute("client_session", clientSession);
 
-    @Test
-    public void test_validateGet_InvalidScope_throwInvalidScopeException() {
+    OAuth2Exception e =
+        assertThrows(
+            OAuth2Exception.class,
+            () -> AuthorizationEndpointRequestValidator.validatePOST(request));
 
-        HttpServletRequest request = mock(HttpServletRequest.class);
+    assertThat(e).isInstanceOf(InvalidRequestException.class);
+    assertThat(e.getErrorDescription()).isEqualTo("No User consent information!");
+  }
 
-        when(request.getParameter(OAuth2ParameterNames.RESPONSE_TYPE))
-                .thenReturn(OAuth2Constants.ResponseType.CODE);
-        when(request.getParameter(OAuth2ParameterNames.CLIENT_ID)).thenReturn(CLIENTID);
-        when(request.getParameter(OAuth2ParameterNames.REDIRECT_URI)).thenReturn(REDIRECT_URI);
-        when(request.getParameter(OAuth2ParameterNames.SCOPE)).thenReturn("invalid");
-        when(request.getParameter(OAuth2ParameterNames.STATE)).thenReturn("111");
+  @Test
+  public void test_validatePost_allRight_noException() {
 
-        OAuth2Exception e = assertThrows(
-                OAuth2Exception.class,
-                ()-> AuthorizationEndpointRequestValidator
-                        .validateGET(request, clientDetailsService));
+    HttpServletRequest request = mock(HttpServletRequest.class);
 
-        assertThat(e).isInstanceOf(InvalidScopeException.class);
-    }
+    when(request.getParameter("user_approve")).thenReturn("true");
+    when(request.getParameter("user_deny")).thenReturn(null);
+    FakeHttpSession httpSession = new FakeHttpSession();
+    when(request.getSession()).thenReturn(httpSession);
 
-    @Test
-    public void test_validateGet_allRight_noException() {
+    clientSession.setRequest(OAuth2Request.newBuilder().build());
+    httpSession.setAttribute("client_session", clientSession);
 
-        HttpServletRequest request = mock(HttpServletRequest.class);
-
-        when(request.getParameter(OAuth2ParameterNames.RESPONSE_TYPE))
-                .thenReturn(OAuth2Constants.ResponseType.CODE);
-        when(request.getParameter(OAuth2ParameterNames.CLIENT_ID)).thenReturn(CLIENTID);
-        when(request.getParameter(OAuth2ParameterNames.REDIRECT_URI)).thenReturn(REDIRECT_URI);
-        when(request.getParameter(OAuth2ParameterNames.SCOPE)).thenReturn("read");
-        when(request.getParameter(OAuth2ParameterNames.STATE)).thenReturn("111");
-
-        assertDoesNotThrow(
-                ()-> AuthorizationEndpointRequestValidator
-                        .validateGET(request, clientDetailsService));
-
-    }
-
-    @Test
-    public void test_validatePost_NoRequestInSession_throwInvalidRequestException() {
-
-        HttpServletRequest request = mock(HttpServletRequest.class);
-
-        when(request.getParameter("user_approve")).thenReturn("true");
-        FakeHttpSession httpSession = new FakeHttpSession();
-        when(request.getSession()).thenReturn(httpSession);
-
-        OAuth2Exception e = assertThrows(
-                OAuth2Exception.class,
-                ()-> AuthorizationEndpointRequestValidator
-                        .validatePOST(request));
-
-        assertThat(e).isInstanceOf(InvalidRequestException.class);
-        assertThat(e.getErrorDescription()).isEqualTo("No request need to approve!");
-    }
-
-
-    @Test
-    public void test_validatePost_userDeny_throwInvalidRequestException() {
-
-        HttpServletRequest request = mock(HttpServletRequest.class);
-
-        when(request.getParameter("user_approve")).thenReturn("false");
-        FakeHttpSession httpSession = new FakeHttpSession();
-        when(request.getSession()).thenReturn(httpSession);
-
-        clientSession.setRequest(OAuth2Request.newBuilder().build());
-        httpSession.setAttribute("client_session", clientSession);
-
-        OAuth2Exception e = assertThrows(
-                OAuth2Exception.class,
-                ()-> AuthorizationEndpointRequestValidator
-                        .validatePOST(request));
-
-        assertThat(e).isInstanceOf(AccessDeniedException.class);
-    }
-
-
-    @Test
-    public void test_validatePost_userConsentMissing_throwInvalidRequestException() {
-
-        HttpServletRequest request = mock(HttpServletRequest.class);
-
-        when(request.getParameter("user_approve")).thenReturn(null);
-        FakeHttpSession httpSession = new FakeHttpSession();
-        when(request.getSession()).thenReturn(httpSession);
-
-        clientSession.setRequest(OAuth2Request.newBuilder().build());
-        httpSession.setAttribute("client_session", clientSession);
-
-        OAuth2Exception e = assertThrows(
-                OAuth2Exception.class,
-                ()-> AuthorizationEndpointRequestValidator
-                        .validatePOST(request));
-
-        assertThat(e).isInstanceOf(InvalidRequestException.class);
-        assertThat(e.getErrorDescription()).isEqualTo("No User consent information!");
-    }
-
-
-    @Test
-    public void test_validatePost_allRight_noException() {
-
-        HttpServletRequest request = mock(HttpServletRequest.class);
-
-        when(request.getParameter("user_approve")).thenReturn("true");
-        when(request.getParameter("user_deny")).thenReturn(null);
-        FakeHttpSession httpSession = new FakeHttpSession();
-        when(request.getSession()).thenReturn(httpSession);
-
-        clientSession.setRequest(OAuth2Request.newBuilder().build());
-        httpSession.setAttribute("client_session", clientSession);
-
-        assertDoesNotThrow(
-                ()-> AuthorizationEndpointRequestValidator
-                        .validatePOST(request));
-    }
-
-
+    assertDoesNotThrow(() -> AuthorizationEndpointRequestValidator.validatePOST(request));
+  }
 }

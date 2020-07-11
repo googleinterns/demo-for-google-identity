@@ -18,18 +18,17 @@ package com.google.googleidentity.oauth2.exception;
 
 public final class UnsupportedResponseTypeException extends OAuth2Exception {
 
-    private static final String UNSUPPORTED_RESPONSE_TYPE = "unsupported_response_type";
+  private static final String UNSUPPORTED_RESPONSE_TYPE = "unsupported_response_type";
 
-    public UnsupportedResponseTypeException() {
-        super();
-    }
+  public UnsupportedResponseTypeException() {
+    super();
+  }
 
-    public String getErrorType(){
-        return UNSUPPORTED_RESPONSE_TYPE;
-    }
+  public String getErrorType() {
+    return UNSUPPORTED_RESPONSE_TYPE;
+  }
 
-    public String getErrorDescription(){
-        return "Unsupported Response Type!";
-    }
-
+  public String getErrorDescription() {
+    return "Unsupported Response Type!";
+  }
 }

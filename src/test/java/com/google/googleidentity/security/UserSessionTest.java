@@ -24,27 +24,22 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-/**
- * Test {@link UserSession}
- */
+/** Test {@link UserSession} */
 public class UserSessionTest {
 
+  @Test
+  void testUserSession_correctInsertion_canReadOut() {
+    UserSession userSession = new UserSession();
 
-    @Test
-    void testUserSession_correctInsertion_canReadOut() {
-        UserSession userSession= new UserSession();
+    assertFalse(userSession.getUser().isPresent());
 
-        assertFalse(userSession.getUser().isPresent());
+    UserDetails user =
+        UserDetails.newBuilder()
+            .setUsername("111")
+            .setPassword(Hashing.sha256().hashString("111", Charsets.UTF_8).toString())
+            .build();
+    userSession.setUser(user);
 
-        UserDetails user =
-                UserDetails.newBuilder()
-                        .setUsername("111")
-                        .setPassword(Hashing.sha256()
-                                .hashString("111", Charsets.UTF_8).toString())
-                        .build();
-        userSession.setUser(user);
-
-        assertTrue(userSession.getUser().isPresent());
-
-    }
+    assertTrue(userSession.getUser().isPresent());
+  }
 }

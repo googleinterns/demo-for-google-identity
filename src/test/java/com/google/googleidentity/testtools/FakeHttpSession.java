@@ -26,103 +26,101 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * Fake HttpSession implementation , only used for test.
- */
+/** Fake HttpSession implementation , only used for test. */
 public class FakeHttpSession implements HttpSession {
 
-    private final Map<String, Object> sessionMap = new HashMap<>();
+  private final Map<String, Object> sessionMap = new HashMap<>();
 
-    @Override
-    public long getCreationTime() {
-        throw new UnsupportedOperationException();
-    }
+  @Override
+  public long getCreationTime() {
+    throw new UnsupportedOperationException();
+  }
 
-    @Override
-    public String getId() {
-        throw new UnsupportedOperationException();
-    }
+  @Override
+  public String getId() {
+    throw new UnsupportedOperationException();
+  }
 
-    @Override
-    public long getLastAccessedTime() {
-        throw new UnsupportedOperationException();
-    }
+  @Override
+  public long getLastAccessedTime() {
+    throw new UnsupportedOperationException();
+  }
 
-    @Override
-    public ServletContext getServletContext() {
-        throw new UnsupportedOperationException();
-    }
+  @Override
+  public ServletContext getServletContext() {
+    throw new UnsupportedOperationException();
+  }
 
-    @Override
-    public void setMaxInactiveInterval(int interval) {
-        throw new UnsupportedOperationException();
-    }
+  @Override
+  public int getMaxInactiveInterval() {
+    throw new UnsupportedOperationException();
+  }
 
-    @Override
-    public int getMaxInactiveInterval() {
-        throw new UnsupportedOperationException();
-    }
+  @Override
+  public void setMaxInactiveInterval(int interval) {
+    throw new UnsupportedOperationException();
+  }
 
-    @Override
-    public HttpSessionContext getSessionContext() {
-        throw new UnsupportedOperationException();
-    }
+  @Override
+  public HttpSessionContext getSessionContext() {
+    throw new UnsupportedOperationException();
+  }
 
-    @Override
-    public Object getAttribute(String name) {
-        return sessionMap.get(name);
-    }
+  @Override
+  public Object getAttribute(String name) {
+    return sessionMap.get(name);
+  }
 
-    @Override
-    public Object getValue(String name) {
-        throw new UnsupportedOperationException();
-    }
+  @Override
+  public Object getValue(String name) {
+    throw new UnsupportedOperationException();
+  }
 
-    @Override
-    public Enumeration<String> getAttributeNames() {
-        throw new UnsupportedOperationException();
-    }
+  @Override
+  public Enumeration<String> getAttributeNames() {
+    throw new UnsupportedOperationException();
+  }
 
-    @Override
-    public String[] getValueNames() {
-        throw new UnsupportedOperationException();
-    }
+  @Override
+  public String[] getValueNames() {
+    throw new UnsupportedOperationException();
+  }
 
-    @Override
-    public void setAttribute(String name, Object value) {
-        sessionMap.put(name, value);
-    }
+  @Override
+  public void setAttribute(String name, Object value) {
+    sessionMap.put(name, value);
+  }
 
-    @Override
-    public void putValue(String name, Object value) {
-        throw new UnsupportedOperationException();
-    }
+  @Override
+  public void putValue(String name, Object value) {
+    throw new UnsupportedOperationException();
+  }
 
-    @Override
-    public void removeAttribute(String name) {
-        throw new UnsupportedOperationException();
-    }
+  @Override
+  public void removeAttribute(String name) {
+    throw new UnsupportedOperationException();
+  }
 
-    @Override
-    public void removeValue(String name) {
-        throw new UnsupportedOperationException();
-    }
+  @Override
+  public void removeValue(String name) {
+    throw new UnsupportedOperationException();
+  }
 
-    @Override
-    public void invalidate() {
-        throw new UnsupportedOperationException();
-    }
+  @Override
+  public void invalidate() {
+    throw new UnsupportedOperationException();
+  }
 
-    @Override
-    public boolean isNew() {
-        throw new UnsupportedOperationException();
-    }
+  @Override
+  public boolean isNew() {
+    throw new UnsupportedOperationException();
+  }
 
-    public UserSession getUserSession() {
-        return (UserSession) getAttribute("user_session");
-    }
+  public UserSession getUserSession() {
+    return (UserSession) getAttribute("user_session");
+  }
 
-    public ClientSession getClientSession() {
-        return (ClientSession) getAttribute("client_session");
-    }
+  public ClientSession getClientSession() {
+    return (ClientSession) getAttribute("client_session");
+  }
 }

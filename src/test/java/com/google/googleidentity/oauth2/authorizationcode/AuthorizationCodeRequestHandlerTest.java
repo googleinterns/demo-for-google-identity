@@ -151,8 +151,7 @@ public class AuthorizationCodeRequestHandlerTest {
 
     assertDoesNotThrow(() -> authorizationCodeRequestHandler.handle(response, TEST_REQUEST));
 
-    verify(response).sendRedirect(
-        Matchers.matches(REDIRECT_URI + "\\?code=.{10}&state=" + STATE));
+    verify(response).sendRedirect(Matchers.matches(REDIRECT_URI + "\\?code=.{10}&state=" + STATE));
   }
 
   @Test
@@ -275,7 +274,6 @@ public class AuthorizationCodeRequestHandlerTest {
     assertThat(refreshToken).isPresent();
 
     assertThat(refreshToken.get()).comparingExpectedFieldsOnly().isEqualTo(expectedRefreshToken);
-
   }
 
   @Test

@@ -20,9 +20,8 @@ import com.google.inject.AbstractModule;
 
 public class ClientModule extends AbstractModule {
 
-    @Override
-    protected void configure(){
-        bind(ClientDetailsService.class).to(InMemoryClientDetailsService.class);
-    }
+  @Override
+  protected void configure() {
+    bind(ClientDetailsService.class).to(InMemoryClientDetailsService.class);
+  }
 }
-

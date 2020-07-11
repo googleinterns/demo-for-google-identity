@@ -21,53 +21,46 @@ import static com.google.common.truth.Truth.assertThat;
 import com.google.common.collect.ImmutableList;
 import org.junit.jupiter.api.Test;
 
-
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
-/**
- * Test functions in {@link OAuth2Utils}
- */
+/** Test functions in {@link OAuth2Utils} */
 public class OAuth2UtilsTest {
 
-    @Test
-    void testParseScope_nullOrEmptyInput_EmptyOut() {
+  @Test
+  void testParseScope_nullOrEmptyInput_EmptyOut() {
 
-        Set<String> scopes = OAuth2Utils.parseScope(null);
+    Set<String> scopes = OAuth2Utils.parseScope(null);
 
-        assertTrue(scopes.isEmpty());
+    assertTrue(scopes.isEmpty());
 
-        scopes = OAuth2Utils.parseScope("   ");
+    scopes = OAuth2Utils.parseScope("   ");
 
-        assertTrue(scopes.isEmpty());
+    assertTrue(scopes.isEmpty());
+  }
 
-    }
+  @Test
+  void testParseScope_validInput_CorrectOut() {
 
-    @Test
-    void testParseScope_validInput_CorrectOut() {
+    Set<String> scopes = OAuth2Utils.parseScope("read write  modify");
 
-        Set<String> scopes = OAuth2Utils.parseScope("read write  modify");
+    assertThat(scopes).containsExactly("read", "write", "modify");
+  }
 
-        assertThat(scopes)
-                .containsExactly("read", "write", "modify");
+  @Test
+  void testMatchUri_simpleGALCorrectInput_CorrectOut() {
+    assertTrue(
+        OAuth2Utils.matchUri(
+            ImmutableList.of("https://oauth-redirect.googleusercontent.com/r/"),
+            "https://oauth-redirect.googleusercontent.com/r/YOUR_PROJECT_ID"));
+  }
 
-    }
-
-    @Test
-    void testMatchUri_simpleGALCorrectInput_CorrectOut() {
-        assertTrue(
-                OAuth2Utils.matchUri(
-                        ImmutableList.of("https://oauth-redirect.googleusercontent.com/r/"),
-                        "https://oauth-redirect.googleusercontent.com/r/YOUR_PROJECT_ID"));
-    }
-
-    @Test
-    void testMatchUri_simpleGALWrongInput_ReturnFalse() {
-        assertFalse(
-                OAuth2Utils.matchUri(
-                        ImmutableList.of("https://oauth-redirect.googleusercontent.com/r/"),
-                        "wrong_uri"));
-    }
+  @Test
+  void testMatchUri_simpleGALWrongInput_ReturnFalse() {
+    assertFalse(
+        OAuth2Utils.matchUri(
+            ImmutableList.of("https://oauth-redirect.googleusercontent.com/r/"), "wrong_uri"));
+  }
 }

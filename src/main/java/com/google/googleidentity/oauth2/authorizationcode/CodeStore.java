@@ -20,23 +20,17 @@ import com.google.googleidentity.oauth2.request.OAuth2Request;
 
 import java.util.Optional;
 
-/**
- * AuthorizationCode store interface
- */
+/** AuthorizationCode store interface */
 interface CodeStore {
 
-    /**
-     *
-     * @return the related request and delete the code
-     */
-    Optional<OAuth2Request> consumeCode(String code);
+  /** @return the related request and delete the code */
+  Optional<OAuth2Request> consumeCode(String code);
 
-    /**
-     * Set the code for the request,
-     * failed when a code is already exist, the code Service
-     * should generate a new code and try again
-     *
-     * @return success or not
-     */
-    boolean setCode(String code, OAuth2Request request);
+  /**
+   * Set the code for the request, failed when a code is already exist, the code Service should
+   * generate a new code and try again
+   *
+   * @return success or not
+   */
+  boolean setCode(String code, OAuth2Request request);
 }

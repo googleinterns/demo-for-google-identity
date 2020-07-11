@@ -42,89 +42,77 @@ import static com.google.common.truth.Truth8.assertThat;
 import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.mock;
 
-/**
- * Tests for {@link OAuth2TokenAuthenticationFilter}
- */
+/** Tests for {@link OAuth2TokenAuthenticationFilter} */
 public class OAuth2TokenAuthenticationFilterTest {
 
-    private static final String USERNAME = "username";
-    private static final String PASSWORD = "password";
-    private static final String STATE = "state";
+  private static final String USERNAME = "username";
+  private static final String PASSWORD = "password";
+  private static final String STATE = "state";
 
-    private static final UserDetails USER =
-            UserDetails.newBuilder()
-                    .setUsername(USERNAME)
-                    .setPassword(Hashing.sha256()
-                            .hashString(PASSWORD, Charsets.UTF_8).toString())
-                    .build();
+  private static final UserDetails USER =
+      UserDetails.newBuilder()
+          .setUsername(USERNAME)
+          .setPassword(Hashing.sha256().hashString(PASSWORD, Charsets.UTF_8).toString())
+          .build();
 
+  private static final String CLIENTID = "client";
+  private static final String SECRET = "secret";
+  private static final String REDIRECT_URI = "http://www.google.com";
 
-    private static final String CLIENTID = "client";
-    private static final String SECRET = "secret";
-    private static final String REDIRECT_URI = "http://www.google.com";
+  private static final String LINE = System.lineSeparator();
 
+  private static final ClientDetails CLIENT =
+      ClientDetails.newBuilder()
+          .setClientId(CLIENTID)
+          .setSecret(Hashing.sha256().hashString(SECRET, Charsets.UTF_8).toString())
+          .addScopes("read")
+          .setIsScoped(true)
+          .addRedirectUris(REDIRECT_URI)
+          .addGrantTypes(GrantType.AUTHORIZATION_CODE)
+          .build();
 
-    private static final String LINE = System.lineSeparator();
+  private static final OAuth2Request TESTREQUEST0 =
+      OAuth2Request.newBuilder()
+          .setRequestAuth(
+              OAuth2Request.RequestAuth.newBuilder()
+                  .setClientId(CLIENTID)
+                  .setUsername(USERNAME)
+                  .build())
+          .setRequestBody(
+              OAuth2Request.RequestBody.newBuilder()
+                  .setIsScoped(true)
+                  .addAllScopes(CLIENT.getScopesList())
+                  .setResponseType(ResponseType.TOKEN)
+                  .setRefreshable(true)
+                  .setGrantType(GrantType.AUTHORIZATION_CODE)
+                  .build())
+          .build();
 
+  @Test
+  public void testFilter_noUserPresent_redirectAndSetOldUrl() throws ServletException, IOException {
 
-    private static final ClientDetails CLIENT =
-            ClientDetails.newBuilder()
-                    .setClientId(CLIENTID)
-                    .setSecret(Hashing.sha256()
-                            .hashString(SECRET, Charsets.UTF_8).toString())
-                    .addScopes("read")
-                    .setIsScoped(true)
-                    .addRedirectUris(REDIRECT_URI)
-                    .addGrantTypes(GrantType.AUTHORIZATION_CODE)
-                    .build();
+    OAuth2TokenService oauth2TokenService = new InMemoryOAuth2TokenService();
 
-    private static final OAuth2Request TESTREQUEST0 =
-            OAuth2Request.newBuilder()
-                    .setRequestAuth(
-                            OAuth2Request.RequestAuth.newBuilder()
-                                    .setClientId(CLIENTID)
-                                    .setUsername(USERNAME)
-                                    .build())
-                    .setRequestBody(
-                            OAuth2Request.RequestBody.newBuilder()
-                                    .setIsScoped(true)
-                                    .addAllScopes(CLIENT.getScopesList())
-                                    .setResponseType(ResponseType.TOKEN)
-                                    .setRefreshable(true)
-                                    .setGrantType(GrantType.AUTHORIZATION_CODE)
-                                    .build())
-                    .build();
+    UserDetailsService userDetailsService = new InMemoryUserDetailsService();
 
+    userDetailsService.addUser(USER);
 
-    @Test
-    public void testFilter_noUserPresent_redirectAndSetOldUrl()
-            throws ServletException, IOException {
+    OAuth2TokenAuthenticationFilter oauth2TokenAuthenticationFilter =
+        new OAuth2TokenAuthenticationFilter(userDetailsService, oauth2TokenService);
 
-        OAuth2TokenService oauth2TokenService = new InMemoryOAuth2TokenService();
+    OAuth2AccessToken token = oauth2TokenService.generateAccessToken(TESTREQUEST0);
 
-        UserDetailsService userDetailsService = new InMemoryUserDetailsService();
+    HttpServletRequest request = mock(HttpServletRequest.class);
+    HttpServletResponse response = mock(HttpServletResponse.class);
+    FilterChain chain = mock(FilterChain.class);
+    FakeHttpSession httpSession = new FakeHttpSession();
 
-        userDetailsService.addUser(USER);
+    when(request.getSession()).thenReturn(httpSession);
+    when(request.getParameter(OAuth2ParameterNames.ACCESS_TOKEN))
+        .thenReturn(token.getAccessToken());
 
-        OAuth2TokenAuthenticationFilter oauth2TokenAuthenticationFilter
-                = new OAuth2TokenAuthenticationFilter(
-                        userDetailsService,
-                        oauth2TokenService);
+    oauth2TokenAuthenticationFilter.doFilter(request, response, chain);
 
-        OAuth2AccessToken token = oauth2TokenService.generateAccessToken(TESTREQUEST0);
-
-        HttpServletRequest request = mock(HttpServletRequest.class);
-        HttpServletResponse response = mock(HttpServletResponse.class);
-        FilterChain chain = mock(FilterChain.class);
-        FakeHttpSession httpSession = new FakeHttpSession();
-
-        when(request.getSession()).thenReturn(httpSession);
-        when(request.getParameter(OAuth2ParameterNames.ACCESS_TOKEN))
-                .thenReturn(token.getAccessToken());
-
-        oauth2TokenAuthenticationFilter.doFilter(request, response, chain);
-
-        assertThat(httpSession.getUserSession().getUser()).hasValue(USER);
-
-    }
+    assertThat(httpSession.getUserSession().getUser()).hasValue(USER);
+  }
 }

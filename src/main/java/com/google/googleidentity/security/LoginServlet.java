@@ -33,59 +33,52 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-/**
- * Demo Login Servlet
- * Just Bind the login Servlet with a freemarker template.
- */
+/** Demo Login Servlet Just Bind the login Servlet with a freemarker template. */
 @Singleton
 public final class LoginServlet extends HttpServlet {
 
-    private static final long serialVersionUID = 1L;
+  private static final long serialVersionUID = 1L;
 
-    private static final Logger log = Logger.getLogger("LoginServlet");
+  private static final Logger log = Logger.getLogger("LoginServlet");
 
-    private Configuration configuration;
+  private Configuration configuration;
 
-    public void init() throws ServletException {
-        Version version = new Version("2.3.30");
+  public void init() throws ServletException {
+    Version version = new Version("2.3.30");
 
-        configuration = new Configuration(version);
+    configuration = new Configuration(version);
 
-        configuration.setServletContextForTemplateLoading(getServletContext(), "template");
+    configuration.setServletContextForTemplateLoading(getServletContext(), "template");
+  }
+
+  protected void doGet(HttpServletRequest request, HttpServletResponse response)
+      throws ServletException, IOException {
+
+    try {
+      displayLoginPage(response);
+    } catch (TemplateException e) {
+      log.log(Level.INFO, "Error when display login page", e);
     }
+  }
 
-    protected void doGet(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
+  protected void doPost(HttpServletRequest request, HttpServletResponse response)
+      throws ServletException, IOException {
 
-        try {
-            displayLoginPage(response);
-        } catch (TemplateException e) {
-            log.log(Level.INFO, "Error when display login page", e);
-        }
-
+    try {
+      displayLoginPage(response);
+    } catch (TemplateException e) {
+      log.log(Level.INFO, "Error when display login page", e);
     }
+  }
 
-    protected void doPost(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
+  private void displayLoginPage(HttpServletResponse response)
+      throws ServletException, IOException, TemplateException {
 
-        try {
-            displayLoginPage(response);
-        } catch (TemplateException e) {
-            log.log(Level.INFO, "Error when display login page", e);
-        }
-
-    }
-
-    private void displayLoginPage(HttpServletResponse response)
-            throws ServletException, IOException, TemplateException {
-
-        Template template = configuration.getTemplate("Login.ftl");
-        Map<String, Object> information = new HashMap<>();
-        response.setCharacterEncoding("utf-8");
-        PrintWriter printWriter = response.getWriter();
-        template.process(information, printWriter);
-        printWriter.flush();
-
-    }
-
+    Template template = configuration.getTemplate("Login.ftl");
+    Map<String, Object> information = new HashMap<>();
+    response.setCharacterEncoding("utf-8");
+    PrintWriter printWriter = response.getWriter();
+    template.process(information, printWriter);
+    printWriter.flush();
+  }
 }

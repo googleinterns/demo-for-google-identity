@@ -42,117 +42,114 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.logging.Logger;
 
-
-/**
- * Token exchange endpoint in OAuth2 Server
- */
+/** Token exchange endpoint in OAuth2 Server */
 @Singleton
 public class TokenEndpoint extends HttpServlet {
 
-    private static final long serialVersionUID = 5L;
+  private static final long serialVersionUID = 5L;
 
-    private static final Logger log = Logger.getLogger("TokenEndpoint");
+  private static final Logger log = Logger.getLogger("TokenEndpoint");
 
-    private final ClientDetailsService clientDetailsService;
+  private final ClientDetailsService clientDetailsService;
 
-    private final RequestHandler requestHandler;
+  private final RequestHandler requestHandler;
 
-    @Inject
-    public TokenEndpoint(
-            ClientDetailsService clientDetailsService,
-            RequestHandler requestHandler) {
-        this.clientDetailsService = clientDetailsService;
-        this.requestHandler = requestHandler;
+  @Inject
+  public TokenEndpoint(ClientDetailsService clientDetailsService, RequestHandler requestHandler) {
+    this.clientDetailsService = clientDetailsService;
+    this.requestHandler = requestHandler;
+  }
+
+  protected void doGet(HttpServletRequest request, HttpServletResponse response)
+      throws ServletException, IOException, UnsupportedOperationException {
+
+    OAuth2Exception exception =
+        new InvalidRequestException(InvalidRequestException.ErrorCode.UNSUPPORTED_REQUEST_METHOD);
+    log.info("Token endpoint does not support GET request.");
+    OAuth2ExceptionHandler.handle(exception, response);
+    return;
+  }
+
+  protected void doPost(HttpServletRequest request, HttpServletResponse response)
+      throws ServletException, IOException, UnsupportedOperationException {
+    try {
+      TokenEndpointRequestValidator.validatePost(request);
+    } catch (OAuth2Exception exception) {
+      log.info(
+          "Failed in validating Post request in Token Endpoint."
+              + "Error Type: "
+              + exception.getErrorType()
+              + "Description: "
+              + exception.getErrorDescription());
+      OAuth2ExceptionHandler.handle(exception, response);
+      return;
     }
 
-    protected void doGet(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException, UnsupportedOperationException {
+    OAuth2Request oauth2Request = parseOAuth2RequestFromHttpRequest(request);
 
-        OAuth2Exception exception =
-                new InvalidRequestException(
-                        InvalidRequestException.ErrorCode.UNSUPPORTED_REQUEST_METHOD);
-        log.info("Token endpoint does not support GET request." );
-        OAuth2ExceptionHandler.handle(exception, response);
-        return;
+    try {
+      requestHandler.handle(response, oauth2Request);
+    } catch (OAuth2Exception exception) {
+      log.info(
+          "Failed when process request in Token Endpoint"
+              + "Error Type: "
+              + exception.getErrorType()
+              + "Description: "
+              + exception.getErrorDescription());
+      OAuth2ExceptionHandler.handle(exception, response);
     }
+  }
 
-    protected void doPost(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException, UnsupportedOperationException {
-        try {
-            TokenEndpointRequestValidator.validatePost(request);
-        } catch(OAuth2Exception exception) {
-            log.info(
-                    "Failed in validating Post request in Token Endpoint." +
-                            "Error Type: " + exception.getErrorType() +
-                            "Description: " + exception.getErrorDescription());
-            OAuth2ExceptionHandler.handle(exception, response);
-            return;
-        }
+  /** Should be called after all validation in doPost function. */
+  public OAuth2Request parseOAuth2RequestFromHttpRequest(HttpServletRequest request) {
 
-        OAuth2Request oauth2Request = parseOAuth2RequestFromHttpRequest(request);
+    String grantType = request.getParameter(OAuth2ParameterNames.GRANT_TYPE);
 
-        try {
-            requestHandler.handle(response, oauth2Request);
-        } catch (OAuth2Exception exception) {
-            log.info(
-                    "Failed when process request in Token Endpoint" +
-                            "Error Type: " + exception.getErrorType() +
-                            "Description: " + exception.getErrorDescription());
-            OAuth2ExceptionHandler.handle(exception, response);
-        }
+    Preconditions.checkArgument(
+        OAuth2Utils.getClientSession(request).getClient().isPresent(),
+        "Client should have been set in client filter!");
+
+    OAuth2Request.Builder oauth2RequestBuilder = OAuth2Request.newBuilder();
+    oauth2RequestBuilder
+        .getRequestAuthBuilder()
+        .setClientId(OAuth2Utils.getClientSession(request).getClient().get().getClientId());
+    oauth2RequestBuilder
+        .getRequestBodyBuilder()
+        .setGrantType(OAuth2EnumMap.GRANT_TYPE_MAP.get(grantType));
+
+    oauth2RequestBuilder.getRequestBodyBuilder().setResponseType(ResponseType.TOKEN);
+
+    if (grantType.equals(OAuth2Constants.GrantType.AUTHORIZATION_CODE)) {
+      oauth2RequestBuilder
+          .getRequestAuthBuilder()
+          .setCode(request.getParameter(OAuth2ParameterNames.CODE));
+      try {
+        oauth2RequestBuilder
+            .getAuthorizationResponseBuilder()
+            .setRedirectUri(
+                URLDecoder.decode(
+                    request.getParameter(OAuth2ParameterNames.REDIRECT_URI), "utf-8"));
+      } catch (UnsupportedEncodingException e) {
+        // This should never happen, since we have validated it before
+        throw new IllegalStateException("URL should be valid", e);
+      }
+
+    } else if (grantType.equals(OAuth2Constants.GrantType.REFRESH_TOKEN)) {
+      oauth2RequestBuilder
+          .getRequestBodyBuilder()
+          .setRefreshToken(request.getParameter(OAuth2ParameterNames.REFRESH_TOKEN));
+    } else if (grantType.equals(OAuth2Constants.GrantType.JWT_ASSERTION)) {
+      oauth2RequestBuilder
+          .getRequestBodyBuilder()
+          .setIntent(request.getParameter(OAuth2ParameterNames.INTENT))
+          .setAssertion(request.getParameter(OAuth2ParameterNames.ASSERTION));
+      if (!Strings.isNullOrEmpty(request.getParameter(OAuth2ParameterNames.SCOPE))) {
+        oauth2RequestBuilder
+            .getRequestBodyBuilder()
+            .setIsScoped(true)
+            .addAllScopes(OAuth2Utils.parseScope(request.getParameter(OAuth2ParameterNames.SCOPE)));
+      }
     }
-
-    /**
-     * Should be called after all validation in doPost function.
-     */
-    public OAuth2Request parseOAuth2RequestFromHttpRequest(HttpServletRequest request) {
-
-        String grantType = request.getParameter(OAuth2ParameterNames.GRANT_TYPE);
-
-        Preconditions.checkArgument(
-                OAuth2Utils.getClientSession(request).getClient().isPresent(),
-                "Client should have been set in client filter!");
-
-        OAuth2Request.Builder oauth2RequestBuilder = OAuth2Request.newBuilder();
-        oauth2RequestBuilder.getRequestAuthBuilder()
-                .setClientId(
-                            OAuth2Utils.getClientSession(request).getClient().get().getClientId());
-        oauth2RequestBuilder.getRequestBodyBuilder()
-            .setGrantType(OAuth2EnumMap.GRANT_TYPE_MAP.get(grantType));
-
-        oauth2RequestBuilder.getRequestBodyBuilder()
-                .setResponseType(ResponseType.TOKEN);
-
-        if (grantType.equals(OAuth2Constants.GrantType.AUTHORIZATION_CODE)) {
-            oauth2RequestBuilder.getRequestAuthBuilder().setCode(
-                    request.getParameter(OAuth2ParameterNames.CODE));
-            try {
-                oauth2RequestBuilder.getAuthorizationResponseBuilder().setRedirectUri(
-                        URLDecoder.decode(
-                                request.getParameter(OAuth2ParameterNames.REDIRECT_URI),
-                                "utf-8"));
-            } catch (UnsupportedEncodingException e) {
-                // This should never happen, since we have validated it before
-                throw new IllegalStateException(
-                        "URL should be valid", e);
-            }
-
-        } else if (grantType.equals(OAuth2Constants.GrantType.REFRESH_TOKEN)) {
-            oauth2RequestBuilder.getRequestBodyBuilder()
-                    .setRefreshToken(
-                            request.getParameter(OAuth2ParameterNames.REFRESH_TOKEN));
-        } else if (grantType.equals(OAuth2Constants.GrantType.JWT_ASSERTION)) {
-            oauth2RequestBuilder.getRequestBodyBuilder()
-                    .setIntent(request.getParameter(OAuth2ParameterNames.INTENT))
-                    .setAssertion(request.getParameter(OAuth2ParameterNames.ASSERTION));
-            if (!Strings.isNullOrEmpty(request.getParameter(OAuth2ParameterNames.SCOPE))) {
-                oauth2RequestBuilder.getRequestBodyBuilder()
-                        .setIsScoped(true)
-                        .addAllScopes(
-                                OAuth2Utils.parseScope(
-                                        request.getParameter(OAuth2ParameterNames.SCOPE)));
-            }
-        }
-        return oauth2RequestBuilder.build();
-    }
+    return oauth2RequestBuilder.build();
+  }
 }

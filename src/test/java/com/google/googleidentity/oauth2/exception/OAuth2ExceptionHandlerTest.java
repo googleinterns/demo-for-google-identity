@@ -20,17 +20,18 @@ import net.minidev.json.JSONObject;
 import org.junit.Test;
 
 import static com.google.common.truth.Truth.assertThat;
+
 public class OAuth2ExceptionHandlerTest {
 
-    @Test
-    public void testGetResponseBody_correct() {
-        OAuth2Exception exception =
-                new InvalidRequestException(InvalidRequestException.ErrorCode.NO_CLIENT_ID);
+  @Test
+  public void testGetResponseBody_correct() {
+    OAuth2Exception exception =
+        new InvalidRequestException(InvalidRequestException.ErrorCode.NO_CLIENT_ID);
 
-        JSONObject object = OAuth2ExceptionHandler.getResponseBody(exception);
+    JSONObject object = OAuth2ExceptionHandler.getResponseBody(exception);
 
-        assertThat(object.get("error")).isEqualTo("invalid_request");
+    assertThat(object.get("error")).isEqualTo("invalid_request");
 
-        assertThat(object.get("error_description")).isEqualTo("No Client ID!");
-    }
+    assertThat(object.get("error_description")).isEqualTo("No Client ID!");
+  }
 }

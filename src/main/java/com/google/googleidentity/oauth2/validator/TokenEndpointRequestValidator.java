@@ -36,102 +36,95 @@ import java.util.Set;
 
 public final class TokenEndpointRequestValidator {
 
-    private static final Set<String> supportedGrantTypes =
-            ImmutableSet.of(
-                    OAuth2Constants.GrantType.AUTHORIZATION_CODE,
-                    OAuth2Constants.GrantType.IMPLICIT,
-                    OAuth2Constants.GrantType.JWT_ASSERTION,
-                    OAuth2Constants.GrantType.REFRESH_TOKEN);
+  private static final Set<String> supportedGrantTypes =
+      ImmutableSet.of(
+          OAuth2Constants.GrantType.AUTHORIZATION_CODE,
+          OAuth2Constants.GrantType.IMPLICIT,
+          OAuth2Constants.GrantType.JWT_ASSERTION,
+          OAuth2Constants.GrantType.REFRESH_TOKEN);
 
-    private static final Set<String> supportedIntents =
-            ImmutableSet.of(
-                    OAuth2Constants.JwtAssertionIntents.CREATE,
-                    OAuth2Constants.JwtAssertionIntents.CHECK,
-                    OAuth2Constants.JwtAssertionIntents.GET);
+  private static final Set<String> supportedIntents =
+      ImmutableSet.of(
+          OAuth2Constants.JwtAssertionIntents.CREATE,
+          OAuth2Constants.JwtAssertionIntents.CHECK,
+          OAuth2Constants.JwtAssertionIntents.GET);
 
-    public static void validatePost(HttpServletRequest request) throws OAuth2Exception {
+  public static void validatePost(HttpServletRequest request) throws OAuth2Exception {
 
-        Preconditions.checkArgument(
-                OAuth2Utils.getClientSession(request).getClient().isPresent(),
-                "Client Should be there since it has passed ClientAuthentication Filter!");
+    Preconditions.checkArgument(
+        OAuth2Utils.getClientSession(request).getClient().isPresent(),
+        "Client Should be there since it has passed ClientAuthentication Filter!");
 
-        ClientDetails client = OAuth2Utils.getClientSession(request).getClient().get();
+    ClientDetails client = OAuth2Utils.getClientSession(request).getClient().get();
 
-        Preconditions.checkArgument(
-                !Strings.isNullOrEmpty(request.getParameter(OAuth2ParameterNames.GRANT_TYPE)),
-                "Grant type is not null since it has been checked in ClientAuthentication Filter");
+    Preconditions.checkArgument(
+        !Strings.isNullOrEmpty(request.getParameter(OAuth2ParameterNames.GRANT_TYPE)),
+        "Grant type is not null since it has been checked in ClientAuthentication Filter");
 
-        String grantType = request.getParameter(OAuth2ParameterNames.GRANT_TYPE);
+    String grantType = request.getParameter(OAuth2ParameterNames.GRANT_TYPE);
 
-        switch (grantType) {
-            case OAuth2Constants.GrantType.IMPLICIT:
-                if (!client.getGrantTypesList().contains(GrantType.IMPLICIT)) {
-                    throw new UnauthorizedClientException();
-                }
-                throw new InvalidRequestException(
-                        InvalidRequestException.ErrorCode.IMPLICIT_GRANT_IN_TOKEN_ENDPOINT);
-            case OAuth2Constants.GrantType.AUTHORIZATION_CODE:
-                if (!client.getGrantTypesList()
-                        .contains(GrantType.AUTHORIZATION_CODE)) {
-                    throw new UnauthorizedClientException();
-                }
-                validateAuthCodeRequest(request);
-                break;
-            case OAuth2Constants.GrantType.REFRESH_TOKEN:
-                if (!client.getGrantTypesList().contains(GrantType.REFRESH_TOKEN)) {
-                    throw new UnauthorizedClientException();
-                }
-                validateRefreshTokenRequest(request);
-                break;
-            case OAuth2Constants.GrantType.JWT_ASSERTION:
-                if (!client.getGrantTypesList().contains(GrantType.JWT_ASSERTION)) {
-                    throw new UnauthorizedClientException();
-                }
-                validateJwtAssertion(request);
-                break;
-            default: throw new UnsupportedGrantTypeException();
+    switch (grantType) {
+      case OAuth2Constants.GrantType.IMPLICIT:
+        if (!client.getGrantTypesList().contains(GrantType.IMPLICIT)) {
+          throw new UnauthorizedClientException();
         }
+        throw new InvalidRequestException(
+            InvalidRequestException.ErrorCode.IMPLICIT_GRANT_IN_TOKEN_ENDPOINT);
+      case OAuth2Constants.GrantType.AUTHORIZATION_CODE:
+        if (!client.getGrantTypesList().contains(GrantType.AUTHORIZATION_CODE)) {
+          throw new UnauthorizedClientException();
+        }
+        validateAuthCodeRequest(request);
+        break;
+      case OAuth2Constants.GrantType.REFRESH_TOKEN:
+        if (!client.getGrantTypesList().contains(GrantType.REFRESH_TOKEN)) {
+          throw new UnauthorizedClientException();
+        }
+        validateRefreshTokenRequest(request);
+        break;
+      case OAuth2Constants.GrantType.JWT_ASSERTION:
+        if (!client.getGrantTypesList().contains(GrantType.JWT_ASSERTION)) {
+          throw new UnauthorizedClientException();
+        }
+        validateJwtAssertion(request);
+        break;
+      default:
+        throw new UnsupportedGrantTypeException();
+    }
+  }
+
+  private static void validateAuthCodeRequest(HttpServletRequest request) throws OAuth2Exception {
+    if (Strings.isNullOrEmpty(request.getParameter(OAuth2ParameterNames.REDIRECT_URI))) {
+      throw new InvalidRequestException(InvalidRequestException.ErrorCode.NO_REDIRECT_URI);
+    }
+    try {
+      URLDecoder.decode(request.getParameter(OAuth2ParameterNames.REDIRECT_URI), "utf-8");
+    } catch (UnsupportedEncodingException e) {
+      throw new InvalidRequestException(InvalidRequestException.ErrorCode.NON_URL_ENCODED_URI);
+    }
+    if (Strings.isNullOrEmpty(request.getParameter(OAuth2ParameterNames.CODE))) {
+      throw new InvalidRequestException(InvalidRequestException.ErrorCode.NO_AUTHORIZATION_CODE);
+    }
+  }
+
+  private static void validateRefreshTokenRequest(HttpServletRequest request)
+      throws OAuth2Exception {
+    if (Strings.isNullOrEmpty(request.getParameter(OAuth2ParameterNames.REFRESH_TOKEN))) {
+      throw new InvalidRequestException(InvalidRequestException.ErrorCode.NO_REFRESH_TOKEN);
+    }
+  }
+
+  private static void validateJwtAssertion(HttpServletRequest request) throws OAuth2Exception {
+    String intent = request.getParameter(OAuth2ParameterNames.INTENT);
+    if (Strings.isNullOrEmpty(intent)) {
+      throw new InvalidRequestException(InvalidRequestException.ErrorCode.NO_INTENT);
     }
 
-    private static void validateAuthCodeRequest(HttpServletRequest request) throws OAuth2Exception {
-        if (Strings.isNullOrEmpty(request.getParameter(OAuth2ParameterNames.REDIRECT_URI))) {
-            throw new InvalidRequestException(
-                    InvalidRequestException.ErrorCode.NO_REDIRECT_URI);
-        }
-        try {
-            URLDecoder.decode(request.getParameter(OAuth2ParameterNames.REDIRECT_URI), "utf-8");
-        } catch (UnsupportedEncodingException e) {
-            throw new InvalidRequestException(
-                    InvalidRequestException.ErrorCode.NON_URL_ENCODED_URI);
-        }
-        if (Strings.isNullOrEmpty(request.getParameter(OAuth2ParameterNames.CODE))) {
-            throw new InvalidRequestException(
-                    InvalidRequestException.ErrorCode.NO_AUTHORIZATION_CODE);
-        }
+    if (!supportedIntents.contains(intent)) {
+      throw new InvalidRequestException(InvalidRequestException.ErrorCode.UNSUPPORTED_INTENT);
     }
-
-    private static void validateRefreshTokenRequest(HttpServletRequest request)
-            throws OAuth2Exception {
-        if (Strings.isNullOrEmpty(request.getParameter(OAuth2ParameterNames.REFRESH_TOKEN))) {
-            throw new InvalidRequestException(
-                    InvalidRequestException.ErrorCode.NO_REFRESH_TOKEN);
-        }
+    if (Strings.isNullOrEmpty(request.getParameter(OAuth2ParameterNames.ASSERTION))) {
+      throw new InvalidRequestException(InvalidRequestException.ErrorCode.NO_ASSERTION);
     }
-
-    private static void validateJwtAssertion(HttpServletRequest request) throws OAuth2Exception {
-        String intent = request.getParameter(OAuth2ParameterNames.INTENT);
-        if (Strings.isNullOrEmpty(intent)) {
-            throw new InvalidRequestException(
-                    InvalidRequestException.ErrorCode.NO_INTENT);
-        }
-
-        if (!supportedIntents.contains(intent)) {
-            throw new InvalidRequestException(
-                    InvalidRequestException.ErrorCode.UNSUPPORTED_INTENT);
-        }
-        if (Strings.isNullOrEmpty(request.getParameter(OAuth2ParameterNames.ASSERTION))) {
-            throw new InvalidRequestException(
-                    InvalidRequestException.ErrorCode.NO_ASSERTION);
-        }
-    }
+  }
 }

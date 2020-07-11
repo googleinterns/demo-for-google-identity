@@ -25,54 +25,53 @@ import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Default InMemory ClientDetailsService for client information Store
- * An Implementation for {@link ClientDetailsService}
+ * Default InMemory ClientDetailsService for client information Store An Implementation for {@link
+ * ClientDetailsService}
  */
 @Singleton
-public final class InMemoryClientDetailsService implements ClientDetailsService{
+public final class InMemoryClientDetailsService implements ClientDetailsService {
 
-    private final ConcurrentHashMap<String, ClientDetails> clientStore
-            = new ConcurrentHashMap<>();
+  private final ConcurrentHashMap<String, ClientDetails> clientStore = new ConcurrentHashMap<>();
 
-    @Override
-    public Optional<ClientDetails> getClientByID(String clientID) {
-        return Optional.ofNullable(clientStore.get(clientID));
+  @Override
+  public Optional<ClientDetails> getClientByID(String clientID) {
+    return Optional.ofNullable(clientStore.get(clientID));
+  }
+
+  @Override
+  public boolean updateClient(ClientDetails client) {
+
+    Preconditions.checkNotNull(client);
+
+    String clientID = client.getClientId();
+    if (clientID.isEmpty()) {
+      throw new IllegalArgumentException("Empty clientid");
     }
-
-    @Override
-    public boolean updateClient(ClientDetails client) {
-
-        Preconditions.checkNotNull(client);
-
-        String clientID = client.getClientId();
-        if (clientID.isEmpty()) {
-            throw new IllegalArgumentException("Empty clientid");
-        }
-        if (!clientStore.containsKey(clientID)) {
-            return false;
-        }
-        clientStore.put(clientID, client);
-        return true;
+    if (!clientStore.containsKey(clientID)) {
+      return false;
     }
+    clientStore.put(clientID, client);
+    return true;
+  }
 
-    @Override
-    public boolean addClient(ClientDetails client) {
+  @Override
+  public boolean addClient(ClientDetails client) {
 
-        Preconditions.checkNotNull(client);
+    Preconditions.checkNotNull(client);
 
-        String clientID = client.getClientId();
-        if (clientID.isEmpty()) {
-            throw new IllegalArgumentException("Empty clientid");
-        }
-        if (clientStore.containsKey(clientID)) {
-            return false;
-        }
-        clientStore.put(clientID, client);
-        return true;
+    String clientID = client.getClientId();
+    if (clientID.isEmpty()) {
+      throw new IllegalArgumentException("Empty clientid");
     }
-
-    @Override
-    public List<ClientDetails> listClient() {
-        return ImmutableList.copyOf(clientStore.values());
+    if (clientStore.containsKey(clientID)) {
+      return false;
     }
+    clientStore.put(clientID, client);
+    return true;
+  }
+
+  @Override
+  public List<ClientDetails> listClient() {
+    return ImmutableList.copyOf(clientStore.values());
+  }
 }

@@ -21,7 +21,6 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-
 import static com.google.common.truth.Truth8.assertThat;
 
 import com.google.googleidentity.testtools.FakeHttpSession;
@@ -32,33 +31,26 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.verify;
 
-/**
- * Test {@link UserAuthenticationFilter}'s logic
- */
+/** Test {@link UserAuthenticationFilter}'s logic */
 public class UserAuthenticationFilterTest {
 
-    @Test
-    public void testFilter_noUserPresent_redirectAndSetOldUrl()
-            throws ServletException, IOException {
+  @Test
+  public void testFilter_noUserPresent_redirectAndSetOldUrl() throws ServletException, IOException {
 
+    UserAuthenticationFilter userAuthenticationFilter = new UserAuthenticationFilter();
 
-        UserAuthenticationFilter userAuthenticationFilter = new UserAuthenticationFilter();
+    HttpServletRequest request = mock(HttpServletRequest.class);
+    HttpServletResponse response = mock(HttpServletResponse.class);
+    FakeHttpSession httpSession = new FakeHttpSession();
 
-        HttpServletRequest request = mock(HttpServletRequest.class);
-        HttpServletResponse response = mock(HttpServletResponse.class);
-        FakeHttpSession httpSession = new FakeHttpSession();
+    when(request.getSession()).thenReturn(httpSession);
+    when(request.getRequestURI()).thenReturn("/resource/user");
+    when(request.getQueryString()).thenReturn(null);
 
-        when(request.getSession()).thenReturn(httpSession);
-        when(request.getRequestURI()).thenReturn("/resource/user");
-        when(request.getQueryString()).thenReturn(null);
+    userAuthenticationFilter.doFilter(request, response, null);
 
-        userAuthenticationFilter.doFilter(request, response, null);
+    verify(response).sendRedirect("/login");
 
-        verify(response).sendRedirect("/login");
-
-        assertThat(httpSession.getUserSession().getOlduri()).hasValue("/resource/user");
-
-    }
-
+    assertThat(httpSession.getUserSession().getOlduri()).hasValue("/resource/user");
+  }
 }
-

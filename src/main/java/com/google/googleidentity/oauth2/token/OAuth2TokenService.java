@@ -21,62 +21,45 @@ import com.google.googleidentity.oauth2.request.OAuth2Request;
 import java.util.List;
 import java.util.Optional;
 
-
-/**
- * The class for generate token, refresh token, read token, store token
- */
+/** The class for generate token, refresh token, read token, store token */
 public interface OAuth2TokenService {
 
-    /**
-     * Generate an access token for the request.
-     */
-    OAuth2AccessToken generateAccessToken(OAuth2Request request);
+  /** Generate an access token for the request. */
+  OAuth2AccessToken generateAccessToken(OAuth2Request request);
 
-    /**
-     * Try to refresh the access token related to the refresh token string.
-     * If token cannot be found, return empty.
-     */
-    Optional<OAuth2AccessToken> refreshToken(String refreshToken);
+  /**
+   * Try to refresh the access token related to the refresh token string. If token cannot be found,
+   * return empty.
+   */
+  Optional<OAuth2AccessToken> refreshToken(String refreshToken);
 
-    /**
-     * Read the token information related to the access token string.
-     * If token cannot be found, return empty.
-     */
-    Optional<OAuth2AccessToken> readAccessToken(String accessToken);
+  /**
+   * Read the token information related to the access token string. If token cannot be found, return
+   * empty.
+   */
+  Optional<OAuth2AccessToken> readAccessToken(String accessToken);
 
-    /**
-     * Read the token information related to the refresh token string.
-     * If token cannot be found, return empty.
-     */
-    Optional<OAuth2RefreshToken> readRefreshToken(String refreshToken);
+  /**
+   * Read the token information related to the refresh token string. If token cannot be found,
+   * return empty.
+   */
+  Optional<OAuth2RefreshToken> readRefreshToken(String refreshToken);
 
-    /**
-     * Revoke by access token, if token cannot be found or the token is expired,  return false.
-     */
-    boolean revokeByAccessToken(String accessToken);
+  /** Revoke by access token, if token cannot be found or the token is expired, return false. */
+  boolean revokeByAccessToken(String accessToken);
 
-    /**
-     * Revoke by refresh token, if token cannot be found, return false.
-     */
-    boolean revokeByRefreshToken(String refreshToken);
+  /** Revoke by refresh token, if token cannot be found, return false. */
+  boolean revokeByRefreshToken(String refreshToken);
 
-    /**
-     * Revoke tokens between a user and a client, if token cannot be found, return false
-     */
-    boolean revokeUserClientTokens(String username, String clientID);
+  /** Revoke tokens between a user and a client, if token cannot be found, return false */
+  boolean revokeUserClientTokens(String username, String clientID);
 
-    /**
-     * List all client linked by this user
-     */
-    List<String> listUserClient(String username);
+  /** List all client linked by this user */
+  List<String> listUserClient(String username);
 
-    /**
-     *  List all access tokens between a user and a client
-     */
-    List<OAuth2AccessToken> listUserClientAccessTokens(String username, String clientID);
+  /** List all access tokens between a user and a client */
+  List<OAuth2AccessToken> listUserClientAccessTokens(String username, String clientID);
 
-    /**
-     *  Get refresh token between a user and a client
-     */
-    Optional<OAuth2RefreshToken> getUserClientRefreshToken(String username, String clientID);
+  /** Get refresh token between a user and a client */
+  Optional<OAuth2RefreshToken> getUserClientRefreshToken(String username, String clientID);
 }

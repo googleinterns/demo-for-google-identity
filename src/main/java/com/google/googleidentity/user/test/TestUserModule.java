@@ -27,34 +27,30 @@ import com.google.inject.Singleton;
 
 public class TestUserModule extends AbstractModule {
 
-    private static final String TESTUSERNAME0 = "user";
-    private static final String TESTUSERPASSWORD0 = "123456";
-    private static final String TESTUSERNAME1 = "user1";
-    private static final String TESTUSERPASSWORD1 = "12345678";
+  private static final String TESTUSERNAME0 = "user";
+  private static final String TESTUSERPASSWORD0 = "123456";
+  private static final String TESTUSERNAME1 = "user1";
+  private static final String TESTUSERPASSWORD1 = "12345678";
 
-    @Override
-    protected void configure() {
-    }
+  @Override
+  protected void configure() {}
 
-    @Provides
-    @Singleton
-    public UserDetailsService getUserDetailsService(
-            InMemoryUserDetailsService userDetailsService) {
-        UserDetails user =
-                UserDetails.newBuilder()
-                        .setUsername(TESTUSERNAME0)
-                        .setPassword(Hashing.sha256()
-                                .hashString(TESTUSERPASSWORD0, Charsets.UTF_8).toString())
-                        .build();
+  @Provides
+  @Singleton
+  public UserDetailsService getUserDetailsService(InMemoryUserDetailsService userDetailsService) {
+    UserDetails user =
+        UserDetails.newBuilder()
+            .setUsername(TESTUSERNAME0)
+            .setPassword(Hashing.sha256().hashString(TESTUSERPASSWORD0, Charsets.UTF_8).toString())
+            .build();
 
-        userDetailsService.addUser(user);
+    userDetailsService.addUser(user);
 
-        UserDetails user1 =
-                UserDetails.newBuilder()
-                        .setUsername(TESTUSERNAME1)
-                        .setPassword(Hashing.sha256()
-                                .hashString(TESTUSERPASSWORD1, Charsets.UTF_8).toString())
-                        .build();
-        return userDetailsService;
-    }
+    UserDetails user1 =
+        UserDetails.newBuilder()
+            .setUsername(TESTUSERNAME1)
+            .setPassword(Hashing.sha256().hashString(TESTUSERPASSWORD1, Charsets.UTF_8).toString())
+            .build();
+    return userDetailsService;
+  }
 }

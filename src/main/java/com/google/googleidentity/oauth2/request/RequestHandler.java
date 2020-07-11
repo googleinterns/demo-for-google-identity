@@ -21,10 +21,8 @@ import com.google.googleidentity.oauth2.exception.OAuth2Exception;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-/**
- * interface for actual request handling.
- */
+/** interface for actual request handling. */
 public interface RequestHandler {
-    void handle(HttpServletResponse response, OAuth2Request oauth2Request)
-            throws IOException, OAuth2Exception;
+  void handle(HttpServletResponse response, OAuth2Request oauth2Request)
+      throws IOException, OAuth2Exception;
 }

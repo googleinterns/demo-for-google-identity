@@ -42,85 +42,78 @@ import java.io.IOException;
 import java.util.Optional;
 import java.util.logging.Logger;
 
-
-/**
- * The filter to protect oauth2 resources using clientid and secret
- */
+/** The filter to protect oauth2 resources using clientid and secret */
 @Singleton
 public final class ClientAuthenticationFilter implements Filter {
-    private static final Logger log = Logger.getLogger("ClientAuthenticationFilter");
+  private static final Logger log = Logger.getLogger("ClientAuthenticationFilter");
+  private static final String GOOGLE_CLIENT_ID = "google";
+  private final ClientDetailsService clientDetailsService;
 
-    private final ClientDetailsService clientDetailsService;
+  @Inject
+  public ClientAuthenticationFilter(ClientDetailsService clientDetailsService) {
+    this.clientDetailsService = clientDetailsService;
+  }
 
-    private static final String GOOGLE_CLIENT_ID = "google";
+  @Override
+  public void init(FilterConfig filterConfig) throws ServletException {}
 
-    @Inject
-    public ClientAuthenticationFilter(ClientDetailsService clientDetailsService) {
-        this.clientDetailsService = clientDetailsService;
-    }
+  @Override
+  public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
+      throws IOException, ServletException {
+    try {
+      String grantType = request.getParameter(OAuth2ParameterNames.GRANT_TYPE);
 
-    @Override
-    public void init(FilterConfig filterConfig) throws ServletException {}
+      if (Strings.isNullOrEmpty(grantType)) {
+        throw new InvalidGrantException(InvalidGrantException.ErrorCode.NO_GRANT_TYPE);
+      }
 
-    @Override
-    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
-            throws IOException, ServletException {
-        try {
-            String grantType = request.getParameter(OAuth2ParameterNames.GRANT_TYPE);
+      // Set client for jwt assertion
+      if (grantType.equals(OAuth2Constants.GrantType.JWT_ASSERTION)) {
+        ClientSession clientSession = OAuth2Utils.getClientSession((HttpServletRequest) request);
+        clientSession.setClient(clientDetailsService.getClientByID(GOOGLE_CLIENT_ID).get());
+        OAuth2Utils.setClientSession((HttpServletRequest) request, clientSession);
+      } else {
+        String clientID = request.getParameter(OAuth2ParameterNames.CLIENT_ID);
+        String secret = request.getParameter(OAuth2ParameterNames.CLIENT_SECRET);
 
-            if (Strings.isNullOrEmpty(grantType)) {
-                throw new InvalidGrantException(InvalidGrantException.ErrorCode.NO_GRANT_TYPE);
-            }
-
-            // Set client for jwt assertion
-            if (grantType.equals(OAuth2Constants.GrantType.JWT_ASSERTION)) {
-                ClientSession clientSession =
-                        OAuth2Utils.getClientSession((HttpServletRequest) request);
-                clientSession.setClient(
-                        clientDetailsService.getClientByID(GOOGLE_CLIENT_ID).get());
-                OAuth2Utils.setClientSession((HttpServletRequest) request, clientSession);
-            } else {
-                String clientID = request.getParameter(OAuth2ParameterNames.CLIENT_ID);
-                String secret = request.getParameter(OAuth2ParameterNames.CLIENT_SECRET);
-
-                if (Strings.isNullOrEmpty(clientID)) {
-                    throw new InvalidRequestException(
-                            InvalidRequestException.ErrorCode.NO_CLIENT_ID);
-                }
-                if (Strings.isNullOrEmpty(secret)|| !check(clientID, secret)) {
-                    throw new InvalidClientException();
-                }
-
-                // Check success!
-                log.info("Client Authenrication:" + clientID + "!");
-                ClientSession clientSession =
-                        OAuth2Utils.getClientSession((HttpServletRequest) request);
-                clientSession.setClient(clientDetailsService.getClientByID(clientID).get());
-                OAuth2Utils.setClientSession((HttpServletRequest)request, clientSession);
-            }
-            chain.doFilter(request, response);
+        if (Strings.isNullOrEmpty(clientID)) {
+          throw new InvalidRequestException(InvalidRequestException.ErrorCode.NO_CLIENT_ID);
         }
-        catch(OAuth2Exception exception){
-            log.info(
-                    "Failed in client Authentication." +
-                            "Error Type: " + exception.getErrorType() +
-                            "Description: " + exception.getErrorDescription());
-            OAuth2ExceptionHandler.handle(exception, (HttpServletResponse) response);
+        if (Strings.isNullOrEmpty(secret) || !check(clientID, secret)) {
+          throw new InvalidClientException();
         }
 
+        // Check success!
+        log.info("Client Authenrication:" + clientID + "!");
+        ClientSession clientSession = OAuth2Utils.getClientSession((HttpServletRequest) request);
+        clientSession.setClient(clientDetailsService.getClientByID(clientID).get());
+        OAuth2Utils.setClientSession((HttpServletRequest) request, clientSession);
+      }
+      chain.doFilter(request, response);
+    } catch (OAuth2Exception exception) {
+      log.info(
+          "Failed in client Authentication."
+              + "Error Type: "
+              + exception.getErrorType()
+              + "Description: "
+              + exception.getErrorDescription());
+      OAuth2ExceptionHandler.handle(exception, (HttpServletResponse) response);
+    }
+  }
+
+  private boolean check(String clientID, String secret) {
+    Optional<ClientDetails> client = clientDetailsService.getClientByID(clientID);
+
+    if (!client.isPresent()) {
+      return false;
     }
 
-    private boolean check(String clientID, String secret){
-        Optional<ClientDetails> client = clientDetailsService.getClientByID(clientID);
+    return client
+        .get()
+        .getSecret()
+        .equals(Hashing.sha256().hashString(secret, Charsets.UTF_8).toString());
+  }
 
-        if (!client.isPresent()) {
-            return false;
-        }
-
-        return client.get().getSecret()
-                .equals(Hashing.sha256().hashString(secret, Charsets.UTF_8).toString());
-    }
-
-    @Override
-    public void destroy() {}
+  @Override
+  public void destroy() {}
 }

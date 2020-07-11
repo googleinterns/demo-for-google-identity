@@ -24,78 +24,67 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static com.google.common.truth.Truth8.assertThat;
 
-/**
- * Test {@link InMemoryUserDetailsService}
- */
+/** Test {@link InMemoryUserDetailsService} */
 public class InMemoryUserDetailsServiceTest {
 
-    private static final String USERNAME = "username";
-    private static final String PASSWORD = "password";
+  private static final String USERNAME = "username";
+  private static final String PASSWORD = "password";
 
-    private static final UserDetails USER =
-            UserDetails.newBuilder()
-                    .setUsername(USERNAME)
-                    .setPassword(Hashing.sha256()
-                            .hashString(PASSWORD, Charsets.UTF_8).toString())
-                    .build();
+  private static final UserDetails USER =
+      UserDetails.newBuilder()
+          .setUsername(USERNAME)
+          .setPassword(Hashing.sha256().hashString(PASSWORD, Charsets.UTF_8).toString())
+          .build();
 
-    @Test
-    void testUserDetailsService_updateNonExistedUser_fail() {
-        UserDetailsService userDetailsService= new InMemoryUserDetailsService();
+  @Test
+  void testUserDetailsService_updateNonExistedUser_fail() {
+    UserDetailsService userDetailsService = new InMemoryUserDetailsService();
 
-        assertFalse(userDetailsService.updateUser(USER));
+    assertFalse(userDetailsService.updateUser(USER));
+  }
 
-    }
+  @Test
+  void testUserDetailsService_getNonExistedUser_fail() {
+    UserDetailsService userDetailsService = new InMemoryUserDetailsService();
 
-    @Test
-    void testUserDetailsService_getNonExistedUser_fail() {
-        UserDetailsService userDetailsService= new InMemoryUserDetailsService();
+    assertFalse(userDetailsService.getUserByName("111").isPresent());
+  }
 
-        assertFalse(userDetailsService.getUserByName("111").isPresent());
+  @Test
+  void testUserDetailsService_addNonExistedUser_success() {
+    UserDetailsService userDetailsService = new InMemoryUserDetailsService();
 
-    }
+    assertTrue(userDetailsService.addUser(USER));
+  }
 
-    @Test
-    void testUserDetailsService_addNonExistedUser_success() {
-        UserDetailsService userDetailsService= new InMemoryUserDetailsService();
+  @Test
+  void testUserDetailsService_updateExistedUser_CorrectUpdate() {
+    UserDetailsService userDetailsService = new InMemoryUserDetailsService();
 
-        assertTrue(userDetailsService.addUser(USER));
+    assertTrue(userDetailsService.addUser(USER));
 
-    }
+    UserDetails newUser = UserDetails.newBuilder(USER).setEmail("x@x.com").build();
 
-    @Test
-    void testUserDetailsService_updateExistedUser_CorrectUpdate() {
-        UserDetailsService userDetailsService= new InMemoryUserDetailsService();
+    assertTrue(userDetailsService.updateUser(newUser));
 
-        assertTrue(userDetailsService.addUser(USER));
+    assertThat(userDetailsService.getUserByName(USERNAME)).hasValue(newUser);
+  }
 
-        UserDetails newUser = UserDetails.newBuilder(USER).setEmail("x@x.com").build();
+  @Test
+  void testUserDetailsService_addExistedUser_fail() {
+    UserDetailsService userDetailsService = new InMemoryUserDetailsService();
 
-        assertTrue(userDetailsService.updateUser(newUser));
+    assertTrue(userDetailsService.addUser(USER));
 
-        assertThat(userDetailsService.getUserByName(USERNAME)).hasValue(newUser);
+    assertFalse(userDetailsService.addUser(USER));
+  }
 
-    }
+  @Test
+  void testUserDetailsService_getExistedUser_success() {
+    UserDetailsService userDetailsService = new InMemoryUserDetailsService();
 
-    @Test
-    void testUserDetailsService_addExistedUser_fail() {
-        UserDetailsService userDetailsService= new InMemoryUserDetailsService();
+    assertTrue(userDetailsService.addUser(USER));
 
-        assertTrue(userDetailsService.addUser(USER));
-
-        assertFalse(userDetailsService.addUser(USER));
-
-    }
-
-    @Test
-    void testUserDetailsService_getExistedUser_success() {
-        UserDetailsService userDetailsService= new InMemoryUserDetailsService();
-
-        assertTrue(userDetailsService.addUser(USER));
-
-        assertTrue(userDetailsService.getUserByName(USERNAME).isPresent());
-
-    }
-
-
+    assertTrue(userDetailsService.getUserByName(USERNAME).isPresent());
+  }
 }

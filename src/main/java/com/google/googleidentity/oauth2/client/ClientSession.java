@@ -22,46 +22,43 @@ import java.io.Serializable;
 import java.util.Optional;
 
 /**
- * ClientSession Object
- * Store client information for a client passed filter
- * Store request information
- * Stored in HttpSession named client_session
+ * ClientSession Object Store client information for a client passed filter Store request
+ * information Stored in HttpSession named client_session
  */
 public final class ClientSession implements Serializable {
 
-    private static final long serialVersionUID = 6L;
+  private static final long serialVersionUID = 6L;
 
-    private ClientDetails client = null;
+  private ClientDetails client = null;
 
-    private OAuth2Request request = null;
+  private OAuth2Request request = null;
 
-    public Optional<ClientDetails> getClient() {
-        return Optional.ofNullable(client);
+  public Optional<ClientDetails> getClient() {
+    return Optional.ofNullable(client);
+  }
+
+  public void setClient(ClientDetails client) {
+    this.client = client;
+  }
+
+  public Optional<OAuth2Request> getRequest() {
+    return Optional.ofNullable(request);
+  }
+
+  public void setRequest(OAuth2Request request) {
+    this.request = request;
+  }
+
+  @Override
+  public String toString() {
+
+    StringBuilder sb = new StringBuilder();
+    if (client != null) {
+      sb.append("client:").append(client.toString()).append("\t");
     }
-
-    public Optional<OAuth2Request> getRequest(){
-        return Optional.ofNullable(request);
+    if (request != null) {
+      sb.append("request:").append(request.toString()).append("\t");
     }
-
-    public void setClient(ClientDetails client) {
-        this.client = client;
-    }
-
-    public void setRequest(OAuth2Request request){
-        this.request = request;
-    }
-
-    @Override
-    public String toString() {
-
-        StringBuilder sb = new StringBuilder();
-        if (client != null) {
-            sb.append("client:").append(client.toString()).append("\t");
-        }
-        if (request != null) {
-            sb.append("request:").append(request.toString()).append("\t");
-        }
-        return sb.toString();
-    }
-
+    return sb.toString();
+  }
 }

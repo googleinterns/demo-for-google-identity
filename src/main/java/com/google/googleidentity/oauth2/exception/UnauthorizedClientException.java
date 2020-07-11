@@ -18,18 +18,17 @@ package com.google.googleidentity.oauth2.exception;
 
 public final class UnauthorizedClientException extends OAuth2Exception {
 
-    private static final String UNAUTHORIZED_CLIENT = "unauthorized_client";
+  private static final String UNAUTHORIZED_CLIENT = "unauthorized_client";
 
-    public UnauthorizedClientException() {
-        super();
-    }
+  public UnauthorizedClientException() {
+    super();
+  }
 
-    public String getErrorType(){
-        return UNAUTHORIZED_CLIENT;
-    }
+  public String getErrorType() {
+    return UNAUTHORIZED_CLIENT;
+  }
 
-    public String getErrorDescription(){
-        return "The client is not allowed to use this method!";
-    }
-
+  public String getErrorDescription() {
+    return "The client is not allowed to use this method!";
+  }
 }

@@ -38,73 +38,67 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-/**
- * Approval endpoint, used for user approval
- */
+/** Approval endpoint, used for user approval */
 @Singleton
 public class ConsentEndpoint extends HttpServlet {
 
-    private static final long serialVersionUID = 7L;
+  private static final long serialVersionUID = 7L;
 
-    private static final Logger log = Logger.getLogger("ConsentEndpoint");
+  private static final Logger log = Logger.getLogger("ConsentEndpoint");
 
-    private Configuration configuration;
+  private Configuration configuration;
 
-    @Inject
-    public ConsentEndpoint() {
+  @Inject
+  public ConsentEndpoint() {}
+
+  public void init() throws ServletException {
+
+    // FreeMaker's version
+    Version version = new Version("2.3.30");
+    configuration = new Configuration(version);
+    configuration.setServletContextForTemplateLoading(getServletContext(), "template");
+  }
+
+  protected void doGet(HttpServletRequest request, HttpServletResponse response)
+      throws ServletException, IOException {
+    try {
+      toConsentPage(request, response);
+    } catch (TemplateException e) {
+      log.log(Level.INFO, "Display Consent Page Error!", e);
+    }
+  }
+
+  protected void doPost(HttpServletRequest request, HttpServletResponse response)
+      throws ServletException, IOException {}
+
+  private void toConsentPage(HttpServletRequest request, HttpServletResponse response)
+      throws IOException, TemplateException {
+
+    Preconditions.checkArgument(
+        OAuth2Utils.getClientSession(request).getRequest().isPresent(),
+        "Request should have been set");
+
+    OAuth2Request oauth2Request = OAuth2Utils.getClientSession(request).getRequest().get();
+
+    Map<String, Object> information = new HashMap<>();
+    information.put("clientID", oauth2Request.getRequestAuth().getClientId());
+
+    List<String> scopes = oauth2Request.getRequestBody().getScopesList();
+
+    StringBuilder sb = new StringBuilder();
+    for (String scope : scopes) {
+      sb.append(scope).append(" ");
     }
 
-    public void init() throws ServletException {
+    information.put("scopes", sb.toString());
 
-        // FreeMaker's version
-        Version version = new Version("2.3.30");
-        configuration = new Configuration(version);
-        configuration.setServletContextForTemplateLoading(getServletContext(), "template");
+    Template template = configuration.getTemplate("ConsentPage.ftl");
 
-    }
+    response.setCharacterEncoding("utf-8");
+    PrintWriter printWriter = response.getWriter();
 
-    protected void doGet(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        try {
-            toConsentPage(request, response);
-        } catch (TemplateException e) {
-            log.log(Level.INFO, "Display Consent Page Error!", e);
-        }
-    }
+    template.process(information, printWriter);
 
-    protected void doPost(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-    }
-
-    private void toConsentPage(HttpServletRequest request, HttpServletResponse response)
-            throws IOException, TemplateException {
-
-        Preconditions.checkArgument(
-                OAuth2Utils.getClientSession(request).getRequest().isPresent(),
-                "Request should have been set");
-
-        OAuth2Request oauth2Request = OAuth2Utils.getClientSession(request).getRequest().get();
-
-        Map<String, Object> information = new HashMap<>();
-        information.put("clientID", oauth2Request.getRequestAuth().getClientId());
-
-        List<String> scopes = oauth2Request.getRequestBody().getScopesList();
-
-        StringBuilder sb = new StringBuilder();
-        for (String scope : scopes) {
-            sb.append(scope).append(" ");
-        }
-
-        information.put("scopes", sb.toString());
-
-        Template template = configuration.getTemplate("ConsentPage.ftl");
-
-        response.setCharacterEncoding("utf-8");
-        PrintWriter printWriter = response.getWriter();
-
-        template.process(information, printWriter);
-
-        printWriter.flush();
-    }
-
+    printWriter.flush();
+  }
 }

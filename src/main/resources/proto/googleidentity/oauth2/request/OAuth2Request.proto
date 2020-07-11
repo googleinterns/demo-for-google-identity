@@ -28,63 +28,63 @@ option java_multiple_files = true;
 // May consider to split it into different sub messages for different usage.
 message OAuth2Request {
 
-    message RequestAuth{
-        // Request clientID
-        string client_id = 1;
+  message RequestAuth{
+    // Request clientID
+    string client_id = 1;
 
-        // Request username
-        string username = 2;
+    // Request username
+    string username = 2;
 
-        // Code for authorization code flow
-        string code = 3;
-    }
+    // Code for authorization code flow
+    string code = 3;
+  }
 
-    RequestAuth request_auth = 1;
+  RequestAuth request_auth = 1;
 
-    message RequestBody{
+  message RequestBody{
 
-        // Request response type
-        googleidentity.oauth2.util.OAuth2Enums.ResponseType response_type = 1;
+    // Request response type
+    googleidentity.oauth2.util.OAuth2Enums.ResponseType response_type = 1;
 
-        // Request grant type
-        googleidentity.oauth2.util.OAuth2Enums.GrantType grant_type = 2;
+    // Request grant type
+    googleidentity.oauth2.util.OAuth2Enums.GrantType grant_type = 2;
 
-        // Whether request scoped is limited
-        bool is_scoped = 3;
+    // Whether request scoped is limited
+    bool is_scoped = 3;
 
-        // Request scopes
-        repeated string scopes = 4;
+    // Request scopes
+    repeated string scopes = 4;
 
-        // Whether support a refresh token
-        bool refreshable = 5;
+    // Whether support a refresh token
+    bool refreshable = 5;
 
-        // Refresh token for refresh token request
-        string refresh_token = 6;
+    // Refresh token for refresh token request
+    string refresh_token = 6;
 
-        // Jwt assertion
-        string assertion = 7;
+    // Jwt assertion
+    string assertion = 7;
 
-        // Jwt assertion intent
-        string intent = 8;
+    // Jwt assertion intent
+    string intent = 8;
 
-        // Token need to revoke
-        string token_to_revoke = 9;
+    // Token need to revoke
+    string token_to_revoke = 9;
 
-        // Revoke token type hint
-        googleidentity.oauth2.util.OAuth2Enums.TokenType token_type_hint = 10;
-    }
+    // Revoke token type hint
+    googleidentity.oauth2.util.OAuth2Enums.TokenType token_type_hint = 10;
+  }
 
-    RequestBody request_body = 2;
+  RequestBody request_body = 2;
 
-    message AuthorizationResponse{
+  message AuthorizationResponse{
 
-        // Request redirect uri
-        string redirect_uri = 1;
+    // Request redirect uri
+    string redirect_uri = 1;
 
-        // Request state
-        string state = 2;
-    }
+    // Request state
+    string state = 2;
+  }
 
-    AuthorizationResponse authorization_response = 3;
+  AuthorizationResponse authorization_response = 3;
 
 }
