@@ -31,6 +31,7 @@ import com.google.googleidentity.oauth2.exception.UnauthorizedClientException;
 import com.google.googleidentity.oauth2.exception.UnsupportedResponseTypeException;
 import com.google.googleidentity.oauth2.request.OAuth2Request;
 import com.google.googleidentity.oauth2.util.OAuth2Constants;
+import com.google.googleidentity.oauth2.util.OAuth2Enums.GrantType;
 import com.google.googleidentity.oauth2.util.OAuth2ParameterNames;
 import com.google.googleidentity.security.UserSession;
 import com.google.googleidentity.testtools.FakeHttpSession;
@@ -67,7 +68,7 @@ public class AuthorizationEndpointRequestValidatorTest {
                     .addScopes("read")
                     .setIsScoped(true)
                     .addRedirectUris(REDIRECT_URI_REGEX)
-                    .addGrantTypes(OAuth2Constants.GrantType.AUTHORIZATION_CODE)
+                    .addGrantTypes(GrantType.AUTHORIZATION_CODE)
                     .build();
 
     private static final String USERNAME = "usernames";

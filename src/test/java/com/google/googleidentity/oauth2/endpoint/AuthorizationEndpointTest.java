@@ -18,15 +18,27 @@ package com.google.googleidentity.oauth2.endpoint;
 
 import com.google.common.base.Charsets;
 import com.google.common.hash.Hashing;
+import com.google.googleidentity.oauth2.authorizationcode.AuthorizationCodeRequestHandler;
+import com.google.googleidentity.oauth2.authorizationcode.AuthorizationCodeService;
+import com.google.googleidentity.oauth2.authorizationcode.InMemoryCodeStore;
 import com.google.googleidentity.oauth2.client.ClientDetails;
 import com.google.googleidentity.oauth2.client.ClientDetailsService;
 import com.google.googleidentity.oauth2.client.InMemoryClientDetailsService;
+import com.google.googleidentity.oauth2.request.MultipleRequestHandler;
+import com.google.googleidentity.oauth2.request.RequestHandler;
 import com.google.googleidentity.oauth2.request.OAuth2Request;
+import com.google.googleidentity.oauth2.token.InMemoryOAuth2TokenService;
 import com.google.googleidentity.oauth2.util.OAuth2Constants;
+import com.google.googleidentity.oauth2.util.OAuth2Enums.GrantType;
+import com.google.googleidentity.oauth2.util.OAuth2Enums.ResponseType;
 import com.google.googleidentity.oauth2.util.OAuth2ParameterNames;
 import com.google.googleidentity.security.UserSession;
 import com.google.googleidentity.testtools.FakeHttpSession;
+import com.google.googleidentity.user.InMemoryUserDetailsService;
 import com.google.googleidentity.user.UserDetails;
+import com.google.googleidentity.user.UserDetailsService;
+import java.util.HashMap;
+import java.util.Map;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -60,6 +72,7 @@ public class AuthorizationEndpointTest {
     private static final String SECRET = "111";
     private static final String REDIRECT_URI = "http://www.google.com";
 
+
     private static final ClientDetails CLIENT =
             ClientDetails.newBuilder()
                     .setClientId(CLIENTID)
@@ -68,7 +81,7 @@ public class AuthorizationEndpointTest {
                     .addScopes("read")
                     .setIsScoped(true)
                     .addRedirectUris(REDIRECT_URI)
-                    .addGrantTypes(OAuth2Constants.GrantType.AUTHORIZATION_CODE)
+                    .addGrantTypes(GrantType.AUTHORIZATION_CODE)
                     .build();
 
     private static final String USERNAME = "usernames";
@@ -87,9 +100,20 @@ public class AuthorizationEndpointTest {
     public void init() {
         ClientDetailsService clientDetailsService = new InMemoryClientDetailsService();
         clientDetailsService.addClient(CLIENT);
+        UserDetailsService userDetailsService = new InMemoryUserDetailsService();
+        userDetailsService.addUser(USER);
         userSession = new UserSession();
         userSession.setUser(USER);
-        authorizationEndpoint = new AuthorizationEndpoint(clientDetailsService);
+        Map<GrantType, RequestHandler> map = new HashMap<>();
+        map.put(
+            GrantType.AUTHORIZATION_CODE,
+            new AuthorizationCodeRequestHandler(
+                new AuthorizationCodeService(new InMemoryCodeStore()),
+                new InMemoryOAuth2TokenService()));
+        authorizationEndpoint =
+            new AuthorizationEndpoint(
+                clientDetailsService,
+                new MultipleRequestHandler(map));
     }
 
 
@@ -105,7 +129,8 @@ public class AuthorizationEndpointTest {
 
         when(request.getSession()).thenReturn(httpSession);
 
-        when(request.getParameter(OAuth2ParameterNames.RESPONSE_TYPE)).thenReturn("code");
+        when(request.getParameter(OAuth2ParameterNames.RESPONSE_TYPE))
+                .thenReturn(OAuth2Constants.ResponseType.CODE);
         when(request.getParameter(OAuth2ParameterNames.CLIENT_ID)).thenReturn(CLIENTID);
         when(request.getParameter(OAuth2ParameterNames.REDIRECT_URI)).thenReturn(REDIRECT_URI);
         when(request.getParameter(OAuth2ParameterNames.SCOPE)).thenReturn(null);
@@ -138,7 +163,8 @@ public class AuthorizationEndpointTest {
 
         when(request.getSession()).thenReturn(httpSession);
 
-        when(request.getParameter(OAuth2ParameterNames.RESPONSE_TYPE)).thenReturn("code");
+        when(request.getParameter(OAuth2ParameterNames.RESPONSE_TYPE))
+                .thenReturn(OAuth2Constants.ResponseType.CODE);
         when(request.getParameter(OAuth2ParameterNames.CLIENT_ID)).thenReturn(CLIENTID);
         when(request.getParameter(OAuth2ParameterNames.REDIRECT_URI)).thenReturn(REDIRECT_URI);
         when(request.getParameter(OAuth2ParameterNames.SCOPE)).thenReturn("read");
@@ -164,9 +190,9 @@ public class AuthorizationEndpointTest {
                                 OAuth2Request.RequestBody.newBuilder()
                                         .setIsScoped(true)
                                         .addAllScopes(CLIENT.getScopesList())
-                                        .setResponseType("code")
+                                        .setResponseType(ResponseType.CODE)
                                         .setRefreshable(true)
-                                        .setGrantType("authorization_code")
+                                        .setGrantType(GrantType.AUTHORIZATION_CODE)
                                         .build())
                         .setAuthorizationResponse(
                                 OAuth2Request.AuthorizationResponse.newBuilder()

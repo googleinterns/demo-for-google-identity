@@ -39,7 +39,9 @@ public final class AuthorizationCodeService {
     /**
      * The value is set in appengine-web.xml
      */
-    private static final String AUTH_CODE_LENGTH = System.getenv("AUTH_CODE_LENGTH");
+    private static final String AUTH_CODE_LENGTH =
+            System.getenv("AUTH_CODE_LENGTH") == null ?
+                    "10" : System.getenv("AUTH_CODE_LENGTH");
 
     private int codeLength = Integer.parseInt(AUTH_CODE_LENGTH);
 

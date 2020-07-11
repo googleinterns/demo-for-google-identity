@@ -14,6 +14,8 @@
 
 syntax = "proto3";
 
+import public "proto/googleidentity/oauth2/util/OAuth2Enums.proto";
+
 package googleidentity.oauth2.request;
 
 option java_package = "com.google.googleidentity.oauth2.request";
@@ -40,11 +42,12 @@ message OAuth2Request {
     RequestAuth request_auth = 1;
 
     message RequestBody{
+
         // Request response type
-        string response_type = 1;
+        googleidentity.oauth2.util.OAuth2Enums.ResponseType response_type = 1;
 
         // Request grant type
-        string grant_type = 2;
+        googleidentity.oauth2.util.OAuth2Enums.GrantType grant_type = 2;
 
         // Whether request scoped is limited
         bool is_scoped = 3;
@@ -68,7 +71,7 @@ message OAuth2Request {
         string token_to_revoke = 9;
 
         // Revoke token type hint
-        string token_type_hint = 10;
+        googleidentity.oauth2.util.OAuth2Enums.TokenType token_type_hint = 10;
     }
 
     RequestBody request_body = 2;

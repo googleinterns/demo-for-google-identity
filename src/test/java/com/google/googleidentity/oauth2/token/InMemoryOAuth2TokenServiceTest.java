@@ -20,7 +20,8 @@ import com.google.common.base.Charsets;
 import com.google.common.hash.Hashing;
 import com.google.googleidentity.oauth2.client.ClientDetails;
 import com.google.googleidentity.oauth2.request.OAuth2Request;
-import com.google.googleidentity.oauth2.util.OAuth2Constants;
+import com.google.googleidentity.oauth2.util.OAuth2Enums.GrantType;
+import com.google.googleidentity.oauth2.util.OAuth2Enums.ResponseType;
 import org.junit.Test;
 
 import java.util.Optional;
@@ -48,7 +49,7 @@ public class InMemoryOAuth2TokenServiceTest {
                     .addScopes("read")
                     .setIsScoped(true)
                     .addRedirectUris(REDIRECT_URI)
-                    .addGrantTypes(OAuth2Constants.GrantType.AUTHORIZATION_CODE)
+                    .addGrantTypes(GrantType.AUTHORIZATION_CODE)
                     .build();
 
     private static final String USERNAME = "111";
@@ -64,9 +65,9 @@ public class InMemoryOAuth2TokenServiceTest {
                             OAuth2Request.RequestBody.newBuilder()
                                     .setIsScoped(true)
                                     .addAllScopes(CLIENT.getScopesList())
-                                    .setResponseType(OAuth2Constants.ResponseType.TOKEN)
+                                    .setResponseType(ResponseType.TOKEN)
                                     .setRefreshable(true)
-                                    .setGrantType(OAuth2Constants.GrantType.AUTHORIZATION_CODE)
+                                    .setGrantType(GrantType.AUTHORIZATION_CODE)
                                     .build())
                     .build();
 
@@ -81,9 +82,9 @@ public class InMemoryOAuth2TokenServiceTest {
                             OAuth2Request.RequestBody.newBuilder()
                                     .setIsScoped(true)
                                     .addAllScopes(CLIENT.getScopesList())
-                                    .setResponseType(OAuth2Constants.ResponseType.TOKEN)
+                                    .setResponseType(ResponseType.TOKEN)
                                     .setRefreshable(false)
-                                    .setGrantType(OAuth2Constants.GrantType.IMPLICIT)
+                                    .setGrantType(GrantType.IMPLICIT)
                                     .build())
                     .build();
 

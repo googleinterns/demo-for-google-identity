@@ -22,15 +22,19 @@ import com.google.common.collect.ImmutableSet;
 import com.google.googleidentity.oauth2.client.ClientDetails;
 import com.google.googleidentity.oauth2.client.ClientDetailsService;
 import com.google.googleidentity.oauth2.client.ClientSession;
-import com.google.googleidentity.oauth2.exception.InvalidRequestException;
-import com.google.googleidentity.oauth2.exception.OAuth2ExceptionHandler;
 import com.google.googleidentity.oauth2.exception.OAuth2Exception;
+import com.google.googleidentity.oauth2.exception.OAuth2ExceptionHandler;
+import com.google.googleidentity.oauth2.exception.InvalidRequestException;
 import com.google.googleidentity.oauth2.request.OAuth2Request;
+import com.google.googleidentity.oauth2.request.RequestHandler;
 import com.google.googleidentity.oauth2.util.OAuth2Constants;
+import com.google.googleidentity.oauth2.util.OAuth2EnumMap;
+import com.google.googleidentity.oauth2.util.OAuth2Enums.GrantType;
 import com.google.googleidentity.oauth2.util.OAuth2ParameterNames;
 import com.google.googleidentity.oauth2.util.OAuth2Utils;
 import com.google.googleidentity.oauth2.validator.AuthorizationEndpointRequestValidator;
 import com.google.inject.Inject;
+import com.google.inject.Provider;
 import com.google.inject.Singleton;
 
 import javax.servlet.ServletException;
@@ -42,6 +46,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.Set;
 import java.util.logging.Logger;
+
 
 /**
  * Demo AuthorizationEndpoint for OAuth2 Server
@@ -55,10 +60,14 @@ public final class AuthorizationEndpoint extends HttpServlet {
 
     private final ClientDetailsService clientDetailsService;
 
+    private final RequestHandler requestHandler;
 
     @Inject
-    public AuthorizationEndpoint(ClientDetailsService clientDetailsService) {
+    public AuthorizationEndpoint(
+            ClientDetailsService clientDetailsService,
+            RequestHandler requestHandler) {
         this.clientDetailsService = clientDetailsService;
+        this.requestHandler = requestHandler;
     }
 
 
@@ -124,6 +133,21 @@ public final class AuthorizationEndpoint extends HttpServlet {
             }
             return;
         }
+
+        Preconditions.checkArgument(
+                OAuth2Utils.getClientSession(request).getRequest().isPresent(),
+                "Request should have been checked in validation");
+
+        try {
+            requestHandler.handle(
+                    response, OAuth2Utils.getClientSession(request).getRequest().get());
+        } catch (OAuth2Exception exception) {
+            log.info(
+                    "Failed when process request in Authorization Endpoint" +
+                            "Error Type: " + exception.getErrorType() +
+                            "Description: " + exception.getErrorDescription());
+            OAuth2ExceptionHandler.handle(exception, response);
+        }
     }
 
     /**
@@ -162,27 +186,33 @@ public final class AuthorizationEndpoint extends HttpServlet {
                 OAuth2Utils.getUserSession(request).getUser().isPresent(),
                 "User should have logged in");
 
-        OAuth2Request.Builder oauth2RequestBuilder =
-                OAuth2Request.newBuilder()
-                        .setRequestAuth(
-                                OAuth2Request.RequestAuth.newBuilder()
-                                        .setClientId(client.getClientId())
-                                        .setUsername(
-                                                OAuth2Utils.getUserSession(request).getUser().get()
-                                                        .getUsername())
-                                        .build())
-                        .setRequestBody(
-                                OAuth2Request.RequestBody.newBuilder()
-                                        .setIsScoped(!scope.isEmpty())
-                                        .addAllScopes(scope)
-                                        .setResponseType(responseType)
-                                        .setRefreshable(
-                                                responseType.equals(
-                                                        OAuth2Constants.ResponseType.CODE))
-                                        .setGrantType(
-                                                OAuth2Utils.getGrantTypeFromResponseType(
-                                                        responseType))
-                                        .build());
+        OAuth2Request.Builder oauth2RequestBuilder = OAuth2Request.newBuilder();
+        oauth2RequestBuilder.getRequestAuthBuilder()
+                .setClientId(client.getClientId())
+                .setUsername(
+                        OAuth2Utils.getUserSession(request).getUser().get()
+                                .getUsername());
+        oauth2RequestBuilder.getRequestBodyBuilder()
+            .setIsScoped(!scope.isEmpty())
+            .addAllScopes(scope)
+            .setResponseType(OAuth2EnumMap.RESPONSE_TYPE_MAP.get(responseType));
+
+
+        switch (OAuth2Utils.getGrantTypeFromResponseType(responseType)) {
+            case OAuth2Constants.GrantType.AUTHORIZATION_CODE:
+                oauth2RequestBuilder.getRequestBodyBuilder()
+                        .setGrantType(GrantType.AUTHORIZATION_CODE)
+                        .setRefreshable(true);
+                break;
+            case OAuth2Constants.GrantType.IMPLICIT:
+                oauth2RequestBuilder.getRequestBodyBuilder()
+                        .setGrantType(GrantType.IMPLICIT)
+                        .setRefreshable(false);
+                break;
+            default:
+                // Will never happen since we have validated it
+                break;
+        }
 
         oauth2RequestBuilder.getAuthorizationResponseBuilder()
                 .setRedirectUri(redirectUri);

@@ -14,14 +14,17 @@
     limitations under the License.
 */
 
-package com.google.googleidentity.oauth2.token;
+package com.google.googleidentity.oauth2.request;
 
-import com.google.inject.AbstractModule;
+import com.google.googleidentity.oauth2.exception.OAuth2Exception;
 
-public class TokenModule extends AbstractModule {
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 
-    @Override
-    protected void configure() {
-        bind(OAuth2TokenService.class).to(InMemoryOAuth2TokenService.class);
-    }
+/**
+ * interface for actual request handling.
+ */
+public interface RequestHandler {
+    void handle(HttpServletResponse response, OAuth2Request oauth2Request)
+            throws IOException, OAuth2Exception;
 }

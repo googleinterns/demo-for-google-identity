@@ -14,10 +14,14 @@
 
 syntax = "proto3";
 
+import public "proto/googleidentity/oauth2/util/OAuth2Enums.proto";
+
 package googleidentity.oauth2.client;
 
 option java_package = "com.google.googleidentity.oauth2.client";
 option java_multiple_files = true;
+
+
 
 // Metadata about an OAuth client registered with this server.
 message ClientDetails {
@@ -27,7 +31,7 @@ message ClientDetails {
     string secret = 2;
 
     // The OAuth 2.0 grant types that are permitted by this client.
-    repeated string grant_types = 3;
+    repeated googleidentity.oauth2.util.OAuth2Enums.GrantType grant_types = 3;
 
     // Whether scopes for this client is limited
     bool is_scoped = 4;

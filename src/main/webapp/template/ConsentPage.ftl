@@ -36,7 +36,7 @@ limitations under the License.
 <body>
 <div class="info" style="text-align:center">
     <h1>${clientID + " Request"}</h1>
-    <h1>${"Scopes: "}</h1>
+    <h1>${"Scopes: " + scopes}</h1>
 <form action="/oauth2/authorize" method="post" >
     <input type="hidden"  name="user_approve" value="true"/>
     <div class="leftbtn">

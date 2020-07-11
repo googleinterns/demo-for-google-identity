@@ -17,6 +17,7 @@
 package com.google.googleidentity.oauth2.validator;
 
 import com.google.common.base.Charsets;
+import com.google.common.collect.ImmutableList;
 import com.google.common.hash.Hashing;
 import com.google.googleidentity.oauth2.client.ClientDetails;
 import com.google.googleidentity.oauth2.client.ClientDetailsService;
@@ -24,6 +25,7 @@ import com.google.googleidentity.oauth2.client.ClientSession;
 import com.google.googleidentity.oauth2.client.InMemoryClientDetailsService;
 import com.google.googleidentity.oauth2.exception.*;
 import com.google.googleidentity.oauth2.util.OAuth2Constants;
+import com.google.googleidentity.oauth2.util.OAuth2Enums.GrantType;
 import com.google.googleidentity.oauth2.util.OAuth2ParameterNames;
 import com.google.googleidentity.security.UserSession;
 import com.google.googleidentity.testtools.FakeHttpSession;
@@ -50,6 +52,12 @@ public class TokenEndpointRequestValidatorTest {
     private static final String REDIRECT_URI_REGEX= "http://www.google.com/";
     private static final String REDIRECT_URI= "http://www.google.com/123";
 
+    private static final ImmutableList<GrantType> TESTGRANTTYPES = ImmutableList.of(
+            GrantType.AUTHORIZATION_CODE,
+            GrantType.IMPLICIT,
+            GrantType.REFRESH_TOKEN,
+            GrantType.JWT_ASSERTION);
+
     private static final ClientDetails CLIENT =
             ClientDetails.newBuilder()
                     .setClientId(CLIENTID)
@@ -58,10 +66,7 @@ public class TokenEndpointRequestValidatorTest {
                     .addScopes("read")
                     .setIsScoped(true)
                     .addRedirectUris(REDIRECT_URI_REGEX)
-                    .addGrantTypes(OAuth2Constants.GrantType.AUTHORIZATION_CODE)
-                    .addGrantTypes(OAuth2Constants.GrantType.IMPLICIT)
-                    .addGrantTypes(OAuth2Constants.GrantType.JWT_ASSERTION)
-                    .addGrantTypes(OAuth2Constants.GrantType.REFRESH_TOKEN)
+                    .addAllGrantTypes(TESTGRANTTYPES)
                     .build();
 
     private static final ClientDetails CLIENT1 =
@@ -72,7 +77,7 @@ public class TokenEndpointRequestValidatorTest {
                     .addScopes("read")
                     .setIsScoped(true)
                     .addRedirectUris(REDIRECT_URI_REGEX)
-                    .addGrantTypes(OAuth2Constants.GrantType.IMPLICIT)
+                    .addGrantTypes(GrantType.IMPLICIT)
                     .build();
 
     private static final String USERNAME = "111";

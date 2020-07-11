@@ -22,7 +22,7 @@ import com.google.common.hash.Hashing;
 import com.google.googleidentity.oauth2.client.ClientDetails;
 import com.google.googleidentity.oauth2.client.ClientDetailsService;
 import com.google.googleidentity.oauth2.client.InMemoryClientDetailsService;
-import com.google.googleidentity.oauth2.util.OAuth2Constants;
+import com.google.googleidentity.oauth2.util.OAuth2Enums.GrantType;
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 import com.google.inject.Singleton;
@@ -33,11 +33,11 @@ public class TestClientModule extends AbstractModule {
     private static final String TESTCLIENTID = "google";
     private static final String TESTSECRET = "secret";
     private static final ImmutableList<String> TESTSCOPES = ImmutableList.of("read");
-    private static final ImmutableList<String> TESTGRANTTYPES = ImmutableList.of(
-            OAuth2Constants.GrantType.AUTHORIZATION_CODE,
-            OAuth2Constants.GrantType.IMPLICIT,
-            OAuth2Constants.GrantType.JWT_ASSERTION,
-            OAuth2Constants.GrantType.REFRESH_TOKEN);
+    private static final ImmutableList<GrantType> TESTGRANTTYPES = ImmutableList.of(
+            GrantType.AUTHORIZATION_CODE,
+            GrantType.IMPLICIT,
+            GrantType.REFRESH_TOKEN,
+            GrantType.JWT_ASSERTION);
 
     private static final String TESTREDIRECTURI = "http://www.google.com";
 

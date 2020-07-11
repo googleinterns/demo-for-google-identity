@@ -23,7 +23,10 @@ import com.google.googleidentity.oauth2.exception.InvalidRequestException;
 import com.google.googleidentity.oauth2.exception.OAuth2Exception;
 import com.google.googleidentity.oauth2.exception.OAuth2ExceptionHandler;
 import com.google.googleidentity.oauth2.request.OAuth2Request;
+import com.google.googleidentity.oauth2.request.RequestHandler;
 import com.google.googleidentity.oauth2.util.OAuth2Constants;
+import com.google.googleidentity.oauth2.util.OAuth2EnumMap;
+import com.google.googleidentity.oauth2.util.OAuth2Enums.ResponseType;
 import com.google.googleidentity.oauth2.util.OAuth2ParameterNames;
 import com.google.googleidentity.oauth2.util.OAuth2Utils;
 import com.google.googleidentity.oauth2.validator.TokenEndpointRequestValidator;
@@ -39,6 +42,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.logging.Logger;
 
+
 /**
  * Token exchange endpoint in OAuth2 Server
  */
@@ -51,10 +55,14 @@ public class TokenEndpoint extends HttpServlet {
 
     private final ClientDetailsService clientDetailsService;
 
+    private final RequestHandler requestHandler;
 
     @Inject
-    public TokenEndpoint(ClientDetailsService clientDetailsService) {
+    public TokenEndpoint(
+            ClientDetailsService clientDetailsService,
+            RequestHandler requestHandler) {
         this.clientDetailsService = clientDetailsService;
+        this.requestHandler = requestHandler;
     }
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -82,6 +90,16 @@ public class TokenEndpoint extends HttpServlet {
         }
 
         OAuth2Request oauth2Request = parseOAuth2RequestFromHttpRequest(request);
+
+        try {
+            requestHandler.handle(response, oauth2Request);
+        } catch (OAuth2Exception exception) {
+            log.info(
+                    "Failed when process request in Token Endpoint" +
+                            "Error Type: " + exception.getErrorType() +
+                            "Description: " + exception.getErrorDescription());
+            OAuth2ExceptionHandler.handle(exception, response);
+        }
     }
 
     /**
@@ -99,9 +117,11 @@ public class TokenEndpoint extends HttpServlet {
         oauth2RequestBuilder.getRequestAuthBuilder()
                 .setClientId(
                             OAuth2Utils.getClientSession(request).getClient().get().getClientId());
+        oauth2RequestBuilder.getRequestBodyBuilder()
+            .setGrantType(OAuth2EnumMap.GRANT_TYPE_MAP.get(grantType));
 
         oauth2RequestBuilder.getRequestBodyBuilder()
-                .setGrantType(grantType).setResponseType(OAuth2Constants.ResponseType.TOKEN);
+                .setResponseType(ResponseType.TOKEN);
 
         if (grantType.equals(OAuth2Constants.GrantType.AUTHORIZATION_CODE)) {
             oauth2RequestBuilder.getRequestAuthBuilder().setCode(
@@ -118,8 +138,9 @@ public class TokenEndpoint extends HttpServlet {
             }
 
         } else if (grantType.equals(OAuth2Constants.GrantType.REFRESH_TOKEN)) {
-            oauth2RequestBuilder.getRequestBodyBuilder().setRefreshToken(
-                    request.getParameter(OAuth2ParameterNames.REFRESH_TOKEN));
+            oauth2RequestBuilder.getRequestBodyBuilder()
+                    .setRefreshToken(
+                            request.getParameter(OAuth2ParameterNames.REFRESH_TOKEN));
         } else if (grantType.equals(OAuth2Constants.GrantType.JWT_ASSERTION)) {
             oauth2RequestBuilder.getRequestBodyBuilder()
                     .setIntent(request.getParameter(OAuth2ParameterNames.INTENT))

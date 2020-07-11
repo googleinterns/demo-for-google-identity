@@ -6,5 +6,6 @@
 /src/main/java/com/google/googleidentity/oauth2/request/OAuth2Request.java
 /src/main/java/com/google/googleidentity/oauth2/token/OAuth2AccessToken.java
 /src/main/java/com/google/googleidentity/oauth2/token/OAuth2RefreshToken.java
+/src/main/java/com/google/googleidentity/oauth2/util/OAuth2Enums.java
 *OrBuilder.java
 *OuterClass.java
