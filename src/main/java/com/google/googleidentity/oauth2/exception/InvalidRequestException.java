@@ -65,6 +65,12 @@ public final class InvalidRequestException extends OAuth2Exception {
         return "No assertion!";
       case UNSUPPORTED_INTENT:
         return "Unsupported intent!";
+      case INVALID_JWT_ISS:
+        return "Invalid jwt iss!";
+      case INVALID_JWT:
+        return "Invalid jwt!";
+      case WRONG_JWT_AUD:
+        return "Wrong jwt aud!";
       default:
         throw new IllegalArgumentException(String.valueOf(errorCode));
     }
@@ -86,6 +92,9 @@ public final class InvalidRequestException extends OAuth2Exception {
     NO_REFRESH_TOKEN,
     NO_INTENT,
     NO_ASSERTION,
-    UNSUPPORTED_INTENT
+    UNSUPPORTED_INTENT,
+    INVALID_JWT_ISS,
+    INVALID_JWT,
+    WRONG_JWT_AUD
   }
 }

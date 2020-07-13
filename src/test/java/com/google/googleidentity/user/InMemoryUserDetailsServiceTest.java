@@ -87,4 +87,25 @@ public class InMemoryUserDetailsServiceTest {
 
     assertTrue(userDetailsService.getUserByName(USERNAME).isPresent());
   }
+
+  @Test
+  void testGetUserByEmailOrGoogleAccountId_getExistedUser_success() {
+    UserDetailsService userDetailsService = new InMemoryUserDetailsService();
+
+    UserDetails user =
+        UserDetails.newBuilder(USER).setEmail("a@a.com").setGoogleAccountId("gid").build();
+
+    assertTrue(userDetailsService.addUser(user));
+
+    assertThat(userDetailsService.getUserByEmailOrGoogleAccountId("a@a.com", null)).hasValue(user);
+
+    assertThat(userDetailsService.getUserByEmailOrGoogleAccountId(null, "gid")).hasValue(user);
+  }
+
+  @Test
+  void testGetUserByEmailOrGoogleAccountId_noSuchUser_failed() {
+    UserDetailsService userDetailsService = new InMemoryUserDetailsService();
+
+    assertThat(userDetailsService.getUserByEmailOrGoogleAccountId("a@a.com", "gid")).isEmpty();
+  }
 }

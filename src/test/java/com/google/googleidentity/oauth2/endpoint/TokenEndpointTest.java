@@ -35,6 +35,7 @@ import com.google.googleidentity.oauth2.request.RequestHandler;
 import com.google.googleidentity.oauth2.token.InMemoryOAuth2TokenService;
 import com.google.googleidentity.oauth2.util.OAuth2Constants;
 import com.google.googleidentity.oauth2.util.OAuth2Enums.GrantType;
+import com.google.googleidentity.oauth2.util.OAuth2Enums.IntentType;
 import com.google.googleidentity.oauth2.util.OAuth2Enums.ResponseType;
 import com.google.googleidentity.oauth2.util.OAuth2ParameterNames;
 import com.google.googleidentity.security.UserSession;
@@ -134,8 +135,8 @@ public class TokenEndpointTest {
 
     String expected =
         OAuth2ExceptionHandler.getResponseBody(
-                new InvalidRequestException(
-                    InvalidRequestException.ErrorCode.UNSUPPORTED_REQUEST_METHOD))
+            new InvalidRequestException(
+                InvalidRequestException.ErrorCode.UNSUPPORTED_REQUEST_METHOD))
             .toJSONString();
 
     Truth.assertThat(stringWriter.toString()).isEqualTo(expected + LINE);
@@ -214,7 +215,7 @@ public class TokenEndpointTest {
         .getRequestBodyBuilder()
         .setGrantType(GrantType.JWT_ASSERTION)
         .setAssertion("assertion")
-        .setIntent(OAuth2Constants.JwtAssertionIntents.CREATE)
+        .setIntent(IntentType.CREATE)
         .setResponseType(ResponseType.TOKEN)
         .setIsScoped(true)
         .addScopes("read");

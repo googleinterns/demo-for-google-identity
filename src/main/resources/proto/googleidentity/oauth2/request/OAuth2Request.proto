@@ -65,7 +65,7 @@ message OAuth2Request {
     string assertion = 7;
 
     // Jwt assertion intent
-    string intent = 8;
+    googleidentity.oauth2.util.OAuth2Enums.IntentType intent = 8;
 
     // Token need to revoke
     string token_to_revoke = 9;

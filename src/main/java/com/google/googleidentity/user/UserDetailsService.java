@@ -21,7 +21,9 @@ import java.util.Optional;
 /** UserDetailsService Interface. Support basic user information access and modification */
 public interface UserDetailsService {
 
-  /** @return the user with the username */
+  /**
+   * @return the user with the same username
+   */
   Optional<UserDetails> getUserByName(String username);
 
   /**
@@ -37,6 +39,13 @@ public interface UserDetailsService {
    * @return add success or not
    */
   boolean addUser(UserDetails user);
+
+  /**
+   * Get user by its email or google account id
+   *
+   * @return
+   */
+  Optional<UserDetails> getUserByEmailOrGoogleAccountId(String email, String gid);
 
   /** @return all users */
   List<UserDetails> listUser();

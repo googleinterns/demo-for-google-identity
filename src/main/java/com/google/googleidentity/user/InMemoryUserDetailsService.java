@@ -17,18 +17,21 @@
 package com.google.googleidentity.user;
 
 import com.google.common.base.Preconditions;
+import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
 import com.google.inject.Singleton;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.logging.Logger;
 
 /** Default InMemory UserDetailsService for user information Store. */
 @Singleton
 public final class InMemoryUserDetailsService implements UserDetailsService {
 
   private final ConcurrentHashMap<String, UserDetails> userStore = new ConcurrentHashMap<>();
+  private static final Logger log = Logger.getLogger("InMemoryUserDetailsService");
 
   public Optional<UserDetails> getUserByName(String username) {
 
@@ -64,6 +67,21 @@ public final class InMemoryUserDetailsService implements UserDetailsService {
     }
     userStore.put(username, user);
     return true;
+  }
+
+  @Override
+  public Optional<UserDetails> getUserByEmailOrGoogleAccountId(String email, String gid) {
+    for (UserDetails user : userStore.values()) {
+      if (!Strings.isNullOrEmpty(email) && user.getEmail().equals(email)) {
+        return Optional.of(user);
+      }
+      if (!Strings.isNullOrEmpty(gid) && user.getGoogleAccountId().equals(gid)) {
+        log.info("User has google account Id with empty email.");
+        return Optional.of(user);
+      }
+    }
+
+    return Optional.empty();
   }
 
   public List<UserDetails> listUser() {
