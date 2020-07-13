@@ -24,12 +24,14 @@ import com.google.inject.Singleton;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.logging.Logger;
 
 /** Default InMemory UserDetailsService for user information Store. */
 @Singleton
 public final class InMemoryUserDetailsService implements UserDetailsService {
 
   private final ConcurrentHashMap<String, UserDetails> userStore = new ConcurrentHashMap<>();
+  private static final Logger log = Logger.getLogger("InMemoryUserDetailsService");
 
   public Optional<UserDetails> getUserByName(String username) {
 
@@ -74,6 +76,7 @@ public final class InMemoryUserDetailsService implements UserDetailsService {
         return Optional.of(user);
       }
       if (!Strings.isNullOrEmpty(gid) && user.getGoogleAccountId().equals(gid)) {
+        log.info("User has google account Id with empty email.");
         return Optional.of(user);
       }
     }
