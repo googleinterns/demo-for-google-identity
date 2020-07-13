@@ -38,74 +38,67 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * Demo UserServlet
- * Read UserDetails.User Object {@link com.google.googleidentity.user.UserDetails}  stored in
- * in the session through class {@link com.google.googleidentity.security.UserSession} and
+ * Demo UserServlet Read UserDetails.User Object {@link com.google.googleidentity.user.UserDetails}
+ * stored in in the session through class {@link com.google.googleidentity.security.UserSession} and
  * display the username.
  */
 @Singleton
 public final class UserServlet extends HttpServlet {
 
-    private static final long serialVersionUID = 1L;
+  private static final long serialVersionUID = 1L;
 
-    private static final Logger log = Logger.getLogger("UserServlet");
+  private static final Logger log = Logger.getLogger("UserServlet");
 
-    private Configuration configuration;
+  private Configuration configuration;
 
-    public void init() throws ServletException {
+  public void init() throws ServletException {
 
-        Version version = new Version("2.3.30");
-        configuration = new Configuration(version);
-        configuration.setServletContextForTemplateLoading(getServletContext(), "template");
+    Version version = new Version("2.3.30");
+    configuration = new Configuration(version);
+    configuration.setServletContextForTemplateLoading(getServletContext(), "template");
+  }
 
+  public void doGet(HttpServletRequest request, HttpServletResponse response)
+      throws ServletException, IOException {
+
+    try {
+      displayMainPage(request, response);
+    } catch (TemplateException e) {
+      log.log(Level.INFO, "MainPage Error!", e);
     }
+  }
 
-    public void doGet(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
+  protected void doPost(HttpServletRequest request, HttpServletResponse response)
+      throws ServletException, IOException {
 
-        try {
-            displayMainPage(request, response);
-        } catch (TemplateException e) {
-            log.log(Level.INFO, "MainPage Error!", e);
-        }
-
+    try {
+      displayMainPage(request, response);
+    } catch (TemplateException e) {
+      log.log(Level.INFO, "MainPage Error!", e);
     }
+  }
 
-    protected void doPost(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
+  private void displayMainPage(HttpServletRequest request, HttpServletResponse response)
+      throws ServletException, IOException, TemplateException {
 
-        try {
-            displayMainPage(request, response);
-        } catch (TemplateException e) {
-            log.log(Level.INFO, "MainPage Error!", e);
-        }
+    UserSession userSession = OAuth2Utils.getUserSession(request);
 
-    }
+    Preconditions.checkArgument(
+        userSession.getUser().isPresent(), "User should have been logged in already");
 
-    private void displayMainPage(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException, TemplateException {
+    UserDetails user = userSession.getUser().get();
 
-        UserSession userSession = OAuth2Utils.getUserSession(request);
+    Map<String, Object> information = new HashMap<>();
 
-        Preconditions.checkArgument(
-                userSession.getUser().isPresent(),
-                "User should have been logged in already");
+    information.put("username", user.getUsername());
 
-        UserDetails user = userSession.getUser().get();
+    Template template = configuration.getTemplate("MainPage.ftl");
 
-        Map<String, Object> information = new HashMap<>();
+    response.setCharacterEncoding("utf-8");
+    PrintWriter printWriter = response.getWriter();
 
-        information.put("username", user.getUsername());
+    template.process(information, printWriter);
 
-        Template template = configuration.getTemplate("MainPage.ftl");
-
-        response.setCharacterEncoding("utf-8");
-        PrintWriter printWriter = response.getWriter();
-
-        template.process(information, printWriter);
-
-        printWriter.flush();
-
-    }
-
+    printWriter.flush();
+  }
 }

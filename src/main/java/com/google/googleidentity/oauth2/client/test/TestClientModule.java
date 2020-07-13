@@ -27,43 +27,38 @@ import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 import com.google.inject.Singleton;
 
-
 public class TestClientModule extends AbstractModule {
 
-    private static final String TESTCLIENTID = "google";
-    private static final String TESTSECRET = "secret";
-    private static final ImmutableList<String> TESTSCOPES = ImmutableList.of("read");
-    private static final ImmutableList<GrantType> TESTGRANTTYPES = ImmutableList.of(
-            GrantType.AUTHORIZATION_CODE,
-            GrantType.IMPLICIT,
-            GrantType.REFRESH_TOKEN,
-            GrantType.JWT_ASSERTION);
+  private static final String TESTCLIENTID = "google";
+  private static final String TESTSECRET = "secret";
+  private static final ImmutableList<String> TESTSCOPES = ImmutableList.of("read");
+  private static final ImmutableList<GrantType> TESTGRANTTYPES =
+      ImmutableList.of(
+          GrantType.AUTHORIZATION_CODE,
+          GrantType.IMPLICIT,
+          GrantType.REFRESH_TOKEN,
+          GrantType.JWT_ASSERTION);
 
-    private static final String TESTREDIRECTURI = "http://www.google.com";
+  private static final String TESTREDIRECTURI = "http://www.google.com";
 
-    @Override
-    protected void configure() {
-    }
+  @Override
+  protected void configure() {}
 
-    @Provides
-    @Singleton
-    public ClientDetailsService getClientDetailsService(
-            InMemoryClientDetailsService clientDetailsService) {
+  @Provides
+  @Singleton
+  public ClientDetailsService getClientDetailsService(
+      InMemoryClientDetailsService clientDetailsService) {
 
-        ClientDetails client =
-                ClientDetails.newBuilder()
-                        .setClientId(TESTCLIENTID)
-                        .setSecret(Hashing.sha256()
-                                .hashString(TESTSECRET, Charsets.UTF_8).toString())
-                        .addAllScopes(TESTSCOPES)
-                        .setIsScoped(true)
-                        .addAllGrantTypes(TESTGRANTTYPES)
-                        .addRedirectUris(TESTREDIRECTURI)
-                        .build();
-        clientDetailsService.addClient(client);
-        return clientDetailsService;
-    }
+    ClientDetails client =
+        ClientDetails.newBuilder()
+            .setClientId(TESTCLIENTID)
+            .setSecret(Hashing.sha256().hashString(TESTSECRET, Charsets.UTF_8).toString())
+            .addAllScopes(TESTSCOPES)
+            .setIsScoped(true)
+            .addAllGrantTypes(TESTGRANTTYPES)
+            .addRedirectUris(TESTREDIRECTURI)
+            .build();
+    clientDetailsService.addClient(client);
+    return clientDetailsService;
+  }
 }
-
-
-

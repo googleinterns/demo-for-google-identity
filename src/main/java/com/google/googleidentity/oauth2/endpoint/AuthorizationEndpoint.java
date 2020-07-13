@@ -47,183 +47,183 @@ import java.net.URLDecoder;
 import java.util.Set;
 import java.util.logging.Logger;
 
-
-/**
- * Demo AuthorizationEndpoint for OAuth2 Server
- */
+/** Demo AuthorizationEndpoint for OAuth2 Server */
 @Singleton
 public final class AuthorizationEndpoint extends HttpServlet {
 
-    private static final long serialVersionUID = 5L;
+  private static final long serialVersionUID = 5L;
 
-    private static final Logger log = Logger.getLogger("AuthorizationEndpoint");
+  private static final Logger log = Logger.getLogger("AuthorizationEndpoint");
 
-    private final ClientDetailsService clientDetailsService;
+  private final ClientDetailsService clientDetailsService;
 
-    private final RequestHandler requestHandler;
+  private final RequestHandler requestHandler;
 
-    @Inject
-    public AuthorizationEndpoint(
-            ClientDetailsService clientDetailsService,
-            RequestHandler requestHandler) {
-        this.clientDetailsService = clientDetailsService;
-        this.requestHandler = requestHandler;
+  @Inject
+  public AuthorizationEndpoint(
+      ClientDetailsService clientDetailsService, RequestHandler requestHandler) {
+    this.clientDetailsService = clientDetailsService;
+    this.requestHandler = requestHandler;
+  }
+
+  protected void doGet(HttpServletRequest request, HttpServletResponse response)
+      throws ServletException, IOException, UnsupportedOperationException {
+    try {
+      AuthorizationEndpointRequestValidator.validateClientAndRedirectUri(
+          request, clientDetailsService);
+    } catch (InvalidRequestException exception) {
+      log.info(
+          "Failed in validating client and redirect URI in Authorization Endpoint."
+              + "Error Type: "
+              + exception.getErrorType()
+              + "Description: "
+              + exception.getErrorDescription());
+      OAuth2ExceptionHandler.handle(exception, response);
+      return;
     }
 
-
-    protected void doGet(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException, UnsupportedOperationException {
-        try {
-            AuthorizationEndpointRequestValidator.validateClientAndRedirectUri(
-                    request, clientDetailsService);
-        } catch (InvalidRequestException exception) {
-            log.info(
-                    "Failed in validating client and redirect URI in Authorization Endpoint." +
-                    "Error Type: " + exception.getErrorType() +
-                    "Description: " + exception.getErrorDescription());
-            OAuth2ExceptionHandler.handle(exception, response);
-            return;
-        }
-
-        try {
-            AuthorizationEndpointRequestValidator.validateGET(request, clientDetailsService);
-        } catch (OAuth2Exception exception) {
-            log.info(
-                    "Failed in validating Get request in Authorization Endpoint." +
-                            "Error Type: " + exception.getErrorType() +
-                            "Description: " + exception.getErrorDescription());
-            response.sendRedirect(
-                    OAuth2ExceptionHandler.getFullRedirectUrl(
-                            exception,
-                            request.getParameter(OAuth2ParameterNames.REDIRECT_URI),
-                            request.getParameter(OAuth2ParameterNames.STATE)));
-            return;
-        }
-
-        ClientSession clientSession = new ClientSession();
-        clientSession.setRequest(parseOAuth2RequestFromHttpRequest(request));
-        OAuth2Utils.setClientSession(request, clientSession);
-
-        response.sendRedirect("/oauth2/consent");
+    try {
+      AuthorizationEndpointRequestValidator.validateGET(request, clientDetailsService);
+    } catch (OAuth2Exception exception) {
+      log.info(
+          "Failed in validating Get request in Authorization Endpoint."
+              + "Error Type: "
+              + exception.getErrorType()
+              + "Description: "
+              + exception.getErrorDescription());
+      response.sendRedirect(
+          OAuth2ExceptionHandler.getFullRedirectUrl(
+              exception,
+              request.getParameter(OAuth2ParameterNames.REDIRECT_URI),
+              request.getParameter(OAuth2ParameterNames.STATE)));
+      return;
     }
 
-    /**
-     * when user approve or deny the consent, the request will sent here
-     */
-    protected void doPost(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException, UnsupportedOperationException {
-        try {
-            AuthorizationEndpointRequestValidator.validatePOST(request);
-        } catch (OAuth2Exception exception) {
-            log.info(exception.getErrorType() + exception.getErrorDescription());
-            if (OAuth2Utils.getClientSession(request).getRequest().isPresent()) {
-                response.sendRedirect(
-                        OAuth2ExceptionHandler.getFullRedirectUrl(
-                                exception,
-                                OAuth2Utils.getClientSession(request).getRequest().get()
-                                        .getAuthorizationResponse().getRedirectUri(),
-                                OAuth2Utils.getClientSession(request).getRequest().get()
-                                        .getAuthorizationResponse().getState()));
-            } else {
-                log.info(
-                        "Failed in validating Post request in Authorization Endpoint." +
-                                "Error Type: " + exception.getErrorType() +
-                                "Description: " + exception.getErrorDescription());
-                OAuth2ExceptionHandler.handle(exception, response);
-            }
-            return;
-        }
+    ClientSession clientSession = new ClientSession();
+    clientSession.setRequest(parseOAuth2RequestFromHttpRequest(request));
+    OAuth2Utils.setClientSession(request, clientSession);
 
-        Preconditions.checkArgument(
-                OAuth2Utils.getClientSession(request).getRequest().isPresent(),
-                "Request should have been checked in validation");
+    response.sendRedirect("/oauth2/consent");
+  }
 
-        try {
-            requestHandler.handle(
-                    response, OAuth2Utils.getClientSession(request).getRequest().get());
-        } catch (OAuth2Exception exception) {
-            log.info(
-                    "Failed when process request in Authorization Endpoint" +
-                            "Error Type: " + exception.getErrorType() +
-                            "Description: " + exception.getErrorDescription());
-            OAuth2ExceptionHandler.handle(exception, response);
-        }
+  /** when user approve or deny the consent, the request will sent here */
+  protected void doPost(HttpServletRequest request, HttpServletResponse response)
+      throws ServletException, IOException, UnsupportedOperationException {
+    try {
+      AuthorizationEndpointRequestValidator.validatePOST(request);
+    } catch (OAuth2Exception exception) {
+      log.info(exception.getErrorType() + exception.getErrorDescription());
+      if (OAuth2Utils.getClientSession(request).getRequest().isPresent()) {
+        response.sendRedirect(
+            OAuth2ExceptionHandler.getFullRedirectUrl(
+                exception,
+                OAuth2Utils.getClientSession(request)
+                    .getRequest()
+                    .get()
+                    .getAuthorizationResponse()
+                    .getRedirectUri(),
+                OAuth2Utils.getClientSession(request)
+                    .getRequest()
+                    .get()
+                    .getAuthorizationResponse()
+                    .getState()));
+      } else {
+        log.info(
+            "Failed in validating Post request in Authorization Endpoint."
+                + "Error Type: "
+                + exception.getErrorType()
+                + "Description: "
+                + exception.getErrorDescription());
+        OAuth2ExceptionHandler.handle(exception, response);
+      }
+      return;
     }
 
-    /**
-     * Should be called after all validation in doGet function.
-     */
-    private OAuth2Request parseOAuth2RequestFromHttpRequest(HttpServletRequest request) {
-        String responseType = request.getParameter(OAuth2ParameterNames.RESPONSE_TYPE);
+    Preconditions.checkArgument(
+        OAuth2Utils.getClientSession(request).getRequest().isPresent(),
+        "Request should have been checked in validation");
 
-        String clientID = request.getParameter(OAuth2ParameterNames.CLIENT_ID);
+    try {
+      requestHandler.handle(response, OAuth2Utils.getClientSession(request).getRequest().get());
+    } catch (OAuth2Exception exception) {
+      log.info(
+          "Failed when process request in Authorization Endpoint"
+              + "Error Type: "
+              + exception.getErrorType()
+              + "Description: "
+              + exception.getErrorDescription());
+      OAuth2ExceptionHandler.handle(exception, response);
+    }
+  }
 
-        Preconditions.checkArgument(
-                clientDetailsService.getClientByID(clientID).isPresent(),
-                "Client should have been checked in validation");
+  /** Should be called after all validation in doGet function. */
+  private OAuth2Request parseOAuth2RequestFromHttpRequest(HttpServletRequest request) {
+    String responseType = request.getParameter(OAuth2ParameterNames.RESPONSE_TYPE);
 
-        ClientDetails client = clientDetailsService.getClientByID(clientID).get();
+    String clientID = request.getParameter(OAuth2ParameterNames.CLIENT_ID);
 
-        String redirectUri = request.getParameter(OAuth2ParameterNames.REDIRECT_URI);
+    Preconditions.checkArgument(
+        clientDetailsService.getClientByID(clientID).isPresent(),
+        "Client should have been checked in validation");
 
-        try {
-            redirectUri = URLDecoder.decode(redirectUri, "utf-8");
-        } catch (UnsupportedEncodingException e) {
-            // This should never happen.
-            throw new IllegalStateException(
-                    "URL should have been decoded during request validation", e);
-        }
+    ClientDetails client = clientDetailsService.getClientByID(clientID).get();
 
-        Set<String> scope = OAuth2Utils.parseScope(
-                request.getParameter(OAuth2ParameterNames.SCOPE));
+    String redirectUri = request.getParameter(OAuth2ParameterNames.REDIRECT_URI);
 
-        // Set default scopes
-        if (client.getIsScoped() && scope.isEmpty()) {
-            scope = ImmutableSet.copyOf(client.getScopesList());
-        }
-
-        Preconditions.checkArgument(
-                OAuth2Utils.getUserSession(request).getUser().isPresent(),
-                "User should have logged in");
-
-        OAuth2Request.Builder oauth2RequestBuilder = OAuth2Request.newBuilder();
-        oauth2RequestBuilder.getRequestAuthBuilder()
-                .setClientId(client.getClientId())
-                .setUsername(
-                        OAuth2Utils.getUserSession(request).getUser().get()
-                                .getUsername());
-        oauth2RequestBuilder.getRequestBodyBuilder()
-            .setIsScoped(!scope.isEmpty())
-            .addAllScopes(scope)
-            .setResponseType(OAuth2EnumMap.RESPONSE_TYPE_MAP.get(responseType));
-
-
-        switch (OAuth2Utils.getGrantTypeFromResponseType(responseType)) {
-            case OAuth2Constants.GrantType.AUTHORIZATION_CODE:
-                oauth2RequestBuilder.getRequestBodyBuilder()
-                        .setGrantType(GrantType.AUTHORIZATION_CODE)
-                        .setRefreshable(true);
-                break;
-            case OAuth2Constants.GrantType.IMPLICIT:
-                oauth2RequestBuilder.getRequestBodyBuilder()
-                        .setGrantType(GrantType.IMPLICIT)
-                        .setRefreshable(false);
-                break;
-            default:
-                // Will never happen since we have validated it
-                break;
-        }
-
-        oauth2RequestBuilder.getAuthorizationResponseBuilder()
-                .setRedirectUri(redirectUri);
-
-        if (!Strings.isNullOrEmpty(request.getParameter(OAuth2ParameterNames.STATE))) {
-            oauth2RequestBuilder.getAuthorizationResponseBuilder()
-                    .setState(request.getParameter(OAuth2ParameterNames.STATE));
-        }
-
-        return oauth2RequestBuilder.build();
+    try {
+      redirectUri = URLDecoder.decode(redirectUri, "utf-8");
+    } catch (UnsupportedEncodingException e) {
+      // This should never happen.
+      throw new IllegalStateException("URL should have been decoded during request validation", e);
     }
 
+    Set<String> scope = OAuth2Utils.parseScope(request.getParameter(OAuth2ParameterNames.SCOPE));
+
+    // Set default scopes
+    if (client.getIsScoped() && scope.isEmpty()) {
+      scope = ImmutableSet.copyOf(client.getScopesList());
+    }
+
+    Preconditions.checkArgument(
+        OAuth2Utils.getUserSession(request).getUser().isPresent(), "User should have logged in");
+
+    OAuth2Request.Builder oauth2RequestBuilder = OAuth2Request.newBuilder();
+    oauth2RequestBuilder
+        .getRequestAuthBuilder()
+        .setClientId(client.getClientId())
+        .setUsername(OAuth2Utils.getUserSession(request).getUser().get().getUsername());
+    oauth2RequestBuilder
+        .getRequestBodyBuilder()
+        .setIsScoped(!scope.isEmpty())
+        .addAllScopes(scope)
+        .setResponseType(OAuth2EnumMap.RESPONSE_TYPE_MAP.get(responseType));
+
+    switch (OAuth2Utils.getGrantTypeFromResponseType(responseType)) {
+      case OAuth2Constants.GrantType.AUTHORIZATION_CODE:
+        oauth2RequestBuilder
+            .getRequestBodyBuilder()
+            .setGrantType(GrantType.AUTHORIZATION_CODE)
+            .setRefreshable(true);
+        break;
+      case OAuth2Constants.GrantType.IMPLICIT:
+        oauth2RequestBuilder
+            .getRequestBodyBuilder()
+            .setGrantType(GrantType.IMPLICIT)
+            .setRefreshable(false);
+        break;
+      default:
+        // Will never happen since we have validated it
+        break;
+    }
+
+    oauth2RequestBuilder.getAuthorizationResponseBuilder().setRedirectUri(redirectUri);
+
+    if (!Strings.isNullOrEmpty(request.getParameter(OAuth2ParameterNames.STATE))) {
+      oauth2RequestBuilder
+          .getAuthorizationResponseBuilder()
+          .setState(request.getParameter(OAuth2ParameterNames.STATE));
+    }
+
+    return oauth2RequestBuilder.build();
+  }
 }
-

@@ -25,27 +25,24 @@ import java.util.Map;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-
-/**
- * Make multiple grant type available.
- */
+/** Make multiple grant type available. */
 public class MultipleRequestHandler implements RequestHandler {
 
-    private final Map<GrantType, RequestHandler> requestHandlerMap;
+  private final Map<GrantType, RequestHandler> requestHandlerMap;
 
-    @Inject
-    public MultipleRequestHandler(Map<GrantType, RequestHandler> requestHandlerMap) {
-        this.requestHandlerMap = requestHandlerMap;
+  @Inject
+  public MultipleRequestHandler(Map<GrantType, RequestHandler> requestHandlerMap) {
+    this.requestHandlerMap = requestHandlerMap;
+  }
+
+  public void handle(HttpServletResponse response, OAuth2Request oauth2Request)
+      throws IOException, OAuth2Exception {
+    if (requestHandlerMap.containsKey(oauth2Request.getRequestBody().getGrantType())) {
+      requestHandlerMap
+          .get(oauth2Request.getRequestBody().getGrantType())
+          .handle(response, oauth2Request);
+    } else {
+      throw new UnsupportedGrantTypeException();
     }
-
-    public void handle(HttpServletResponse response, OAuth2Request oauth2Request)
-            throws IOException, OAuth2Exception {
-        if (requestHandlerMap.containsKey(oauth2Request.getRequestBody().getGrantType())) {
-            requestHandlerMap.get(oauth2Request.getRequestBody().getGrantType())
-                    .handle(response, oauth2Request);
-        } else {
-            throw new UnsupportedGrantTypeException();
-        }
-    }
-
+  }
 }

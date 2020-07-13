@@ -26,7 +26,8 @@ public class RequestHandlerModule extends AbstractModule {
   @Override
   protected void configure() {
     MapBinder<GrantType, RequestHandler> mapBinder =
-        MapBinder.newMapBinder(binder(), GrantType.class, RequestHandler.class);
+        MapBinder.newMapBinder(
+            binder(), GrantType.class, RequestHandler.class);
     mapBinder.addBinding(GrantType.AUTHORIZATION_CODE).to(AuthorizationCodeRequestHandler.class);
     bind(RequestHandler.class).to(MultipleRequestHandler.class);
   }

@@ -24,52 +24,49 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
-/**
- * Default InMemory UserDetailsService for user information Store.
- */
+/** Default InMemory UserDetailsService for user information Store. */
 @Singleton
 public final class InMemoryUserDetailsService implements UserDetailsService {
 
-    private final ConcurrentHashMap<String, UserDetails> userStore =
-            new ConcurrentHashMap<>();
+  private final ConcurrentHashMap<String, UserDetails> userStore = new ConcurrentHashMap<>();
 
-    public Optional<UserDetails> getUserByName(String username) {
+  public Optional<UserDetails> getUserByName(String username) {
 
-        return Optional.ofNullable(userStore.get(username));
+    return Optional.ofNullable(userStore.get(username));
+  }
+
+  public boolean updateUser(UserDetails user) {
+
+    Preconditions.checkNotNull(user);
+
+    String username = user.getUsername();
+    if (username.isEmpty()) {
+      throw new IllegalArgumentException("Empty username");
     }
-
-    public boolean updateUser(UserDetails user) {
-
-        Preconditions.checkNotNull(user);
-
-        String username = user.getUsername();
-        if (username.isEmpty()) {
-            throw new IllegalArgumentException("Empty username");
-        }
-        if (!userStore.containsKey(username)) {
-            return false;
-        }
-        userStore.put(username, user);
-        return true;
+    if (!userStore.containsKey(username)) {
+      return false;
     }
+    userStore.put(username, user);
+    return true;
+  }
 
-    @Override
-    public boolean addUser(UserDetails user) {
+  @Override
+  public boolean addUser(UserDetails user) {
 
-        Preconditions.checkNotNull(user);
+    Preconditions.checkNotNull(user);
 
-        String username = user.getUsername();
-        if (username.isEmpty()) {
-            throw new IllegalArgumentException("Empty username");
-        }
-        if (userStore.containsKey(username)) {
-            return false;
-        }
-        userStore.put(username, user);
-        return true;
+    String username = user.getUsername();
+    if (username.isEmpty()) {
+      throw new IllegalArgumentException("Empty username");
     }
-
-    public List<UserDetails> listUser() {
-        return ImmutableList.copyOf(userStore.values());
+    if (userStore.containsKey(username)) {
+      return false;
     }
+    userStore.put(username, user);
+    return true;
+  }
+
+  public List<UserDetails> listUser() {
+    return ImmutableList.copyOf(userStore.values());
+  }
 }

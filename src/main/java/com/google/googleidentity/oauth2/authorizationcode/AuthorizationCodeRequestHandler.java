@@ -71,14 +71,19 @@ public final class AuthorizationCodeRequestHandler implements RequestHandler {
         log.log(Level.INFO, "Error when parse redirect uri to return auth code!", e);
       }
 
-    } else if (oauth2Request.getRequestBody().getResponseType()
+    } else if (oauth2Request
+        .getRequestBody()
+        .getResponseType()
         .equals(OAuth2Enums.ResponseType.TOKEN)) {
       Optional<OAuth2Request> opRequest =
           authorizationCodeService.consumeCode(oauth2Request.getRequestAuth().getCode());
       if (!opRequest.isPresent()) {
         throw new InvalidGrantException(InvalidGrantException.ErrorCode.NONEXISTENT_CODE);
       }
-      if (!opRequest.get().getRequestAuth().getClientId()
+      if (!opRequest
+          .get()
+          .getRequestAuth()
+          .getClientId()
           .equals(oauth2Request.getRequestAuth().getClientId())) {
         throw new InvalidGrantException(InvalidGrantException.ErrorCode.CODE_CLIENT_MISMATCH);
       }

@@ -25,75 +25,68 @@ import java.security.Key;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-/**
- * Used for encrypt username and clientID
- */
+/** Used for encrypt username and clientID */
 final class UserClientTokenInfo {
-    private final String username;
-    private final String clientID;
-    private final String tokenValue;
+  private static final Logger log = Logger.getLogger("UserClientTokenInfo");
+  private static final String delimiter = "\t";
+  private final String username;
+  private final String clientID;
+  private final String tokenValue;
 
-    private static final Logger log = Logger.getLogger("UserClientTokenInfo");
+  UserClientTokenInfo(String username, String clientID, String tokenValue) {
+    this.username = username;
+    this.clientID = clientID;
+    this.tokenValue = tokenValue;
+  }
 
-    private final static String delimiter = "\t";
+  public static UserClientTokenInfo decryptTokenString(Key aesKey, String tokenString) {
+    try {
+      Cipher cipher = Cipher.getInstance("AES");
+      byte[] bytesToDecrypt = BaseEncoding.base64Url().withPadChar('*').decode(tokenString);
+      cipher.init(Cipher.DECRYPT_MODE, aesKey);
+      byte[] decryptedBytes = cipher.doFinal(bytesToDecrypt);
+      String tokenInfoString = new String(decryptedBytes, StandardCharsets.UTF_8);
+      String[] tokenInfo = tokenInfoString.split(delimiter);
 
-    UserClientTokenInfo(String username, String clientID, String tokenValue) {
-        this.username = username;
-        this.clientID = clientID;
-        this.tokenValue = tokenValue;
+      if (tokenInfo.length != 3) {
+        throw new InvalidParameterException();
+      }
+
+      return new UserClientTokenInfo(tokenInfo[0], tokenInfo[1], tokenInfo[2]);
+    } catch (Exception e) {
+      log.log(Level.INFO, "Error when decrypting tokenString!", e);
+      throw new InvalidParameterException();
     }
+  }
 
-    public String getUsername() {
-        return username;
+  public String getUsername() {
+    return username;
+  }
+
+  public String getClientID() {
+    return clientID;
+  }
+
+  /** The random string generated for a token. */
+  public String getTokenValue() {
+    return tokenValue;
+  }
+
+  /**
+   * The string contains information of username, client ID and tokenValue. It is encrypt and send
+   * to user as token string.
+   */
+  public String getEncryptTokenString(Key aesKey) {
+    String tokenInfo = username + delimiter + clientID + delimiter + tokenValue;
+    try {
+      Cipher cipher = Cipher.getInstance("AES");
+      cipher.init(Cipher.ENCRYPT_MODE, aesKey);
+      byte[] bytesToEncrypt = tokenInfo.getBytes(StandardCharsets.UTF_8);
+      byte[] encryptedBytes = cipher.doFinal(bytesToEncrypt);
+      return BaseEncoding.base64Url().withPadChar('*').encode(encryptedBytes);
+    } catch (Exception e) {
+      log.log(Level.INFO, "Error when encrypting tokenString!", e);
+      return null;
     }
-
-    public String getClientID() {
-        return clientID;
-    }
-
-    /**
-     * The random string generated for a token.
-     */
-    public String getTokenValue() {
-        return tokenValue;
-    }
-
-    /**
-     * The string contains information of username, client ID and tokenValue.
-     * It is encrypt and send to user as token string.
-     */
-    public String getEncryptTokenString(Key aesKey) {
-        String tokenInfo  = username + delimiter + clientID + delimiter + tokenValue;
-        try {
-            Cipher cipher = Cipher.getInstance("AES");
-            cipher.init(Cipher.ENCRYPT_MODE, aesKey);
-            byte[] bytesToEncrypt = tokenInfo.getBytes(StandardCharsets.UTF_8);
-            byte[] encryptedBytes = cipher.doFinal(bytesToEncrypt);
-            return BaseEncoding.base64Url().encode(encryptedBytes);
-        } catch (Exception e) {
-            log.log(Level.INFO, "Error when encrypting tokenString!",  e);
-            return null;
-        }
-    }
-
-    public static UserClientTokenInfo decryptTokenString(Key aesKey, String tokenString) {
-        try {
-            Cipher cipher = Cipher.getInstance("AES");
-            byte[] bytesToDecrypt = BaseEncoding.base64Url().decode(tokenString);
-            cipher.init(Cipher.DECRYPT_MODE, aesKey);
-            byte[] decryptedBytes = cipher.doFinal(bytesToDecrypt);
-            String tokenInfoString = new String(decryptedBytes, StandardCharsets.UTF_8);
-            String[] tokenInfo = tokenInfoString.split(delimiter);
-
-            if (tokenInfo.length != 3) {
-                throw new InvalidParameterException();
-            }
-
-            return new UserClientTokenInfo(tokenInfo[0], tokenInfo[1], tokenInfo[2]);
-        } catch (Exception e) {
-            log.log(Level.INFO, "Error when decrypting tokenString!",  e);
-            throw new InvalidParameterException();
-        }
-    }
-
+  }
 }

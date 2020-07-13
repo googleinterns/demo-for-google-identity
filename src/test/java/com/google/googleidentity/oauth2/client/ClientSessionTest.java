@@ -27,37 +27,33 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
-/**
- * Test {@link ClientSession}
- */
+/** Test {@link ClientSession} */
 public class ClientSessionTest {
 
+  @Test
+  void testClientSession_correctInsertion_canReadOut() {
+    ClientSession clientSession = new ClientSession();
 
-    @Test
-    void testClientSession_correctInsertion_canReadOut() {
-        ClientSession clientSession= new ClientSession();
+    assertFalse(clientSession.getClient().isPresent());
 
-        assertFalse(clientSession.getClient().isPresent());
+    ClientDetails client =
+        ClientDetails.newBuilder()
+            .setClientId("client")
+            .setSecret(Hashing.sha256().hashString("111", Charsets.UTF_8).toString())
+            .addScopes("read")
+            .setIsScoped(true)
+            .addGrantTypes(GrantType.AUTHORIZATION_CODE)
+            .addRedirectUris("http://localhost:8080/redirect")
+            .build();
 
-        ClientDetails client =
-                ClientDetails.newBuilder()
-                        .setClientId("client")
-                        .setSecret(Hashing.sha256()
-                                .hashString("111", Charsets.UTF_8).toString())
-                        .addScopes("read")
-                        .setIsScoped(true)
-                        .addGrantTypes(GrantType.AUTHORIZATION_CODE)
-                        .addRedirectUris("http://localhost:8080/redirect")
-                        .build();
+    clientSession.setClient(client);
 
-        clientSession.setClient(client);
+    OAuth2Request oauth2Request = OAuth2Request.newBuilder().build();
 
-        OAuth2Request oauth2Request = OAuth2Request.newBuilder().build();
+    clientSession.setRequest(oauth2Request);
 
-        clientSession.setRequest(oauth2Request);
+    assertThat(clientSession.getClient()).isEqualTo(Optional.of(client));
 
-        assertThat(clientSession.getClient()).isEqualTo(Optional.of(client));
-
-        assertThat(clientSession.getRequest()).isEqualTo(Optional.of(oauth2Request));
-    }
+    assertThat(clientSession.getRequest()).isEqualTo(Optional.of(oauth2Request));
+  }
 }

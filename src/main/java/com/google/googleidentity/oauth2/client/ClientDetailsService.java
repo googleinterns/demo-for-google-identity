@@ -19,40 +19,31 @@ package com.google.googleidentity.oauth2.client;
 import java.util.List;
 import java.util.Optional;
 
-/**
- * ClientDetailsService Interface.
- * Support basic client information access and modification
- */
+/** ClientDetailsService Interface. Support basic client information access and modification */
 public interface ClientDetailsService {
 
   /**
-   *
    * @param clientID the clientID
    * @return the client information with the clientID
    */
   Optional<ClientDetails> getClientByID(String clientID);
 
-    /**
-     * update a client's information, fail if no client
-     * match the clientID
-     *
-     * @param client new Client Information
-     * @return update success or not
-     */
-    boolean updateClient(ClientDetails client);
+  /**
+   * update a client's information, fail if no client match the clientID
+   *
+   * @param client new Client Information
+   * @return update success or not
+   */
+  boolean updateClient(ClientDetails client);
 
   /**
-   * Add a new client's information, fail if there is
-   * already a client with that clientID
+   * Add a new client's information, fail if there is already a client with that clientID
    *
    * @param client new Client Information
    * @return add success or not
    */
   boolean addClient(ClientDetails client);
 
-    /**
-     * @return all clients
-     */
-    List<ClientDetails> listClient();
-
+  /** @return all clients */
+  List<ClientDetails> listClient();
 }

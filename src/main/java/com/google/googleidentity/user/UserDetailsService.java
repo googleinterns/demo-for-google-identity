@@ -18,35 +18,26 @@ package com.google.googleidentity.user;
 import java.util.List;
 import java.util.Optional;
 
-/**
- * UserDetailsService Interface.
- * Support basic user information access and modification
- */
+/** UserDetailsService Interface. Support basic user information access and modification */
 public interface UserDetailsService {
 
-    /**
-     * @return the user with the username
-     */
-    Optional<UserDetails> getUserByName(String username);
+  /** @return the user with the username */
+  Optional<UserDetails> getUserByName(String username);
 
-    /**
-     * Update the user with the same username,
-     * if the user does not exist, it will fail
-     *
-     * @return update success or not
-     */
-    boolean updateUser(UserDetails user);
+  /**
+   * Update the user with the same username, if the user does not exist, it will fail
+   *
+   * @return update success or not
+   */
+  boolean updateUser(UserDetails user);
 
-    /**
-     * Add user, if a user with same name exists, it will fail
-     *
-     * @return add success or not
-     */
-    boolean addUser(UserDetails user);
+  /**
+   * Add user, if a user with same name exists, it will fail
+   *
+   * @return add success or not
+   */
+  boolean addUser(UserDetails user);
 
-    /**
-     * @return all users
-     */
-    List<UserDetails> listUser();
-
+  /** @return all users */
+  List<UserDetails> listUser();
 }

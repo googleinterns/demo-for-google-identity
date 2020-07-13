@@ -18,18 +18,17 @@ package com.google.googleidentity.oauth2.exception;
 
 public final class UnsupportedGrantTypeException extends OAuth2Exception {
 
-    private static final String UNSUPPORTED_GRANT_TYPE = "unsupported_grant_type";
+  private static final String UNSUPPORTED_GRANT_TYPE = "unsupported_grant_type";
 
-    public UnsupportedGrantTypeException() {
-        super();
-    }
+  public UnsupportedGrantTypeException() {
+    super();
+  }
 
-    public String getErrorType(){
-        return UNSUPPORTED_GRANT_TYPE;
-    }
+  public String getErrorType() {
+    return UNSUPPORTED_GRANT_TYPE;
+  }
 
-    public String getErrorDescription(){
-        return "Unsupported grant type!";
-    }
-
+  public String getErrorDescription() {
+    return "Unsupported grant type!";
+  }
 }

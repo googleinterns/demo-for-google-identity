@@ -48,149 +48,138 @@ import static org.mockito.Mockito.verify;
 
 public class ClientAuthenticationFilterTest {
 
-    private static final String LINE = System.lineSeparator();
+  private static final String LINE = System.lineSeparator();
 
-    private static final String CLIENTID = "google";
-    private static final String SECRET = "secret";
+  private static final String CLIENTID = "google";
+  private static final String SECRET = "secret";
 
-    private static final ClientDetails CLIENT =
-            ClientDetails.newBuilder()
-                    .setClientId(CLIENTID)
-                    .setSecret(Hashing.sha256()
-                            .hashString(SECRET, Charsets.UTF_8).toString())
-                    .addScopes("read")
-                    .setIsScoped(true)
-                    .build();
+  private static final ClientDetails CLIENT =
+      ClientDetails.newBuilder()
+          .setClientId(CLIENTID)
+          .setSecret(Hashing.sha256().hashString(SECRET, Charsets.UTF_8).toString())
+          .addScopes("read")
+          .setIsScoped(true)
+          .build();
 
-    ClientAuthenticationFilter clientAuthenticationFilter;
+  ClientAuthenticationFilter clientAuthenticationFilter;
 
-    @Before
-    public void init(){
-        ClientDetailsService clientDetailsService = new InMemoryClientDetailsService();
-        clientDetailsService.addClient(CLIENT);
-        clientAuthenticationFilter = new ClientAuthenticationFilter(clientDetailsService);
-    }
+  @Before
+  public void init() {
+    ClientDetailsService clientDetailsService = new InMemoryClientDetailsService();
+    clientDetailsService.addClient(CLIENT);
+    clientAuthenticationFilter = new ClientAuthenticationFilter(clientDetailsService);
+  }
 
+  @Test
+  public void testFilter_noGrantType_throwInvalidGrantException()
+      throws ServletException, IOException {
+    HttpServletRequest request = mock(HttpServletRequest.class);
+    HttpServletResponse response = mock(HttpServletResponse.class);
+    FilterChain chain = mock(FilterChain.class);
+    FakeHttpSession httpSession = new FakeHttpSession();
 
-    @Test
-    public void testFilter_noGrantType_throwInvalidGrantException()
-            throws ServletException, IOException {
-        HttpServletRequest request = mock(HttpServletRequest.class);
-        HttpServletResponse response = mock(HttpServletResponse.class);
-        FilterChain chain = mock(FilterChain.class);
-        FakeHttpSession httpSession = new FakeHttpSession();
+    when(request.getSession()).thenReturn(httpSession);
+    when(request.getParameter(OAuth2ParameterNames.GRANT_TYPE)).thenReturn(null);
 
-        when(request.getSession()).thenReturn(httpSession);
-        when(request.getParameter(OAuth2ParameterNames.GRANT_TYPE)).thenReturn(null);
+    StringWriter stringWriter = new StringWriter();
+    PrintWriter writer = new PrintWriter(stringWriter);
+    when(response.getWriter()).thenReturn(writer);
 
-        StringWriter stringWriter = new StringWriter();
-        PrintWriter writer = new PrintWriter(stringWriter);
-        when(response.getWriter()).thenReturn(writer);
+    clientAuthenticationFilter.doFilter(request, response, chain);
 
-        clientAuthenticationFilter.doFilter(request, response, chain);
-
-        String expected = OAuth2ExceptionHandler.getResponseBody(
+    String expected =
+        OAuth2ExceptionHandler.getResponseBody(
                 new InvalidGrantException(InvalidGrantException.ErrorCode.NO_GRANT_TYPE))
-                .toJSONString();
+            .toJSONString();
 
-        assertThat(stringWriter.toString()).isEqualTo(expected + LINE);
-    }
+    assertThat(stringWriter.toString()).isEqualTo(expected + LINE);
+  }
 
-    @Test
-    public void testFilter_Jwt_SetCleintToGoogle()
-            throws ServletException, IOException {
-        HttpServletRequest request = mock(HttpServletRequest.class);
-        HttpServletResponse response = mock(HttpServletResponse.class);
-        FilterChain chain = mock(FilterChain.class);
-        FakeHttpSession httpSession = new FakeHttpSession();
+  @Test
+  public void testFilter_Jwt_SetCleintToGoogle() throws ServletException, IOException {
+    HttpServletRequest request = mock(HttpServletRequest.class);
+    HttpServletResponse response = mock(HttpServletResponse.class);
+    FilterChain chain = mock(FilterChain.class);
+    FakeHttpSession httpSession = new FakeHttpSession();
 
-        when(request.getSession()).thenReturn(httpSession);
-        when(request.getParameter(OAuth2ParameterNames.GRANT_TYPE))
-                .thenReturn("urn:ietf:params:oauth:grant-type:jwt-bearer");
+    when(request.getSession()).thenReturn(httpSession);
+    when(request.getParameter(OAuth2ParameterNames.GRANT_TYPE))
+        .thenReturn("urn:ietf:params:oauth:grant-type:jwt-bearer");
 
-        clientAuthenticationFilter.doFilter(request, response, chain);
+    clientAuthenticationFilter.doFilter(request, response, chain);
 
-        verify(chain).doFilter(request, response);
+    verify(chain).doFilter(request, response);
 
-        assertThat(httpSession.getClientSession().getClient()).hasValue(CLIENT);
+    assertThat(httpSession.getClientSession().getClient()).hasValue(CLIENT);
+  }
 
-    }
+  @Test
+  public void testFilter_NoClientID_throwInvalidRequestException()
+      throws ServletException, IOException {
+    HttpServletRequest request = mock(HttpServletRequest.class);
+    HttpServletResponse response = mock(HttpServletResponse.class);
+    FilterChain chain = mock(FilterChain.class);
+    FakeHttpSession httpSession = new FakeHttpSession();
 
-    @Test
-    public void testFilter_NoClientID_throwInvalidRequestException()
-            throws ServletException, IOException {
-        HttpServletRequest request = mock(HttpServletRequest.class);
-        HttpServletResponse response = mock(HttpServletResponse.class);
-        FilterChain chain = mock(FilterChain.class);
-        FakeHttpSession httpSession = new FakeHttpSession();
+    when(request.getSession()).thenReturn(httpSession);
+    when(request.getParameter(OAuth2ParameterNames.GRANT_TYPE)).thenReturn("authorization_code");
+    when(request.getParameter(OAuth2ParameterNames.CLIENT_ID)).thenReturn(null);
 
-        when(request.getSession()).thenReturn(httpSession);
-        when(request.getParameter(OAuth2ParameterNames.GRANT_TYPE))
-                .thenReturn("authorization_code");
-        when(request.getParameter(OAuth2ParameterNames.CLIENT_ID)).thenReturn(null);
+    StringWriter stringWriter = new StringWriter();
+    PrintWriter writer = new PrintWriter(stringWriter);
+    when(response.getWriter()).thenReturn(writer);
 
-        StringWriter stringWriter = new StringWriter();
-        PrintWriter writer = new PrintWriter(stringWriter);
-        when(response.getWriter()).thenReturn(writer);
+    clientAuthenticationFilter.doFilter(request, response, chain);
 
-        clientAuthenticationFilter.doFilter(request, response, chain);
-
-        String expected = OAuth2ExceptionHandler.getResponseBody(
+    String expected =
+        OAuth2ExceptionHandler.getResponseBody(
                 new InvalidRequestException(InvalidRequestException.ErrorCode.NO_CLIENT_ID))
-                .toJSONString();
+            .toJSONString();
 
-        assertThat(stringWriter.toString()).isEqualTo(expected + LINE);
-    }
+    assertThat(stringWriter.toString()).isEqualTo(expected + LINE);
+  }
 
-    @Test
-    public void testFilter_wrongSecret_throwInvalidClientException()
-            throws ServletException, IOException {
-        HttpServletRequest request = mock(HttpServletRequest.class);
-        HttpServletResponse response = mock(HttpServletResponse.class);
-        FilterChain chain = mock(FilterChain.class);
-        FakeHttpSession httpSession = new FakeHttpSession();
+  @Test
+  public void testFilter_wrongSecret_throwInvalidClientException()
+      throws ServletException, IOException {
+    HttpServletRequest request = mock(HttpServletRequest.class);
+    HttpServletResponse response = mock(HttpServletResponse.class);
+    FilterChain chain = mock(FilterChain.class);
+    FakeHttpSession httpSession = new FakeHttpSession();
 
-        when(request.getSession()).thenReturn(httpSession);
-        when(request.getParameter(OAuth2ParameterNames.GRANT_TYPE))
-                .thenReturn("authorization_code");
-        when(request.getParameter(OAuth2ParameterNames.CLIENT_ID)).thenReturn(CLIENTID);
-        when(request.getParameter(OAuth2ParameterNames.CLIENT_SECRET)).thenReturn("wrong");
+    when(request.getSession()).thenReturn(httpSession);
+    when(request.getParameter(OAuth2ParameterNames.GRANT_TYPE)).thenReturn("authorization_code");
+    when(request.getParameter(OAuth2ParameterNames.CLIENT_ID)).thenReturn(CLIENTID);
+    when(request.getParameter(OAuth2ParameterNames.CLIENT_SECRET)).thenReturn("wrong");
 
-        StringWriter stringWriter = new StringWriter();
-        PrintWriter writer = new PrintWriter(stringWriter);
-        when(response.getWriter()).thenReturn(writer);
+    StringWriter stringWriter = new StringWriter();
+    PrintWriter writer = new PrintWriter(stringWriter);
+    when(response.getWriter()).thenReturn(writer);
 
-        clientAuthenticationFilter.doFilter(request, response, chain);
+    clientAuthenticationFilter.doFilter(request, response, chain);
 
-        String expected = OAuth2ExceptionHandler.getResponseBody(
-                new InvalidClientException())
-                .toJSONString();
+    String expected =
+        OAuth2ExceptionHandler.getResponseBody(new InvalidClientException()).toJSONString();
 
-        assertThat(stringWriter.toString()).isEqualTo(expected + LINE);
-    }
+    assertThat(stringWriter.toString()).isEqualTo(expected + LINE);
+  }
 
+  @Test
+  public void testFilter_Correct_doFilterToNextPage() throws ServletException, IOException {
+    HttpServletRequest request = mock(HttpServletRequest.class);
+    HttpServletResponse response = mock(HttpServletResponse.class);
+    FilterChain chain = mock(FilterChain.class);
+    FakeHttpSession httpSession = new FakeHttpSession();
 
-    @Test
-    public void testFilter_Correct_doFilterToNextPage()
-            throws ServletException, IOException {
-        HttpServletRequest request = mock(HttpServletRequest.class);
-        HttpServletResponse response = mock(HttpServletResponse.class);
-        FilterChain chain = mock(FilterChain.class);
-        FakeHttpSession httpSession = new FakeHttpSession();
+    when(request.getSession()).thenReturn(httpSession);
+    when(request.getParameter(OAuth2ParameterNames.GRANT_TYPE)).thenReturn("authorization_code");
+    when(request.getParameter(OAuth2ParameterNames.CLIENT_ID)).thenReturn(CLIENTID);
+    when(request.getParameter(OAuth2ParameterNames.CLIENT_SECRET)).thenReturn(SECRET);
 
-        when(request.getSession()).thenReturn(httpSession);
-        when(request.getParameter(OAuth2ParameterNames.GRANT_TYPE))
-                .thenReturn("authorization_code");
-        when(request.getParameter(OAuth2ParameterNames.CLIENT_ID)).thenReturn(CLIENTID);
-        when(request.getParameter(OAuth2ParameterNames.CLIENT_SECRET)).thenReturn(SECRET);
+    clientAuthenticationFilter.doFilter(request, response, chain);
 
-        clientAuthenticationFilter.doFilter(request, response, chain);
+    verify(chain).doFilter(request, response);
 
-        verify(chain).doFilter(request, response);
-
-        assertThat(httpSession.getClientSession().getClient()).hasValue(CLIENT);
-
-    }
-
-
+    assertThat(httpSession.getClientSession().getClient()).hasValue(CLIENT);
+  }
 }

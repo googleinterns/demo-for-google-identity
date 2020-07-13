@@ -32,63 +32,53 @@ import java.util.Objects;
 import java.util.Optional;
 
 /**
- * Demo Login Check Servlet
- * Check the username and password in the post request, return the redirect link.
- * For a success login request, a UserDetails.User Object
- * {@link com.google.googleidentity.user.UserDetails} will
- * be stored in the session through class
- * {@link com.google.googleidentity.security.UserSession}.
- * The redirect link for a success request is to the original request
- * or the default as /resource/user.
- * The redirect link for a failed request is still the login page.
+ * Demo Login Check Servlet Check the username and password in the post request, return the redirect
+ * link. For a success login request, a UserDetails.User Object {@link
+ * com.google.googleidentity.user.UserDetails} will be stored in the session through class {@link
+ * com.google.googleidentity.security.UserSession}. The redirect link for a success request is to
+ * the original request or the default as /resource/user. The redirect link for a failed request is
+ * still the login page.
  */
 @Singleton
 public final class LoginCheckServlet extends HttpServlet {
 
-    private static final long serialVersionUID = 4L;
+  private static final long serialVersionUID = 4L;
 
-    private final UserDetailsService userDetailsService;
+  private final UserDetailsService userDetailsService;
 
-    @Inject
-    public LoginCheckServlet(UserDetailsService userDetailsService) {
-        this.userDetailsService = userDetailsService;
+  @Inject
+  public LoginCheckServlet(UserDetailsService userDetailsService) {
+    this.userDetailsService = userDetailsService;
+  }
+
+  public void doPost(HttpServletRequest request, HttpServletResponse response)
+      throws ServletException, IOException {
+    String username = request.getParameter("username");
+    String password = request.getParameter("password");
+
+    response.setContentType("text/html;charset=utf-8");
+
+    if (check(username, password)) {
+      UserSession userSession = OAuth2Utils.getUserSession(request);
+
+      userSession.setUser(
+          UserDetails.newBuilder().setUsername(username).setPassword(password).build());
+
+      OAuth2Utils.setUserSession(request, userSession);
+      response.setStatus(HttpStatusCodes.STATUS_CODE_OK);
+      response.getWriter().println(userSession.getOlduri().orElse("/resource/user"));
+
+    } else {
+      response.setStatus(HttpStatusCodes.STATUS_CODE_UNAUTHORIZED);
+      response.getWriter().println("/login");
     }
 
-    public void doPost(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        String username = request.getParameter("username");
-        String password = request.getParameter("password");
+    response.getWriter().flush();
+  }
 
-        response.setContentType("text/html;charset=utf-8");
+  private boolean check(String username, String password) {
+    Optional<UserDetails> user = userDetailsService.getUserByName(username);
 
-        if (check(username, password)) {
-            UserSession userSession = OAuth2Utils.getUserSession(request);
-
-            userSession.setUser(
-                    UserDetails.newBuilder()
-                            .setUsername(username)
-                            .setPassword(password)
-                            .build());
-
-            OAuth2Utils.setUserSession(request, userSession);
-            response.setStatus(HttpStatusCodes.STATUS_CODE_OK);
-            response.getWriter().println(
-                   userSession.getOlduri().orElse("/resource/user"));
-
-        } else {
-            response.setStatus(HttpStatusCodes.STATUS_CODE_UNAUTHORIZED);
-            response.getWriter().println("/login");
-        }
-
-        response.getWriter().flush();
-
-    }
-
-    private boolean check(String username, String password) {
-        Optional<UserDetails> user = userDetailsService.getUserByName(username);
-
-        return user.isPresent() && Objects.equals(password, user.get().getPassword());
-    }
-
-
+    return user.isPresent() && Objects.equals(password, user.get().getPassword());
+  }
 }

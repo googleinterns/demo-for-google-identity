@@ -17,46 +17,45 @@
 package com.google.googleidentity.oauth2.exception;
 
 public final class InvalidGrantException extends OAuth2Exception {
-    public enum ErrorCode{
-        NONEXISTENT_CODE,
-        CODE_CLIENT_MISMATCH,
-        NO_GRANT_TYPE,
-        CODE_REDIRECT_URI_MISMATCH,
-        NONEXISTENT_REFRESH_TOKEN,
-        REFRESH_TOKEN_CLIENT_MISMATCH
+  private static final String INVALID_GRANT = "invalid_grant";
+  private final ErrorCode errorCode;
+
+  public InvalidGrantException(ErrorCode errorCode) {
+    super();
+    this.errorCode = errorCode;
+  }
+
+  @Override
+  public String getErrorType() {
+    return INVALID_GRANT;
+  }
+
+  @Override
+  public String getErrorDescription() {
+    switch (errorCode) {
+      case NONEXISTENT_CODE:
+        return "Non existing code!";
+      case CODE_CLIENT_MISMATCH:
+        return "Code client mismatch!";
+      case NO_GRANT_TYPE:
+        return "No grant type!";
+      case CODE_REDIRECT_URI_MISMATCH:
+        return "Redirect uri mismatches the grant!";
+      case NONEXISTENT_REFRESH_TOKEN:
+        return "Refresh token does not exist!";
+      case REFRESH_TOKEN_CLIENT_MISMATCH:
+        return "Refresh token and client mismatch!";
+      default:
+        throw new IllegalArgumentException(String.valueOf(errorCode));
     }
+  }
 
-    private static final String INVALID_GRANT = "invalid_grant";
-
-    private final ErrorCode errorCode;
-
-    public InvalidGrantException(ErrorCode errorCode) {
-        super();
-        this.errorCode = errorCode;
-    }
-
-    @Override
-    public String getErrorType() {
-        return INVALID_GRANT;
-    }
-
-    @Override
-    public String getErrorDescription() {
-        switch (errorCode) {
-            case NONEXISTENT_CODE:
-                return "Non existing code!";
-            case CODE_CLIENT_MISMATCH:
-                return "Code client mismatch!";
-            case NO_GRANT_TYPE:
-                return "No grant type!";
-            case CODE_REDIRECT_URI_MISMATCH:
-                return "Redirect uri mismatches the grant!";
-            case NONEXISTENT_REFRESH_TOKEN:
-                return "Refresh token does not exist!";
-            case REFRESH_TOKEN_CLIENT_MISMATCH:
-                return "Refresh token and client mismatch!";
-            default:
-                throw new IllegalArgumentException(String.valueOf(errorCode));
-        }
-    }
+  public enum ErrorCode {
+    NONEXISTENT_CODE,
+    CODE_CLIENT_MISMATCH,
+    NO_GRANT_TYPE,
+    CODE_REDIRECT_URI_MISMATCH,
+    NONEXISTENT_REFRESH_TOKEN,
+    REFRESH_TOKEN_CLIENT_MISMATCH
+  }
 }

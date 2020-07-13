@@ -22,25 +22,25 @@ option java_multiple_files = true;
 // Store oauth2 access token information
 message OAuth2AccessToken {
 
-    // OAuth2AccessToken value
-    string access_token = 1;
+  // OAuth2AccessToken value
+  string access_token = 1;
 
-    // Token clientID
-    string client_id = 2;
+  // Token clientID
+  string client_id = 2;
 
-    // Token username
-    string username = 3;
+  // Token username
+  string username = 3;
 
-    // Whether token scoped is limited
-    bool is_scoped = 4;
+  // Whether token scoped is limited
+  bool is_scoped = 4;
 
-    // Token scopes
-    repeated string scopes = 5;
+  // Token scopes
+  repeated string scopes = 5;
 
-    // Token expired time
-    int64 expired_time = 6;
+  // Token expired time
+  int64 expired_time = 6;
 
-    // Refresh Token value, used when return refresh_token
-    // in authorization code grant type
-    string refresh_token = 7;
+  // Refresh Token value, used when return refresh_token
+  // in authorization code grant type
+  string refresh_token = 7;
 }

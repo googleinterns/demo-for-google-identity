@@ -29,108 +29,99 @@ import static com.google.common.truth.Truth8.assertThat;
 import static com.google.common.truth.Truth.assertThat;
 
 public class UserTokensTest {
-    private static final String CLIENTID = "clientid";
-    private static final String SECRET = "secret";
-    private static final String REDIRECT_URI = "http://www.google.com";
+  private static final String CLIENTID = "clientid";
+  private static final String SECRET = "secret";
+  private static final String REDIRECT_URI = "http://www.google.com";
 
-    private static final ClientDetails CLIENT =
-            ClientDetails.newBuilder()
-                    .setClientId(CLIENTID)
-                    .setSecret(Hashing.sha256()
-                            .hashString(SECRET, Charsets.UTF_8).toString())
-                    .addScopes("read")
-                    .setIsScoped(true)
-                    .addRedirectUris(REDIRECT_URI)
-                    .addGrantTypes(GrantType.AUTHORIZATION_CODE)
-                    .build();
+  private static final ClientDetails CLIENT =
+      ClientDetails.newBuilder()
+          .setClientId(CLIENTID)
+          .setSecret(Hashing.sha256().hashString(SECRET, Charsets.UTF_8).toString())
+          .addScopes("read")
+          .setIsScoped(true)
+          .addRedirectUris(REDIRECT_URI)
+          .addGrantTypes(GrantType.AUTHORIZATION_CODE)
+          .build();
 
-    private static final String USERNAME = "111";
+  private static final String USERNAME = "111";
 
-    OAuth2AccessToken TEST_ACCESS_TOKEN =
-            OAuth2AccessToken.newBuilder()
-                    .setClientId(CLIENTID)
-                    .setUsername(USERNAME)
-                    .setIsScoped(true)
-                    .setExpiredTime(Instant.now().getEpochSecond())
-                    .addAllScopes(CLIENT.getScopesList())
-                    .build();
+  OAuth2AccessToken TEST_ACCESS_TOKEN =
+      OAuth2AccessToken.newBuilder()
+          .setClientId(CLIENTID)
+          .setUsername(USERNAME)
+          .setIsScoped(true)
+          .setExpiredTime(Instant.now().getEpochSecond())
+          .addAllScopes(CLIENT.getScopesList())
+          .build();
 
+  @Test
+  public void testAddAccessToken_canReadOut() {
+    UserTokens user = new UserTokens(USERNAME);
 
+    String tokenValue = UUID.randomUUID().toString();
+    user.addAccessToken(CLIENTID, tokenValue, TEST_ACCESS_TOKEN);
 
+    assertThat(user.readAccessToken(CLIENTID, tokenValue)).hasValue(TEST_ACCESS_TOKEN);
 
-    @Test
-    public void testAddAccessToken_canReadOut() {
-        UserTokens user = new UserTokens(USERNAME);
+    assertThat(user.listAccessTokens(CLIENTID)).containsExactly(TEST_ACCESS_TOKEN);
+  }
 
-        String tokenValue = UUID.randomUUID().toString();
-        user.addAccessToken(CLIENTID, tokenValue, TEST_ACCESS_TOKEN);
+  @Test
+  public void testSetRefreshToken_canReadOut() {
+    UserTokens user = new UserTokens(USERNAME);
 
-        assertThat(user.readAccessToken(CLIENTID, tokenValue)).hasValue(TEST_ACCESS_TOKEN);
+    String tokenString = UUID.randomUUID().toString();
 
-        assertThat(user.listAccessTokens(CLIENTID)).containsExactly(TEST_ACCESS_TOKEN);
-    }
+    OAuth2RefreshToken TEST_REFRESH_TOKEN =
+        OAuth2RefreshToken.newBuilder()
+            .setClientId(CLIENTID)
+            .setUsername(USERNAME)
+            .setIsScoped(true)
+            .addAllScopes(CLIENT.getScopesList())
+            .setRefreshToken(tokenString)
+            .build();
 
-    @Test
-    public void testSetRefreshToken_canReadOut() {
-        UserTokens user = new UserTokens(USERNAME);
+    user.setRefreshToken(CLIENTID, TEST_REFRESH_TOKEN);
 
-        String tokenString = UUID.randomUUID().toString();
+    assertThat(user.getRefreshToken(CLIENTID)).hasValue(TEST_REFRESH_TOKEN);
 
-        OAuth2RefreshToken TEST_REFRESH_TOKEN =
-                OAuth2RefreshToken.newBuilder()
-                        .setClientId(CLIENTID)
-                        .setUsername(USERNAME)
-                        .setIsScoped(true)
-                        .addAllScopes(CLIENT.getScopesList())
-                        .setRefreshToken(tokenString)
-                        .build();
+    assertThat(user.readRefreshToken(CLIENTID, tokenString)).hasValue(TEST_REFRESH_TOKEN);
+  }
 
-        user.setRefreshToken(CLIENTID, TEST_REFRESH_TOKEN);
+  @Test
+  public void testRevokeTokens_empty() {
+    UserTokens user = new UserTokens(USERNAME);
 
-        assertThat(user.getRefreshToken(CLIENTID)).hasValue(TEST_REFRESH_TOKEN);
+    String tokenString = UUID.randomUUID().toString();
 
-        assertThat(user.readRefreshToken(CLIENTID, tokenString)).hasValue(TEST_REFRESH_TOKEN);
+    OAuth2RefreshToken TEST_REFRESH_TOKEN =
+        OAuth2RefreshToken.newBuilder()
+            .setClientId(CLIENTID)
+            .setUsername(USERNAME)
+            .setIsScoped(true)
+            .addAllScopes(CLIENT.getScopesList())
+            .setRefreshToken(tokenString)
+            .build();
 
-    }
+    user.setRefreshToken(CLIENTID, TEST_REFRESH_TOKEN);
 
+    user.revokeUserClientTokens(CLIENTID);
 
-    @Test
-    public void testRevokeTokens_empty() {
-        UserTokens user = new UserTokens(USERNAME);
+    assertThat(user.getRefreshToken(CLIENTID)).isEmpty();
 
-        String tokenString = UUID.randomUUID().toString();
+    assertThat(user.isEmpty()).isTrue();
+  }
 
-        OAuth2RefreshToken TEST_REFRESH_TOKEN =
-                OAuth2RefreshToken.newBuilder()
-                        .setClientId(CLIENTID)
-                        .setUsername(USERNAME)
-                        .setIsScoped(true)
-                        .addAllScopes(CLIENT.getScopesList())
-                        .setRefreshToken(tokenString)
-                        .build();
+  @Test
+  public void testClearExpiredTokens_tokenRemoved() {
+    UserTokens user = new UserTokens(USERNAME);
 
-        user.setRefreshToken(CLIENTID, TEST_REFRESH_TOKEN);
+    String tokenString = UUID.randomUUID().toString();
 
-        user.revokeUserClientTokens(CLIENTID);
+    user.addAccessToken(CLIENTID, tokenString, TEST_ACCESS_TOKEN);
 
-        assertThat(user.getRefreshToken(CLIENTID)).isEmpty();
+    user.clearExpiredTokens();
 
-        assertThat(user.isEmpty()).isTrue();
-
-    }
-
-
-    @Test
-    public void testClearExpiredTokens_tokenRemoved() {
-        UserTokens user = new UserTokens(USERNAME);
-
-        String tokenString = UUID.randomUUID().toString();
-
-        user.addAccessToken(CLIENTID, tokenString, TEST_ACCESS_TOKEN);
-
-        user.clearExpiredTokens();
-
-        assertThat(user.getRefreshToken(CLIENTID)).isEmpty();
-
-    }
+    assertThat(user.getRefreshToken(CLIENTID)).isEmpty();
+  }
 }

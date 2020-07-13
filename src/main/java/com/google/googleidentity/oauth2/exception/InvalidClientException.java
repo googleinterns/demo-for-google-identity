@@ -20,23 +20,22 @@ import org.apache.http.HttpStatus;
 
 public final class InvalidClientException extends OAuth2Exception {
 
-    private static final String INVALID_CLIENT = "invalid_client";
+  private static final String INVALID_CLIENT = "invalid_client";
 
-    public InvalidClientException() {
-        super();
-    }
+  public InvalidClientException() {
+    super();
+  }
 
-    @Override
-    public int getHttpCode(){
-        return HttpStatus.SC_UNAUTHORIZED;
-    }
+  @Override
+  public int getHttpCode() {
+    return HttpStatus.SC_UNAUTHORIZED;
+  }
 
-    public String getErrorType(){
-        return INVALID_CLIENT;
-    }
+  public String getErrorType() {
+    return INVALID_CLIENT;
+  }
 
-    public String getErrorDescription(){
-        return "Client Authentication Failed!";
-    }
-
+  public String getErrorDescription() {
+    return "Client Authentication Failed!";
+  }
 }

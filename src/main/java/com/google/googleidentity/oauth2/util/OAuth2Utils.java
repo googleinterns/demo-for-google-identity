@@ -24,100 +24,77 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.Set;
 
-/**
- * OAuth2 Util Library
- */
+/** OAuth2 Util Library */
 public class OAuth2Utils {
 
-    private static final String USER_SESSION = "user_session";
-    private static final String CLIENT_SESSION = "client_session";
+  private static final String USER_SESSION = "user_session";
+  private static final String CLIENT_SESSION = "client_session";
 
-    /**
-     *
-     * @param scope string of scopes with space delimiter
-     * @return parsed scope set
-     */
-    public static Set<String> parseScope(String scope) {
-        if (scope == null) {
-            return ImmutableSet.of();
+  /**
+   * @param scope string of scopes with space delimiter
+   * @return parsed scope set
+   */
+  public static Set<String> parseScope(String scope) {
+    if (scope == null) {
+      return ImmutableSet.of();
+    }
+
+    String[] scopes = scope.split("\\s+");
+
+    return ImmutableSet.copyOf(scopes);
+  }
+
+  /** Only used in Authorization Endpoint. Should be called after validation of responseType */
+  public static String getGrantTypeFromResponseType(String responseType) {
+    if (responseType.equals("code")) {
+      return "authorization_code";
+    } else {
+      return "implicit";
+    }
+  }
+
+  /** @return whether the uri matches one of the uri in uriList of a client */
+  public static boolean matchUri(List<String> uriList, String uri) {
+    for (String eachPattern : uriList) {
+      if (uri.startsWith(eachPattern)) {
+        // match exactly same uris
+        if (eachPattern.equals(uri)) {
+          return true;
         }
-
-        String[] scopes = scope.split("\\s+");
-
-        return ImmutableSet.copyOf(scopes);
-
-    }
-
-    /**
-     * Only used in Authorization Endpoint.
-     * Should be called after validation of responseType
-     */
-    public static String getGrantTypeFromResponseType(String responseType) {
-        if (responseType.equals("code")) {
-            return "authorization_code";
+        // match uris like abc.com/xyz to registered uri abc.com/
+        if (eachPattern.charAt(eachPattern.length() - 1) == '/') {
+          return true;
         }
-        else {
-            return "implicit";
+        // match uris like abc.com/xyz to registered uri abc.com
+        if (uri.length() > eachPattern.length() && uri.charAt(eachPattern.length()) == '/') {
+          return true;
         }
+      }
     }
+    return false;
+  }
 
-    /**
-     * @return whether the uri matches one of the uri in uriList of a client
-     */
-    public static boolean matchUri(List<String> uriList, String uri) {
-        for (String eachPattern : uriList) {
-            if (uri.startsWith(eachPattern)) {
-                //match exactly same uris
-                if (eachPattern.equals(uri)) {
-                    return true;
-                }
-                //match uris like abc.com/xyz to registered uri abc.com/
-                if (eachPattern.charAt(eachPattern.length()-1) == '/') {
-                    return true;
-                }
-                //match uris like abc.com/xyz to registered uri abc.com
-                if (uri.length()>eachPattern.length() && uri.charAt(eachPattern.length()) == '/') {
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
+  /** Get UserSession from HttpSession */
+  public static UserSession getUserSession(HttpServletRequest request) {
+    UserSession userSession = (UserSession) request.getSession().getAttribute(USER_SESSION);
 
-    /**
-     * Get UserSession from HttpSession
-     */
-    public static UserSession getUserSession(HttpServletRequest request) {
-        UserSession userSession =
-                (UserSession) request.getSession().getAttribute(USER_SESSION);
+    return userSession == null ? new UserSession() : userSession;
+  }
 
-        return userSession == null ? new UserSession() : userSession;
+  /** Set UserSession to HttpSession */
+  public static void setUserSession(HttpServletRequest request, UserSession userSession) {
+    request.getSession().setAttribute(USER_SESSION, userSession);
+  }
 
-    }
+  /** Get ClientSession from HttpSession */
+  public static ClientSession getClientSession(HttpServletRequest request) {
+    ClientSession clientSession = (ClientSession) request.getSession().getAttribute(CLIENT_SESSION);
 
-    /**
-     * Set UserSession to HttpSession
-     */
-    public static void setUserSession(
-            HttpServletRequest request, UserSession userSession) {
-        request.getSession().setAttribute(USER_SESSION, userSession);
-    }
+    return clientSession == null ? new ClientSession() : clientSession;
+  }
 
-    /**
-     * Get ClientSession from HttpSession
-     */
-    public static ClientSession getClientSession(HttpServletRequest request) {
-        ClientSession clientSession =
-                (ClientSession) request.getSession().getAttribute(CLIENT_SESSION);
-
-        return clientSession == null ? new ClientSession() : clientSession;
-    }
-
-    /**
-     * Set ClientSession to HttpSession
-     */
-    public static void setClientSession(
-            HttpServletRequest request, ClientSession clientSession) {
-        request.getSession().setAttribute(CLIENT_SESSION, clientSession);
-    }
+  /** Set ClientSession to HttpSession */
+  public static void setClientSession(HttpServletRequest request, ClientSession clientSession) {
+    request.getSession().setAttribute(CLIENT_SESSION, clientSession);
+  }
 }

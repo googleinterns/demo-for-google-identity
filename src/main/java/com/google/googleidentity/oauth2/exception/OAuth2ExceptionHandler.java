@@ -27,61 +27,53 @@ import java.net.URISyntaxException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-
-/**
- * class to handle {@link OAuth2Exception}
- */
+/** class to handle {@link OAuth2Exception} */
 public final class OAuth2ExceptionHandler {
 
-    private static final Logger log = Logger.getLogger("OAuth2ExceptionHandler");
+  private static final Logger log = Logger.getLogger("OAuth2ExceptionHandler");
 
-    private static final String ERROR_DESCRIPTION = "error_description";
-    private static final String ERROR = "error";
+  private static final String ERROR_DESCRIPTION = "error_description";
+  private static final String ERROR = "error";
 
-    /**
-     * Used to return json error response
-     */
-    public static void handle(OAuth2Exception exception, HttpServletResponse response)
-            throws IOException {
-        response.setStatus(exception.getHttpCode());
-        response.setContentType("application/json;charset=UTF-8");
-        response.getWriter().println(getResponseBody(exception).toJSONString());
-        response.getWriter().flush();
+  /** Used to return json error response */
+  public static void handle(OAuth2Exception exception, HttpServletResponse response)
+      throws IOException {
+    response.setStatus(exception.getHttpCode());
+    response.setContentType("application/json;charset=UTF-8");
+    response.getWriter().println(getResponseBody(exception).toJSONString());
+    response.getWriter().flush();
+  }
+
+  /** Used to get json error response */
+  public static JSONObject getResponseBody(OAuth2Exception exception) {
+    JSONObject json = new JSONObject();
+    json.appendField(ERROR, exception.getErrorType());
+    if (!Strings.isNullOrEmpty(exception.getErrorDescription())) {
+      json.appendField(ERROR_DESCRIPTION, exception.getErrorDescription());
     }
+    return json;
+  }
 
-    /**
-     * Used to get json error response
-     */
-    public static JSONObject getResponseBody(OAuth2Exception exception) {
-        JSONObject json =  new JSONObject();
-        json.appendField(ERROR, exception.getErrorType());
-        if (!Strings.isNullOrEmpty(exception.getErrorDescription())) {
-            json.appendField(ERROR_DESCRIPTION, exception.getErrorDescription());
-        }
-        return json;
+  /**
+   * According to RFC6749, if the resource owner denies the access request or if the request fails
+   * for reasons other than a missing or invalid redirection URI, redirect and send the error
+   * message.
+   */
+  public static String getFullRedirectUrl(
+      OAuth2Exception exception, String redirectUri, String state) {
+    try {
+      URIBuilder uriBuilder =
+          new URIBuilder(redirectUri).addParameter(ERROR, exception.getErrorType());
+      if (Strings.isNullOrEmpty(exception.getErrorDescription())) {
+        uriBuilder.addParameter(ERROR_DESCRIPTION, exception.getErrorDescription());
+      }
+      if (Strings.isNullOrEmpty(state)) {
+        uriBuilder.addParameter(OAuth2ParameterNames.STATE, state);
+      }
+      return uriBuilder.build().toString();
+    } catch (URISyntaxException e) {
+      log.log(Level.INFO, "URI ERROR!", e);
     }
-
-    /**
-     * According to RFC6749, if the resource owner denies the access request or if the request
-     * fails for reasons other than a missing or invalid redirection URI, redirect and send the
-     * error message.
-     */
-    public static String getFullRedirectUrl(
-            OAuth2Exception exception, String redirectUri, String state) {
-        try {
-            URIBuilder uriBuilder = new URIBuilder(redirectUri)
-                    .addParameter(ERROR, exception.getErrorType());
-            if (Strings.isNullOrEmpty(exception.getErrorDescription())) {
-                uriBuilder.addParameter(
-                        ERROR_DESCRIPTION, exception.getErrorDescription());
-            }
-            if(Strings.isNullOrEmpty(state)) {
-                uriBuilder.addParameter(OAuth2ParameterNames.STATE, state);
-            }
-            return uriBuilder.build().toString();
-        } catch (URISyntaxException e) {
-            log.log(Level.INFO, "URI ERROR!", e);
-        }
-        return null;
-    }
+    return null;
+  }
 }

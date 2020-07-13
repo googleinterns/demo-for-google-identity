@@ -20,9 +20,8 @@ import com.google.inject.AbstractModule;
 
 public class AuthorizationCodeModule extends AbstractModule {
 
-    @Override
-    protected void configure(){
-        bind(CodeStore.class).to(InMemoryCodeStore.class);
-    }
-
+  @Override
+  protected void configure() {
+    bind(CodeStore.class).to(InMemoryCodeStore.class);
+  }
 }

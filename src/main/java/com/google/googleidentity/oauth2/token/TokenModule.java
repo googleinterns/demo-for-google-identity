@@ -20,8 +20,8 @@ import com.google.inject.AbstractModule;
 
 public class TokenModule extends AbstractModule {
 
-    @Override
-    protected void configure() {
-        bind(OAuth2TokenService.class).to(InMemoryOAuth2TokenService.class);
-    }
+  @Override
+  protected void configure() {
+    bind(OAuth2TokenService.class).to(InMemoryOAuth2TokenService.class);
+  }
 }

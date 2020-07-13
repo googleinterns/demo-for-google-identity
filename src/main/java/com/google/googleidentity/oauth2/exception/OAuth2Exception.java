@@ -18,30 +18,26 @@ package com.google.googleidentity.oauth2.exception;
 
 import org.apache.http.HttpStatus;
 
-/**
- * OAuth2 Exceptions. Will be deal in try catch clause
- */
+/** OAuth2 Exceptions. Will be deal in try catch clause */
 public abstract class OAuth2Exception extends Exception {
 
-    public OAuth2Exception() {
-        super();
-    }
+  public OAuth2Exception() {
+    super();
+  }
 
-    public int getHttpCode(){
-        return HttpStatus.SC_BAD_REQUEST;
-    }
+  public int getHttpCode() {
+    return HttpStatus.SC_BAD_REQUEST;
+  }
 
-    /**
-     * Should be implemented in specific exception classes.
-     * It will be filled in error field in http response by {@link OAuth2ExceptionHandler}
-     */
-    public abstract String getErrorType();
+  /**
+   * Should be implemented in specific exception classes. It will be filled in error field in http
+   * response by {@link OAuth2ExceptionHandler}
+   */
+  public abstract String getErrorType();
 
-    /**
-     * Should be implemented in specific exception, default is empty.
-     * It will be filled in error_description field in http response
-     * by {@link OAuth2ExceptionHandler}
-     */
-    public abstract String getErrorDescription();
-
+  /**
+   * Should be implemented in specific exception, default is empty. It will be filled in
+   * error_description field in http response by {@link OAuth2ExceptionHandler}
+   */
+  public abstract String getErrorDescription();
 }

@@ -16,7 +16,6 @@
 
 package com.google.googleidentity.config;
 
-
 import com.google.googleidentity.filter.OAuth2TokenAuthenticationFilter;
 import com.google.googleidentity.filter.UserAuthenticationFilter;
 import com.google.googleidentity.oauth2.endpoint.AuthorizationEndpoint;
@@ -29,41 +28,26 @@ import com.google.googleidentity.security.LoginServlet;
 import com.google.inject.AbstractModule;
 import com.google.inject.servlet.ServletModule;
 
-
 public final class OAuth2Module extends AbstractModule {
 
-    @Override
-    protected void configure() {
-        install(new ServletModule() {
-            @Override
-            protected void configureServlets() {
-                serve(
-                        "/resource/user",
-                        "resource/user;jsessionid.*")
-                        .with(UserServlet.class);
-                serveRegex(
-                        "/",
-                        "/login",
-                        "/login;jsessionid.*")
-                        .with(LoginServlet.class);
-                serve("/login_check")
-                        .with(LoginCheckServlet.class);
-                serve("/oauth2/authorize")
-                        .with(AuthorizationEndpoint.class);
-                serve("/oauth2/consent")
-                        .with(ConsentEndpoint.class);
-                serve("/oauth2/token")
-                        .with(TokenEndpoint.class);
-                filterRegex("/resource/.*")
-                        .through(OAuth2TokenAuthenticationFilter.class);
-                filterRegex(
-                        "/oauth2/authorize",
-                        "/resource/.*")
-                        .through(UserAuthenticationFilter.class);
-                filter("/oauth2/token")
-                        .through(ClientAuthenticationFilter.class);
-            }
+  @Override
+  protected void configure() {
+    install(
+        new ServletModule() {
+          @Override
+          protected void configureServlets() {
+            serve("/resource/user", "resource/user;jsessionid.*").with(UserServlet.class);
+            serveRegex("/", "/login", "/login;jsessionid.*")
+                .with(LoginServlet.class);
+            serve("/login_check").with(LoginCheckServlet.class);
+            serve("/oauth2/authorize").with(AuthorizationEndpoint.class);
+            serve("/oauth2/consent").with(ConsentEndpoint.class);
+            serve("/oauth2/token").with(TokenEndpoint.class);
+            filterRegex("/resource/.*").through(OAuth2TokenAuthenticationFilter.class);
+            filterRegex("/oauth2/authorize", "/resource/.*")
+                .through(UserAuthenticationFilter.class);
+            filter("/oauth2/token").through(ClientAuthenticationFilter.class);
+          }
         });
-    }
-
+  }
 }

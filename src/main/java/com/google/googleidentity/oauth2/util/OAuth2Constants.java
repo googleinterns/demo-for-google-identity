@@ -16,28 +16,24 @@
 
 package com.google.googleidentity.oauth2.util;
 
-/**
- * OAuth2 constants like grant types and response types
- */
+/** OAuth2 constants like grant types and response types */
 public final class OAuth2Constants {
 
-    public static final class GrantType {
-        public static final String AUTHORIZATION_CODE = "authorization_code";
-        public static final String REFRESH_TOKEN = "refresh_token";
-        public static final String IMPLICIT = "implicit";
-        public static final String JWT_ASSERTION = "urn:ietf:params:oauth:grant-type:jwt-bearer";
-    }
+  public static final class GrantType {
+    public static final String AUTHORIZATION_CODE = "authorization_code";
+    public static final String REFRESH_TOKEN = "refresh_token";
+    public static final String IMPLICIT = "implicit";
+    public static final String JWT_ASSERTION = "urn:ietf:params:oauth:grant-type:jwt-bearer";
+  }
 
+  public static final class ResponseType {
+    public static final String TOKEN = "token";
+    public static final String CODE = "code";
+  }
 
-    public static final class ResponseType {
-        public static final String TOKEN = "token";
-        public static final String CODE = "code";
-    }
-
-
-    public static final class JwtAssertionIntents {
-        public static final String CHECK = "check";
-        public static final String GET = "get";
-        public static final String CREATE = "create";
-    }
+  public static final class JwtAssertionIntents {
+    public static final String CHECK = "check";
+    public static final String GET = "get";
+    public static final String CREATE = "create";
+  }
 }

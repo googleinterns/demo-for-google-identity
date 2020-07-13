@@ -22,48 +22,45 @@ import java.io.Serializable;
 import java.util.Optional;
 
 /**
- * UserSession Object
- * Store a logged in user's information in
- * {@link com.google.googleidentity.user.UserDetails} Object.
- * Store an original request that filtered by
- * {@link com.google.googleidentity.filter.UserAuthenticationFilter}.
- * Stored in HttpSession named user_session
+ * UserSession Object Store a logged in user's information in {@link
+ * com.google.googleidentity.user.UserDetails} Object. Store an original request that filtered by
+ * {@link com.google.googleidentity.filter.UserAuthenticationFilter}. Stored in HttpSession named
+ * user_session
  */
 public final class UserSession implements Serializable {
 
-    private static final long serialVersionUID = 3L;
+  private static final long serialVersionUID = 3L;
 
-    private UserDetails user = null;
+  private UserDetails user = null;
 
-    private String olduri = null;
+  private String olduri = null;
 
-    public Optional<UserDetails> getUser() {
-        return Optional.ofNullable(user);
+  public Optional<UserDetails> getUser() {
+    return Optional.ofNullable(user);
+  }
+
+  public void setUser(UserDetails user) {
+    this.user = user;
+  }
+
+  public Optional<String> getOlduri() {
+    return Optional.ofNullable(olduri);
+  }
+
+  public void setOlduri(String olduri) {
+    this.olduri = olduri;
+  }
+
+  @Override
+  public String toString() {
+
+    StringBuilder sb = new StringBuilder();
+    if (user != null) {
+      sb.append("user:").append(user.toString()).append("\t");
     }
-
-    public Optional<String> getOlduri() {
-        return Optional.ofNullable(olduri);
+    if (olduri != null) {
+      sb.append("olduri:").append(olduri).append("\t");
     }
-
-    public void setUser(UserDetails user) {
-        this.user = user;
-    }
-
-    public void setOlduri(String olduri) {
-        this.olduri = olduri;
-    }
-
-    @Override
-    public String toString() {
-
-        StringBuilder sb = new StringBuilder();
-        if (user != null) {
-            sb.append("user:").append(user.toString()).append("\t");
-        }
-        if (olduri != null) {
-            sb.append("olduri:").append(olduri).append("\t");
-        }
-        return sb.toString();
-    }
-
+    return sb.toString();
+  }
 }

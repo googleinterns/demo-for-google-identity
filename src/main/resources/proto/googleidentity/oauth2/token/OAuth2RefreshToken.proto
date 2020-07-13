@@ -22,18 +22,18 @@ option java_multiple_files = true;
 // Store oauth2 refresh token information
 message OAuth2RefreshToken {
 
-    // Refresh Token value
-    string refresh_token = 1;
+  // Refresh Token value
+  string refresh_token = 1;
 
-    // Token clientID
-    string client_id = 2;
+  // Token clientID
+  string client_id = 2;
 
-    // Token username
-    string username = 3;
+  // Token username
+  string username = 3;
 
-    // Whether token scoped is limited
-    bool is_scoped = 4;
+  // Whether token scoped is limited
+  bool is_scoped = 4;
 
-    // Token scopes
-    repeated string scopes = 5;
+  // Token scopes
+  repeated string scopes = 5;
 }
