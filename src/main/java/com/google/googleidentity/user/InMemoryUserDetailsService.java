@@ -17,6 +17,7 @@
 package com.google.googleidentity.user;
 
 import com.google.common.base.Preconditions;
+import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
 import com.google.inject.Singleton;
 
@@ -64,6 +65,20 @@ public final class InMemoryUserDetailsService implements UserDetailsService {
     }
     userStore.put(username, user);
     return true;
+  }
+
+  @Override
+  public Optional<UserDetails> getUserByEmailOrGoogleAccountId(String email, String gid) {
+    for (UserDetails user : userStore.values()) {
+      if (!Strings.isNullOrEmpty(email) && user.getEmail().equals(email)) {
+        return Optional.of(user);
+      }
+      if (!Strings.isNullOrEmpty(gid) && user.getGoogleAccountId().equals(gid)) {
+        return Optional.of(user);
+      }
+    }
+
+    return Optional.empty();
   }
 
   public List<UserDetails> listUser() {

@@ -39,4 +39,11 @@ message OAuth2Enums {
     ACCESS = 0;
     REFRESH = 1;
   }
+
+  enum IntentType {
+    NO_INTENT = 0;
+    CHECK = 1;
+    GET = 2;
+    CREATE = 3;
+  }
 }

@@ -17,7 +17,9 @@
 package com.google.googleidentity.oauth2.util;
 
 import com.google.common.collect.ImmutableMap;
+import com.google.googleidentity.oauth2.util.OAuth2Constants.JwtAssertionIntents;
 import com.google.googleidentity.oauth2.util.OAuth2Enums.GrantType;
+import com.google.googleidentity.oauth2.util.OAuth2Enums.IntentType;
 import com.google.googleidentity.oauth2.util.OAuth2Enums.ResponseType;
 
 public class OAuth2EnumMap {
@@ -32,4 +34,10 @@ public class OAuth2EnumMap {
           OAuth2Constants.GrantType.IMPLICIT, GrantType.IMPLICIT,
           OAuth2Constants.GrantType.REFRESH_TOKEN, GrantType.REFRESH_TOKEN,
           OAuth2Constants.GrantType.JWT_ASSERTION, GrantType.JWT_ASSERTION);
+
+  public static final ImmutableMap<String, IntentType> INTENT_TYPE_MAP =
+      ImmutableMap.of(
+          JwtAssertionIntents.CHECK, IntentType.CHECK,
+          JwtAssertionIntents.GET, IntentType.GET,
+          JwtAssertionIntents.CREATE, IntentType.CREATE);
 }

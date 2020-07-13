@@ -141,7 +141,8 @@ public class TokenEndpoint extends HttpServlet {
     } else if (grantType.equals(OAuth2Constants.GrantType.JWT_ASSERTION)) {
       oauth2RequestBuilder
           .getRequestBodyBuilder()
-          .setIntent(request.getParameter(OAuth2ParameterNames.INTENT))
+          .setIntent(
+              OAuth2EnumMap.INTENT_TYPE_MAP.get(request.getParameter(OAuth2ParameterNames.INTENT)))
           .setAssertion(request.getParameter(OAuth2ParameterNames.ASSERTION));
       if (!Strings.isNullOrEmpty(request.getParameter(OAuth2ParameterNames.SCOPE))) {
         oauth2RequestBuilder
