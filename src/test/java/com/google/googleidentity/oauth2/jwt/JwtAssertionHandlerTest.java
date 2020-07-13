@@ -52,12 +52,12 @@ import java.io.StringWriter;
 import java.security.Key;
 import java.time.Instant;
 import java.util.Date;
-import java.util.List;
 import java.util.Optional;
 import javax.servlet.http.HttpServletResponse;
 import net.minidev.json.JSONObject;
 import net.minidev.json.parser.JSONParser;
 import net.minidev.json.parser.ParseException;
+import org.apache.commons.lang3.tuple.Pair;
 import org.apache.http.HttpStatus;
 import org.junit.Before;
 import org.junit.Test;
@@ -253,11 +253,11 @@ public class JwtAssertionHandlerTest {
             jwtAssertionRequestHandler.verifyAndGetInfoFromJwt(
                 assertion, new TestJwtSigningKeyResolver(jwkStore.getJWKString())));
 
-    List<String> info =
+    Pair<String, String> info =
         jwtAssertionRequestHandler.verifyAndGetInfoFromJwt(
             assertion, new TestJwtSigningKeyResolver(jwkStore.getJWKString()));
-    assertThat(info.get(0)).isEqualTo("a@gmail.com");
-    assertThat(info.get(1)).isEqualTo("1234567890");
+    assertThat(info.getLeft()).isEqualTo("a@gmail.com");
+    assertThat(info.getRight()).isEqualTo("1234567890");
   }
 
   @Test
@@ -310,7 +310,7 @@ public class JwtAssertionHandlerTest {
     assertDoesNotThrow(
         () ->
             jwtAssertionRequestHandler.handleGetAssertion(
-                response, "b@gmail.com", "1234567890", CLIENT.getScopesList()));
+                response, "b@gmail.com", "1234567890", CLIENT.getScopesList(), CLIENT));
 
     JSONObject json =
         (JSONObject) new JSONParser(JSONParser.MODE_PERMISSIVE).parse(stringWriter.toString());
@@ -333,7 +333,7 @@ public class JwtAssertionHandlerTest {
     assertDoesNotThrow(
         () ->
             jwtAssertionRequestHandler.handleGetAssertion(
-                response, "a@gmail.com", "1234567890", CLIENT.getScopesList()));
+                response, "a@gmail.com", "1234567890", CLIENT.getScopesList(), CLIENT));
 
     JSONObject json =
         (JSONObject) new JSONParser(JSONParser.MODE_PERMISSIVE).parse(stringWriter.toString());
@@ -389,7 +389,7 @@ public class JwtAssertionHandlerTest {
     assertDoesNotThrow(
         () ->
             jwtAssertionRequestHandler.handleCreateAssertion(
-                response, "b@gmail.com", "1234567890", CLIENT.getScopesList()));
+                response, "b@gmail.com", "1234567890", CLIENT.getScopesList(), CLIENT));
 
     JSONObject json =
         (JSONObject) new JSONParser(JSONParser.MODE_PERMISSIVE).parse(stringWriter.toString());
@@ -445,7 +445,7 @@ public class JwtAssertionHandlerTest {
     assertDoesNotThrow(
         () ->
             jwtAssertionRequestHandler.handleCreateAssertion(
-                response, "a@gmail.com", "1234567890", CLIENT.getScopesList()));
+                response, "a@gmail.com", "1234567890", CLIENT.getScopesList(), CLIENT));
 
     JSONObject json =
         (JSONObject) new JSONParser(JSONParser.MODE_PERMISSIVE).parse(stringWriter.toString());

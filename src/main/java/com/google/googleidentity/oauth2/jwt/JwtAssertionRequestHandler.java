@@ -45,14 +45,18 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.servlet.http.HttpServletResponse;
 import net.minidev.json.JSONObject;
+import org.apache.commons.lang3.tuple.Pair;
 import org.apache.http.HttpStatus;
 
 /** Processor for dealing JWT Assertion */
 @Singleton
 public class JwtAssertionRequestHandler implements RequestHandler {
 
-  private static final String keyUrl = "https://www.googleapis.com/oauth2/v3/certs";
-  private static final String aud =
+  private static final String KEYURL = "https://www.googleapis.com/oauth2/v3/certs";
+  private static final String GOOLE_ISS = "https://accounts.google.com";
+  private static final String EMAIL = "email";
+  private static final String SUB = "sub";
+  private static final String AUD =
       "475640046628-i42g5qfbcp58e3nijqiedomvhe7hb3sn.apps.googleusercontent.com";
   private final OAuth2TokenService oauth2TokenService;
   private final UserDetailsService userDetailsService;
@@ -74,49 +78,59 @@ public class JwtAssertionRequestHandler implements RequestHandler {
   @Override
   public void handle(HttpServletResponse response, OAuth2Request oauth2Request)
       throws IOException, OAuth2Exception {
-    List<String> info =
+    Pair<String, String> info =
         verifyAndGetInfoFromJwt(
-            oauth2Request.getRequestBody().getAssertion(), new JwtSigningKeyResolver(keyUrl));
-    String email = info.get(0);
-    String googleAccountId = info.get(1);
+            oauth2Request.getRequestBody().getAssertion(), new JwtSigningKeyResolver(KEYURL));
+    String email = info.getLeft();
+    String googleAccountId = info.getRight();
+    ClientDetails client =
+        clientDetailsService.getClientByID(oauth2Request.getRequestAuth().getClientId()).get();
     switch (oauth2Request.getRequestBody().getIntent()) {
       case CHECK:
         handleCheckAssertion(response, email, googleAccountId);
         break;
       case GET:
         handleGetAssertion(
-            response, email, googleAccountId, oauth2Request.getRequestBody().getScopesList());
+            response,
+            email,
+            googleAccountId,
+            oauth2Request.getRequestBody().getScopesList(),
+            client);
         break;
       case CREATE:
         handleCreateAssertion(
-            response, email, googleAccountId, oauth2Request.getRequestBody().getScopesList());
+            response,
+            email,
+            googleAccountId,
+            oauth2Request.getRequestBody().getScopesList(),
+            client);
         break;
       default:
         throw new IllegalStateException();
     }
   }
 
-  public List<String> verifyAndGetInfoFromJwt(String assertion, SigningKeyResolverAdapter keys)
-      throws OAuth2Exception {
+  public Pair<String, String> verifyAndGetInfoFromJwt(
+      String assertion, SigningKeyResolverAdapter keys) throws OAuth2Exception {
     Jws<Claims> jws;
 
     String email = null;
     String googleAccountId = null;
     try {
       jws = Jwts.parserBuilder().setSigningKeyResolver(keys).build().parseClaimsJws(assertion);
-      if (!jws.getBody().getIssuer().equals("https://accounts.google.com")) {
+      if (!jws.getBody().getIssuer().equals(GOOLE_ISS)) {
         throw new InvalidRequestException(ErrorCode.INVALID_JWT_ISS);
       }
-      if (!jws.getBody().getAudience().equals(aud)) {
+      if (!jws.getBody().getAudience().equals(AUD)) {
         throw new InvalidRequestException(ErrorCode.WRONG_JWT_AUD);
       }
-      email = jws.getBody().get("email", String.class);
-      googleAccountId = jws.getBody().get("sub", Long.class).toString();
+      email = jws.getBody().get(EMAIL, String.class);
+      googleAccountId = jws.getBody().get(SUB, Long.class).toString();
     } catch (JwtException ex) {
       log.log(Level.INFO, "JWT Decode ERROR!", ex);
       throw new InvalidRequestException(ErrorCode.INVALID_JWT);
     }
-    return ImmutableList.of(email, googleAccountId);
+    return Pair.of(email, googleAccountId);
   }
 
   public void handleCheckAssertion(
@@ -138,12 +152,15 @@ public class JwtAssertionRequestHandler implements RequestHandler {
   }
 
   public void handleGetAssertion(
-      HttpServletResponse response, String email, String googleAccountId, List<String> scopes)
+      HttpServletResponse response,
+      String email,
+      String googleAccountId,
+      List<String> scopes,
+      ClientDetails client)
       throws IOException, InvalidScopeException {
     Optional<UserDetails> user =
         userDetailsService.getUserByEmailOrGoogleAccountId(email, googleAccountId);
     if (user.isPresent()) {
-      ClientDetails client = clientDetailsService.getClientByID("google").get();
 
       if (!scopes.isEmpty()
           && client.getIsScoped()
@@ -162,7 +179,11 @@ public class JwtAssertionRequestHandler implements RequestHandler {
   }
 
   public void handleCreateAssertion(
-      HttpServletResponse response, String email, String googleAccountId, List<String> scopes)
+      HttpServletResponse response,
+      String email,
+      String googleAccountId,
+      List<String> scopes,
+      ClientDetails client)
       throws IOException, InvalidScopeException {
     Optional<UserDetails> user =
         userDetailsService.getUserByEmailOrGoogleAccountId(email, googleAccountId);
@@ -176,7 +197,6 @@ public class JwtAssertionRequestHandler implements RequestHandler {
               .setGoogleAccountId(googleAccountId)
               .build();
       userDetailsService.addUser(newUser);
-      ClientDetails client = clientDetailsService.getClientByID("google").get();
       if (!scopes.isEmpty()
           && client.getIsScoped()
           && (!client.getScopesList().containsAll(scopes))) {
