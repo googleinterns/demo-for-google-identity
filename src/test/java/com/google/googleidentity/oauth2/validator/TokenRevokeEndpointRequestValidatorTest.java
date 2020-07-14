@@ -17,6 +17,7 @@
 package com.google.googleidentity.oauth2.validator;
 
 import static com.google.common.truth.Truth.assertThat;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -27,6 +28,7 @@ import com.google.common.hash.Hashing;
 import com.google.googleidentity.oauth2.client.ClientDetails;
 import com.google.googleidentity.oauth2.exception.InvalidRequestException;
 import com.google.googleidentity.oauth2.exception.OAuth2Exception;
+import com.google.googleidentity.oauth2.util.OAuth2Constants;
 import com.google.googleidentity.oauth2.util.OAuth2Constants.TokenTypes;
 import com.google.googleidentity.oauth2.util.OAuth2Enums.GrantType;
 import com.google.googleidentity.testtools.FakeHttpSession;
@@ -69,9 +71,7 @@ public class TokenRevokeEndpointRequestValidatorTest {
 
     assertThat(e).isInstanceOf(InvalidRequestException.class);
 
-    assertThat(e.getErrorDescription())
-        .isEqualTo("No token to revoke!");
-
+    assertThat(e.getErrorDescription()).isEqualTo("No token to revoke!");
   }
 
   @Test
@@ -89,9 +89,18 @@ public class TokenRevokeEndpointRequestValidatorTest {
 
     assertThat(e).isInstanceOf(InvalidRequestException.class);
 
-    assertThat(e.getErrorDescription())
-        .isEqualTo("Invalid token type!");
-
+    assertThat(e.getErrorDescription()).isEqualTo("Invalid token type!");
   }
 
+  @Test
+  public void test_validatePost_correctRequest_throwNoException() {
+
+    HttpServletRequest request = mock(HttpServletRequest.class);
+    FakeHttpSession httpSession = new FakeHttpSession();
+
+    when(request.getParameter("token")).thenReturn("token");
+    when(request.getParameter("token_type_hint")).thenReturn(TokenTypes.ACCESS_TOKEN);
+
+    assertDoesNotThrow(() -> TokenRevokeEndpointRequestValidator.validatePOST(request));
+  }
 }
