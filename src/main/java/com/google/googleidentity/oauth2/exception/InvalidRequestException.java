@@ -71,6 +71,10 @@ public final class InvalidRequestException extends OAuth2Exception {
         return "Invalid jwt!";
       case WRONG_JWT_AUD:
         return "Wrong jwt aud!";
+      case NO_REVOKE_TOKEN:
+        return "No token to revoke!";
+      case INVALID_TOKEN_TYPE:
+        return "Invalid token type!";
       default:
         throw new IllegalArgumentException(String.valueOf(errorCode));
     }
@@ -95,6 +99,8 @@ public final class InvalidRequestException extends OAuth2Exception {
     UNSUPPORTED_INTENT,
     INVALID_JWT_ISS,
     INVALID_JWT,
-    WRONG_JWT_AUD
+    WRONG_JWT_AUD,
+    NO_REVOKE_TOKEN,
+    INVALID_TOKEN_TYPE
   }
 }

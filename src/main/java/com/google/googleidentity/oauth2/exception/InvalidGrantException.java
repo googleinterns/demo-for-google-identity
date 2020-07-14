@@ -45,6 +45,10 @@ public final class InvalidGrantException extends OAuth2Exception {
         return "Refresh token does not exist!";
       case REFRESH_TOKEN_CLIENT_MISMATCH:
         return "Refresh token and client mismatch!";
+      case NONEXISTENT_REVOKE_TOKEN:
+        return "Token to be revoked does not exist!";
+      case REVOKE_TOKEN_CLIENT_MISMATCH:
+        return "Token to be revoked and client id mismatch!";
       default:
         throw new IllegalArgumentException(String.valueOf(errorCode));
     }
@@ -56,6 +60,8 @@ public final class InvalidGrantException extends OAuth2Exception {
     NO_GRANT_TYPE,
     CODE_REDIRECT_URI_MISMATCH,
     NONEXISTENT_REFRESH_TOKEN,
-    REFRESH_TOKEN_CLIENT_MISMATCH
+    REFRESH_TOKEN_CLIENT_MISMATCH,
+    NONEXISTENT_REVOKE_TOKEN,
+    REVOKE_TOKEN_CLIENT_MISMATCH
   }
 }
