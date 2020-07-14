@@ -18,11 +18,9 @@ package com.google.googleidentity.oauth2.endpoint;
 
 import com.google.common.base.Strings;
 import com.google.googleidentity.oauth2.client.ClientDetailsService;
-import com.google.googleidentity.oauth2.risc.RiscSendHandler;
+import com.google.googleidentity.oauth2.risc.UnlinkHandler;
 import com.google.googleidentity.oauth2.util.OAuth2Utils;
-import com.google.googleidentity.security.UserSession;
 import com.google.inject.Inject;
-import com.google.inject.Provider;
 import com.google.inject.Singleton;
 import java.io.IOException;
 import java.util.logging.Logger;
@@ -33,22 +31,22 @@ import javax.servlet.http.HttpServletResponse;
 
 /** When user request to revoke token with a client , the request will be sent here.
  *  In the demo, user can send the request from MainPage.
- *  It will check the user session and client id and then send it to {@link RiscSendHandler}.
+ *  It will check the user session and client id and then send it to {@link UnlinkHandler}.
  */
 @Singleton
-public class RiscSendEndpoint extends HttpServlet {
+public class UnlinkEndpoint extends HttpServlet {
 
   private static final long serialVersionUID = 12L;
 
   private static final Logger log = Logger.getLogger("RiscEndpoint");
 
-  private final RiscSendHandler riscHandler;
+  private final UnlinkHandler unlinkHandler;
 
   private final ClientDetailsService clientDetailsService;
 
   @Inject
-  public RiscSendEndpoint(RiscSendHandler riscHandler, ClientDetailsService clientDetailsService) {
-    this.riscHandler = riscHandler;
+  public UnlinkEndpoint(UnlinkHandler unlinkHandler, ClientDetailsService clientDetailsService) {
+    this.unlinkHandler = unlinkHandler;
     this.clientDetailsService = clientDetailsService;
   }
 
@@ -59,7 +57,7 @@ public class RiscSendEndpoint extends HttpServlet {
 
       if (!Strings.isNullOrEmpty(clientID)
           && clientDetailsService.getClientByID(clientID).isPresent()) {
-        riscHandler.RevokeTokenWithClient(
+        unlinkHandler.RevokeTokenWithClient(
             OAuth2Utils.getUserSession(request).getUser().get().getUsername(), clientID);
       }
     }

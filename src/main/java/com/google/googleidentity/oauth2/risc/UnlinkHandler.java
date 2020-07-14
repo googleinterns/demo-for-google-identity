@@ -52,7 +52,7 @@ import org.apache.http.impl.client.HttpClients;
 
 /** Revoke tokens between a user and a client. Send risc if the client support it. */
 @Singleton
-public class RiscSendHandler {
+public class UnlinkHandler {
   private static final Logger log = Logger.getLogger("RiscHandler");
   private static int MAX_RETRY_COUNT = 3;
   private static Duration RETRY_INTERVAL_TIME = Duration.ofMinutes(10);
@@ -64,7 +64,7 @@ public class RiscSendHandler {
   private long jtiValue = 0l;
 
   @Inject
-  public RiscSendHandler(
+  public UnlinkHandler(
       OAuth2TokenService oauth2TokenService,
       JwkStore jwkStore,
       ClientDetailsService clientDetailsService) {

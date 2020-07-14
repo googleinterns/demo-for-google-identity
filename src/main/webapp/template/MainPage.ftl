@@ -30,7 +30,7 @@ limitations under the License.
     </div>
 </div>
 <div style="text-align:center">
-    <form action="/oauth2/risc/send" method="post" >
+    <form action="/oauth2/unlink" method="post" >
         <div class="dropdown">
             <h1> Unlink With </h1>
             <a class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
