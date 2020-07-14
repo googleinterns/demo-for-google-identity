@@ -56,8 +56,7 @@ public class JwtAssertionRequestHandler implements RequestHandler {
   private static final String GOOLE_ISS = "https://accounts.google.com";
   private static final String EMAIL = "email";
   private static final String SUB = "sub";
-  private static final String AUD =
-      "475640046628-i42g5qfbcp58e3nijqiedomvhe7hb3sn.apps.googleusercontent.com";
+  private static final String AUD = "567474276809-9j01no46fm5j26e0tk4sme835gd129df.apps.googleusercontent.com";
   private final OAuth2TokenService oauth2TokenService;
   private final UserDetailsService userDetailsService;
 
@@ -125,7 +124,7 @@ public class JwtAssertionRequestHandler implements RequestHandler {
         throw new InvalidRequestException(ErrorCode.WRONG_JWT_AUD);
       }
       email = jws.getBody().get(EMAIL, String.class);
-      googleAccountId = jws.getBody().get(SUB, Long.class).toString();
+      googleAccountId = jws.getBody().get(SUB, String.class);
     } catch (JwtException ex) {
       log.log(Level.INFO, "JWT Decode ERROR!", ex);
       throw new InvalidRequestException(ErrorCode.INVALID_JWT);

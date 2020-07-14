@@ -127,7 +127,7 @@ public class JwtAssertionHandlerTest {
     String assertion =
         Jwts.builder()
             .setIssuer("https://accounts.google.com")
-            .setAudience("475640046628-i42g5qfbcp58e3nijqiedomvhe7hb3sn.apps.googleusercontent.com")
+            .setAudience("567474276809-9j01no46fm5j26e0tk4sme835gd129df.apps.googleusercontent.com")
             .setIssuedAt(Date.from(Instant.now()))
             .setExpiration(Date.from(Instant.now()))
             .claim("name", "a bc")
@@ -135,7 +135,7 @@ public class JwtAssertionHandlerTest {
             .claim("family_name", "bc")
             .claim("email", "a@gmail.com")
             .claim("email_verified", true)
-            .claim("sub", 1234567890)
+            .claim("sub", "1234567890")
             .setHeaderParam("kid", jwk.getKeyID())
             .signWith(key)
             .compact();
@@ -163,7 +163,7 @@ public class JwtAssertionHandlerTest {
     String assertion =
         Jwts.builder()
             .setIssuer("https://accounts.not.google.com")
-            .setAudience("475640046628-i42g5qfbcp58e3nijqiedomvhe7hb3sn.apps.googleusercontent.com")
+            .setAudience("567474276809-9j01no46fm5j26e0tk4sme835gd129df.apps.googleusercontent.com")
             .setIssuedAt(Date.from(Instant.now()))
             .setExpiration(Date.from(Instant.now().plusSeconds(600)))
             .claim("name", "a bc")
@@ -171,7 +171,7 @@ public class JwtAssertionHandlerTest {
             .claim("family_name", "bc")
             .claim("email", "a@gmail.com")
             .claim("email_verified", true)
-            .claim("sub", 1234567890)
+            .claim("sub", "1234567890")
             .setHeaderParam("kid", jwk.getKeyID())
             .signWith(key)
             .compact();
@@ -207,7 +207,7 @@ public class JwtAssertionHandlerTest {
             .claim("family_name", "bc")
             .claim("email", "a@gmail.com")
             .claim("email_verified", true)
-            .claim("sub", 1234567890)
+            .claim("sub", "1234567890")
             .setHeaderParam("kid", jwk.getKeyID())
             .signWith(key)
             .compact();
@@ -235,7 +235,7 @@ public class JwtAssertionHandlerTest {
     String assertion =
         Jwts.builder()
             .setIssuer("https://accounts.google.com")
-            .setAudience("475640046628-i42g5qfbcp58e3nijqiedomvhe7hb3sn.apps.googleusercontent.com")
+            .setAudience("567474276809-9j01no46fm5j26e0tk4sme835gd129df.apps.googleusercontent.com")
             .setIssuedAt(Date.from(Instant.now()))
             .setExpiration(Date.from(Instant.now().plusSeconds(600)))
             .claim("name", "a bc")
@@ -243,7 +243,7 @@ public class JwtAssertionHandlerTest {
             .claim("family_name", "bc")
             .claim("email", "a@gmail.com")
             .claim("email_verified", true)
-            .claim("sub", 1234567890)
+            .claim("sub", "1234567890")
             .setHeaderParam("kid", jwk.getKeyID())
             .signWith(key)
             .compact();
