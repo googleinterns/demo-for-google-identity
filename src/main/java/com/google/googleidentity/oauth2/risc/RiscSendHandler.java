@@ -16,7 +16,10 @@
 
 package com.google.googleidentity.oauth2.risc;
 
+import com.google.common.base.Preconditions;
 import com.google.common.hash.Hashing;
+import com.google.googleidentity.oauth2.client.ClientDetails;
+import com.google.googleidentity.oauth2.client.ClientDetailsService;
 import com.google.googleidentity.oauth2.jwt.JwkStore;
 import com.google.googleidentity.oauth2.token.OAuth2AccessToken;
 import com.google.googleidentity.oauth2.token.OAuth2RefreshToken;
@@ -31,6 +34,7 @@ import io.jsonwebtoken.Jwts;
 import java.io.IOException;
 import java.security.Key;
 import java.time.Duration;
+import java.time.Instant;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -48,22 +52,26 @@ import org.apache.http.impl.client.HttpClients;
 @Singleton
 public class RiscSendHandler {
   private static final Logger log = Logger.getLogger("RiscHandler");
-  private static final String URI = "https://risc.googleapis.com/v1beta/events:report";
   private static int maxRetryCount = 3;
   private static Duration retryIntervalTime = Duration.ofMinutes(10);
   private static String webUrl =
       System.getenv("WEB_URL") == null ? "localhost:8080" : System.getenv("WEB_URL");
   private final OAuth2TokenService oauth2TokenService;
+  private final ClientDetailsService clientDetailsService;
   private final JwkStore jwkStore;
   private long jtiValue = 0l;
 
   @Inject
-  public RiscSendHandler(OAuth2TokenService oauth2TokenService, JwkStore jwkStore) {
+  public RiscSendHandler(
+      OAuth2TokenService oauth2TokenService,
+      JwkStore jwkStore,
+      ClientDetailsService clientDetailsService) {
     this.oauth2TokenService = oauth2TokenService;
     this.jwkStore = jwkStore;
+    this.clientDetailsService = clientDetailsService;
   }
 
-  public void RevokeTokenWithGoogle(String username, String clientID) {
+  public void RevokeTokenWithClient(String username, String clientID) {
 
     List<OAuth2AccessToken> tokenList =
         oauth2TokenService.listUserClientAccessTokens(username, clientID);
@@ -99,46 +107,53 @@ public class RiscSendHandler {
     public void run() {
       boolean flag = false;
       int sendCount = 0;
+      JWK jwk = jwkStore.getJWK();
+      Key key = null;
+      try {
+        key = jwk.toRSAKey().toPrivateKey();
+      } catch (JOSEException exception) {
+        log.log(Level.INFO, "jwk error", exception);
+      }
+
+      Map<String, Object> claims = new HashMap<String, Object>();
+
+      Map<String, Object> events = new HashMap<String, Object>();
+
+      events.put("subject_type", "oauth_token");
+      events.put("token_type", tokenType);
+      events.put("token_identifier_alg", "hash_SHA512_double");
+
+      if (tokenType.equals(TokenTypes.ACCESS_TOKEN)) {
+
+        byte[] hash =
+            Hashing.sha512()
+                .hashString(accessToken.getAccessToken(), StandardCharset.UTF_8)
+                .asBytes();
+        events.put("token", Hashing.sha512().hashBytes(hash).toString());
+      } else {
+        byte[] hash =
+            Hashing.sha512()
+                .hashString(refreshToken.getRefreshToken(), StandardCharset.UTF_8)
+                .asBytes();
+        events.put("token", Hashing.sha512().hashBytes(hash).toString());
+      }
+
+      claims.put("https://schemas.openid.net/secevent/oauth/event-type/token-revoked", events);
+
+      Optional<ClientDetails> client =
+          clientDetailsService.getClientByID(accessToken.getClientId());
+
+      Preconditions.checkArgument(
+          clientDetailsService.getClientByID(accessToken.getClientId()).isPresent(),
+          "Client should exist");
+
       while (!flag && sendCount < maxRetryCount) {
         sendCount++;
-        JWK jwk = jwkStore.getJWK();
-        Key key = null;
-        try {
-          key = jwk.toRSAKey().toPrivateKey();
-        } catch (JOSEException exception) {
-          log.log(Level.INFO, "jwk error", exception);
-        }
-
-        Map<String, Object> claims = new HashMap<String, Object>();
-
-        Map<String, Object> events = new HashMap<String, Object>();
-
-        events.put("subject_type", "oauth_token");
-        events.put("token_type", tokenType);
-        events.put("token_identifier_alg", "hash_SHA512_double");
-
-        if (tokenType.equals(TokenTypes.ACCESS_TOKEN)) {
-
-          byte[] hash =
-              Hashing.sha512()
-                  .hashString(accessToken.getAccessToken(), StandardCharset.UTF_8)
-                  .asBytes();
-          events.put("token", Hashing.sha512().hashBytes(hash).toString());
-        } else {
-          byte[] hash =
-              Hashing.sha512()
-                  .hashString(refreshToken.getRefreshToken(), StandardCharset.UTF_8)
-                  .asBytes();
-          events.put("token", Hashing.sha512().hashBytes(hash).toString());
-        }
-
-        claims.put("https://schemas.openid.net/secevent/oauth/event-type/token-revoked", events);
-
         String jws =
             Jwts.builder()
                 .setIssuer(webUrl + "/risc")
-                .setAudience("google_account_linking")
-                .setIssuedAt(new Date())
+                .setAudience(client.get().getRiscAud())
+                .setIssuedAt(Date.from(Instant.now()))
                 .setId(String.valueOf(getJtiValue()))
                 .claim("events", claims)
                 .signWith(key)
@@ -146,7 +161,7 @@ public class RiscSendHandler {
                 .compact();
 
         CloseableHttpClient httpClient = HttpClients.createDefault();
-        HttpPost httppost = new HttpPost(URI);
+        HttpPost httppost = new HttpPost(client.get().getRiscUri());
         httppost.setHeader("Content-Type", "application/secevent+jwt");
         httppost.setHeader("Accept", "application/json");
         httppost.setEntity(EntityBuilder.create().setText(jws).build());

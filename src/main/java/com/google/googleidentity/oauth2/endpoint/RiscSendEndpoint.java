@@ -17,6 +17,7 @@
 package com.google.googleidentity.oauth2.endpoint;
 
 import com.google.common.base.Strings;
+import com.google.googleidentity.oauth2.client.ClientDetailsService;
 import com.google.googleidentity.oauth2.risc.RiscSendHandler;
 import com.google.googleidentity.oauth2.util.OAuth2Utils;
 import com.google.googleidentity.security.UserSession;
@@ -30,9 +31,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-/**
- * User revoke request will be sent here.
- */
+/** User revoke request will be sent here. */
 @Singleton
 public class RiscSendEndpoint extends HttpServlet {
 
@@ -42,18 +41,24 @@ public class RiscSendEndpoint extends HttpServlet {
 
   private final RiscSendHandler riscHandler;
 
+  private final ClientDetailsService clientDetailsService;
+
   @Inject
-  public RiscSendEndpoint(RiscSendHandler riscHandler, Provider<UserSession> session) {
+  public RiscSendEndpoint(RiscSendHandler riscHandler, ClientDetailsService clientDetailsService) {
     this.riscHandler = riscHandler;
+    this.clientDetailsService = clientDetailsService;
   }
 
   protected void doPost(HttpServletRequest request, HttpServletResponse response)
       throws ServletException, IOException {
-    String clientID = request.getParameter("client");
+    if (OAuth2Utils.getUserSession(request).getUser().isPresent()) {
+      String clientID = request.getParameter("client");
 
-    if (!Strings.isNullOrEmpty(clientID)) {
-      riscHandler.RevokeTokenWithGoogle(
-          OAuth2Utils.getUserSession(request).getUser().get().getUsername(), clientID);
+      if (!Strings.isNullOrEmpty(clientID)
+          && clientDetailsService.getClientByID(clientID).isPresent()) {
+        riscHandler.RevokeTokenWithClient(
+            OAuth2Utils.getUserSession(request).getUser().get().getUsername(), clientID);
+      }
     }
     response.sendRedirect("/resource/user");
   }

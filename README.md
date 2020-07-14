@@ -30,11 +30,15 @@ Apache header:
 
 ## Current Progress
 
-Finish Basic Login Filter using Guice-Servlet
+Finish Basic Login Filter using Guice-Servlet.
 
-Finish Basic AuthorizationEndpoint, ConsentEndpoint and TokenEndpoint.
+Finish Basic AuthorizationEndpoint, ConsentEndpoint, TokenEndpoint, TokenRevokeEndpoint, RiscDocEndpoint and JwkEndpoint.
 
-Only Authorization Code Flow is workable now.
+Authorization Code Flow and Implicit Flow are all workable now.
+
+Support token revocation.
+
+Support Risc.
 
 In memory user information storage with sha256 based hashing on password.
 
@@ -56,28 +60,38 @@ google		secret       read     http://www.google.com
 
 The project can be reached at
 
-Login Page: http://gal-2020-summer-intern.appspot.com/login
+Login Page: https://gal-2020-summer-intern.appspot.com/login
 
-Resource Page: http://gal-2020-summer-intern.appspot.com/resource/user
+Resource Page: https://gal-2020-summer-intern.appspot.com/resource/user
 
-Authorization Endpoint: http://gal-2020-summer-intern.appspot.com/oauth2/authorize
+Authorization Endpoint: https://gal-2020-summer-intern.appspot.com/oauth2/authorize
 
-Token Endpoint: http://gal-2020-summer-intern.appspot.com/oauth2/authorize
+Token Endpoint: https://gal-2020-summer-intern.appspot.com/oauth2/authorize
 
-All resources under /resource is protected(currently only have /resource/user)
+RiscDoc Endpoint: https://gal-2020-summer-intern.appspot.com/oauth2/risc/.well-know/risc-configuration
+
+Risc Issuer: https://gal-2020-summer-intern.appspot.com/oauth2/risc
+
+Risc Jwk Endpoint: https://gal-2020-summer-intern.appspot.com/oauth2/risc/key
+
+All resources under /resource is protected (currently only have /resource/user)
 
 How to run it:
-1. download, install maven from https://maven.apache.org/
-2. download, install google cloud SDK following https://cloud.google.com/sdk/docs/quickstarts
-3. download, install Protocol Buffers from https://github.com/protocolbuffers/protobuf/releases/tag/v3.12.3
-4. compile all proto files in src/main/resources/proto
-5. Test it locally or on app engine
+1. Download, install maven from https://maven.apache.org/
+2. Download, install google cloud SDK following https://cloud.google.com/sdk/docs/quickstarts
+3. Download, install Protocol Buffers from https://github.com/protocolbuffers/protobuf/releases/tag/v3.12.3
+4. Dompile all proto files in src/main/resources/proto
+5. Change web url (for risc issuer and key) in appengine-web.xml by setting system env.
+6. Test it locally or on app engine
+
 locally:
+
 mvn package appengine:run
 
 reach localhost:8080
 
 app engine:
+
 mvn package appengine:deploy 
 
 reach your appengine website
