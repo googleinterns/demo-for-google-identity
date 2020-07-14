@@ -18,6 +18,7 @@ package com.google.googleidentity.oauth2.request;
 
 import com.google.googleidentity.oauth2.authorizationcode.AuthorizationCodeRequestHandler;
 import com.google.googleidentity.oauth2.implicit.ImplicitRequestHandler;
+import com.google.googleidentity.oauth2.jwt.JwtAssertionRequestHandler;
 import com.google.googleidentity.oauth2.refresh.RefreshTokenRequestHandler;
 import com.google.googleidentity.oauth2.util.OAuth2Enums.GrantType;
 import com.google.inject.AbstractModule;
@@ -33,6 +34,7 @@ public class RequestHandlerModule extends AbstractModule {
     mapBinder.addBinding(GrantType.AUTHORIZATION_CODE).to(AuthorizationCodeRequestHandler.class);
     mapBinder.addBinding(GrantType.IMPLICIT).to(ImplicitRequestHandler.class);
     mapBinder.addBinding(GrantType.REFRESH_TOKEN).to(RefreshTokenRequestHandler.class);
+    mapBinder.addBinding(GrantType.JWT_ASSERTION).to(JwtAssertionRequestHandler.class);
     bind(RequestHandler.class).to(MultipleRequestHandler.class);
   }
 }

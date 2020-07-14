@@ -40,6 +40,9 @@ public class TestClientModule extends AbstractModule {
           GrantType.JWT_ASSERTION);
 
   private static final String TESTREDIRECTURI = "http://www.google.com";
+  private static final String TESTREDIRECTURI1 = "https://oauth-redirect.googleusercontent.com/r";
+  private static final String TESTREDIRECTURI2 = "https://oauth-redirect-sandbox.googleusercontent.com/r";
+
 
   @Override
   protected void configure() {}
@@ -57,6 +60,8 @@ public class TestClientModule extends AbstractModule {
             .setIsScoped(true)
             .addAllGrantTypes(TESTGRANTTYPES)
             .addRedirectUris(TESTREDIRECTURI)
+            .addRedirectUris(TESTREDIRECTURI1)
+            .addRedirectUris(TESTREDIRECTURI2)
             .build();
     clientDetailsService.addClient(client);
     return clientDetailsService;

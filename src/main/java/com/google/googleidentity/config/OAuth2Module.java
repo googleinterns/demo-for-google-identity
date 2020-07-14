@@ -37,12 +37,14 @@ public final class OAuth2Module extends AbstractModule {
           @Override
           protected void configureServlets() {
             serve("/resource/user", "resource/user;jsessionid.*").with(UserServlet.class);
-            serveRegex("/", "/login", "/login;jsessionid.*")
-                .with(LoginServlet.class);
+            serveRegex("/", "/login", "/login;jsessionid.*").with(LoginServlet.class);
             serve("/login_check").with(LoginCheckServlet.class);
             serve("/oauth2/authorize").with(AuthorizationEndpoint.class);
             serve("/oauth2/consent").with(ConsentEndpoint.class);
             serve("/oauth2/token").with(TokenEndpoint.class);
+            // The filter order is same as the order they be introduced here, let token
+            // authentication filter be at the first so that it can set client session from token to
+            // let the request pass user authentication filter
             filterRegex("/resource/.*").through(OAuth2TokenAuthenticationFilter.class);
             filterRegex("/oauth2/authorize", "/resource/.*")
                 .through(UserAuthenticationFilter.class);
