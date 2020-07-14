@@ -80,7 +80,7 @@ public class RiscSendHandler {
     Preconditions.checkArgument(
         clientDetailsService.getClientByID(clientID).isPresent(), "Client should exist");
 
-    List<OAuth2AccessToken> tokenList =
+    List<OAuth2AccessToken> accessTokenList =
         oauth2TokenService.listUserClientAccessTokens(username, clientID);
 
     Optional<OAuth2RefreshToken> refreshToken =
@@ -93,7 +93,7 @@ public class RiscSendHandler {
       return;
     }
 
-    for (OAuth2AccessToken token : tokenList) {
+    for (OAuth2AccessToken token : accessTokenList) {
       Thread thread = new sendEventThread(token);
       thread.start();
     }
