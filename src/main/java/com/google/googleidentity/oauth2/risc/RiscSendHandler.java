@@ -50,12 +50,13 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 
+/** Revoke token between a user and a client. Send risc if the client support it. */
 @Singleton
 public class RiscSendHandler {
   private static final Logger log = Logger.getLogger("RiscHandler");
-  private static int maxRetryCount = 3;
-  private static Duration retryIntervalTime = Duration.ofMinutes(10);
-  private static String webUrl =
+  private static int MAX_RETRY_COUNT = 3;
+  private static Duration RETRY_INTERVAL_TIME = Duration.ofMinutes(10);
+  private static String WEB_URL =
       System.getenv("WEB_URL") == null ? "localhost:8080" : System.getenv("WEB_URL");
   private final OAuth2TokenService oauth2TokenService;
   private final ClientDetailsService clientDetailsService;
@@ -94,6 +95,11 @@ public class RiscSendHandler {
 
     for (OAuth2AccessToken token : tokenList) {
       Thread thread = new sendEventThread(token);
+      thread.start();
+    }
+
+    if (refreshToken.isPresent()) {
+      Thread thread = new sendEventThread(refreshToken.get());
       thread.start();
     }
   }
@@ -136,20 +142,12 @@ public class RiscSendHandler {
       events.put("token_type", tokenType);
       events.put("token_identifier_alg", "hash_SHA512_double");
 
-      if (tokenType.equals(TokenTypes.ACCESS_TOKEN)) {
-
-        byte[] hash =
-            Hashing.sha512()
-                .hashString(accessToken.getAccessToken(), StandardCharset.UTF_8)
-                .asBytes();
-        events.put("token", Hashing.sha512().hashBytes(hash).toString());
-      } else {
-        byte[] hash =
-            Hashing.sha512()
-                .hashString(refreshToken.getRefreshToken(), StandardCharset.UTF_8)
-                .asBytes();
-        events.put("token", Hashing.sha512().hashBytes(hash).toString());
-      }
+      String tokenValue =
+          tokenType.equals(TokenTypes.ACCESS_TOKEN)
+              ? accessToken.getAccessToken()
+              : refreshToken.getRefreshToken();
+      byte[] hash = Hashing.sha512().hashString(tokenValue, StandardCharset.UTF_8).asBytes();
+      events.put("token", Hashing.sha512().hashBytes(hash).toString());
 
       claims.put("https://schemas.openid.net/secevent/oauth/event-type/token-revoked", events);
 
@@ -160,11 +158,11 @@ public class RiscSendHandler {
           clientDetailsService.getClientByID(accessToken.getClientId()).isPresent(),
           "Client should exist");
 
-      while (!flag && sendCount < maxRetryCount) {
+      while (!flag && sendCount < MAX_RETRY_COUNT) {
         sendCount++;
         String jws =
             Jwts.builder()
-                .setIssuer(webUrl + "/risc")
+                .setIssuer(WEB_URL + "/risc")
                 .setAudience(client.get().getRiscAud())
                 .setIssuedAt(Date.from(Instant.now()))
                 .setId(String.valueOf(getJtiValue()))
@@ -186,7 +184,7 @@ public class RiscSendHandler {
           log.log(Level.INFO, "Jwt Key Error!", exception);
         }
         try {
-          Thread.sleep(retryIntervalTime.toMillis());
+          Thread.sleep(RETRY_INTERVAL_TIME.toMillis());
         } catch (InterruptedException e) {
           e.printStackTrace();
         }

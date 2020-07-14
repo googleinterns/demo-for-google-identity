@@ -31,7 +31,9 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-/** User revoke request will be sent here. */
+/** When user request to revoke token with a client , the request will be sent here.
+ *  It will check the user session and client id and then send it to {@link RiscSendHandler}.
+ */
 @Singleton
 public class RiscSendEndpoint extends HttpServlet {
 

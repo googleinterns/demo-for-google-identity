@@ -25,6 +25,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import net.minidev.json.JSONObject;
 
+/**
+ * Provide risc configuration including issuer and public key url
+ */
 @Singleton
 public class RiscDocEndpoint extends HttpServlet {
 

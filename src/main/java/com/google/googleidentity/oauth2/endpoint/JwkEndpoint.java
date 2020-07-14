@@ -25,6 +25,9 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+/**
+ * Provide Jwk Public key for clients to verify risc
+ */
 @Singleton
 public class JwkEndpoint extends HttpServlet {
 
