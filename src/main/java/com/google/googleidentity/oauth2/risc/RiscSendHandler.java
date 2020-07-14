@@ -50,7 +50,7 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 
-/** Revoke token between a user and a client. Send risc if the client support it. */
+/** Revoke tokens between a user and a client. Send risc if the client support it. */
 @Singleton
 public class RiscSendHandler {
   private static final Logger log = Logger.getLogger("RiscHandler");
@@ -124,7 +124,7 @@ public class RiscSendHandler {
     }
 
     public void run() {
-      boolean flag = false;
+      boolean successfullySentEvent = false;
       int sendCount = 0;
       JWK jwk = jwkStore.getJWK();
       Key key = null;
@@ -158,7 +158,7 @@ public class RiscSendHandler {
           clientDetailsService.getClientByID(accessToken.getClientId()).isPresent(),
           "Client should exist");
 
-      while (!flag && sendCount < MAX_RETRY_COUNT) {
+      while (!successfullySentEvent && sendCount < MAX_RETRY_COUNT) {
         sendCount++;
         String jws =
             Jwts.builder()
@@ -179,14 +179,14 @@ public class RiscSendHandler {
         try {
           CloseableHttpResponse response = httpClient.execute(httppost);
           int status = response.getStatusLine().getStatusCode();
-          flag = status == HttpStatus.SC_ACCEPTED;
+          successfullySentEvent = status == HttpStatus.SC_ACCEPTED;
         } catch (IOException exception) {
-          log.log(Level.INFO, "Jwt Key Error!", exception);
+          log.log(Level.INFO, "Send risc error!", exception);
         }
         try {
           Thread.sleep(RETRY_INTERVAL_TIME.toMillis());
         } catch (InterruptedException e) {
-          e.printStackTrace();
+          log.log(Level.INFO, "Thread sleep error when sending risc!", e);
         }
       }
     }

@@ -32,6 +32,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /** When user request to revoke token with a client , the request will be sent here.
+ *  In the demo, user can send the request from MainPage.
  *  It will check the user session and client id and then send it to {@link RiscSendHandler}.
  */
 @Singleton
