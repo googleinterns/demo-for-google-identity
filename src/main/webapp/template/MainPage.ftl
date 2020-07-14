@@ -24,7 +24,7 @@ limitations under the License.
     <title>Main Page</title>
 </head>
 <body>
-<div align="middle">
+<div style="text-align:center">
     <div class="info">
         ${username}
     </div>
