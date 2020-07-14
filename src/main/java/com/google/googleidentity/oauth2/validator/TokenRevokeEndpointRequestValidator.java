@@ -29,8 +29,6 @@ public final class TokenRevokeEndpointRequestValidator {
   /**
    * Check whether the Post request is valid in token revoke endpoint.
    */
-  private static final ImmutableSet<String> SUPPORT_TOKEN_TYPES =
-      ImmutableSet.of(TokenTypes.ACCESS_TOKEN,TokenTypes.REFRESH_TOKEN);
   public static void validatePOST(HttpServletRequest request) throws OAuth2Exception {
     if (Strings.isNullOrEmpty(request.getParameter("token"))) {
       throw new InvalidRequestException(ErrorCode.NO_REVOKE_TOKEN);
