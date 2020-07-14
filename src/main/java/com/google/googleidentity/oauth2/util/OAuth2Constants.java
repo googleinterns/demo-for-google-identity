@@ -36,4 +36,9 @@ public final class OAuth2Constants {
     public static final String GET = "get";
     public static final String CREATE = "create";
   }
+
+  public static final class TokenTypes {
+    public static final String ACCESS_TOKEN = "access_token";
+    public static final String REFRESH_TOKEN = "refresh_token";
+  }
 }

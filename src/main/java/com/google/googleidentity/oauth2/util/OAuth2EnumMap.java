@@ -18,9 +18,11 @@ package com.google.googleidentity.oauth2.util;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.googleidentity.oauth2.util.OAuth2Constants.JwtAssertionIntents;
+import com.google.googleidentity.oauth2.util.OAuth2Constants.TokenTypes;
 import com.google.googleidentity.oauth2.util.OAuth2Enums.GrantType;
 import com.google.googleidentity.oauth2.util.OAuth2Enums.IntentType;
 import com.google.googleidentity.oauth2.util.OAuth2Enums.ResponseType;
+import com.google.googleidentity.oauth2.util.OAuth2Enums.TokenType;
 
 public class OAuth2EnumMap {
   public static final ImmutableMap<String, ResponseType> RESPONSE_TYPE_MAP =
@@ -40,4 +42,16 @@ public class OAuth2EnumMap {
           JwtAssertionIntents.CHECK, IntentType.CHECK,
           JwtAssertionIntents.GET, IntentType.GET,
           JwtAssertionIntents.CREATE, IntentType.CREATE);
+
+  public static final ImmutableMap<String, TokenType> TOKEN_TYPE_MAP =
+      ImmutableMap.of(
+          TokenTypes.ACCESS_TOKEN, TokenType.ACCESS,
+          TokenTypes.REFRESH_TOKEN, TokenType.REFRESH);
+
+  public static final ImmutableMap<GrantType, String> REVERSE_GRANT_TYPE_MAP =
+      ImmutableMap.of(
+          GrantType.AUTHORIZATION_CODE, OAuth2Constants.GrantType.AUTHORIZATION_CODE,
+          GrantType.IMPLICIT, OAuth2Constants.GrantType.IMPLICIT,
+          GrantType.REFRESH_TOKEN, OAuth2Constants.GrantType.REFRESH_TOKEN,
+          GrantType.JWT_ASSERTION, OAuth2Constants.GrantType.JWT_ASSERTION);
 }

@@ -21,6 +21,7 @@ import com.google.googleidentity.filter.UserAuthenticationFilter;
 import com.google.googleidentity.oauth2.endpoint.AuthorizationEndpoint;
 import com.google.googleidentity.oauth2.endpoint.ConsentEndpoint;
 import com.google.googleidentity.oauth2.endpoint.TokenEndpoint;
+import com.google.googleidentity.oauth2.endpoint.TokenRevokeEndpoint;
 import com.google.googleidentity.oauth2.filter.ClientAuthenticationFilter;
 import com.google.googleidentity.resource.UserServlet;
 import com.google.googleidentity.security.LoginCheckServlet;
@@ -42,13 +43,14 @@ public final class OAuth2Module extends AbstractModule {
             serve("/oauth2/authorize").with(AuthorizationEndpoint.class);
             serve("/oauth2/consent").with(ConsentEndpoint.class);
             serve("/oauth2/token").with(TokenEndpoint.class);
+            serve("/oauth2/revoke").with(TokenRevokeEndpoint.class);
             // The filter order is same as the order they be introduced here, let token
             // authentication filter be at the first so that it can set client session from token to
             // let the request pass user authentication filter
             filterRegex("/resource/.*").through(OAuth2TokenAuthenticationFilter.class);
             filterRegex("/oauth2/authorize", "/resource/.*")
                 .through(UserAuthenticationFilter.class);
-            filter("/oauth2/token").through(ClientAuthenticationFilter.class);
+            filter("/oauth2/token", "/oauth2/revoke").through(ClientAuthenticationFilter.class);
           }
         });
   }
