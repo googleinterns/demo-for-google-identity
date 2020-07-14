@@ -1,0 +1,168 @@
+/*
+    Copyright 2020 Google LLC
+
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+    https://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+*/
+
+package com.google.googleidentity.oauth2.risc;
+
+import com.google.common.hash.Hashing;
+import com.google.googleidentity.oauth2.jwt.JwkStore;
+import com.google.googleidentity.oauth2.token.OAuth2AccessToken;
+import com.google.googleidentity.oauth2.token.OAuth2RefreshToken;
+import com.google.googleidentity.oauth2.token.OAuth2TokenService;
+import com.google.googleidentity.oauth2.util.OAuth2Constants.TokenTypes;
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
+import com.nimbusds.jose.JOSEException;
+import com.nimbusds.jose.jwk.JWK;
+import com.nimbusds.jose.util.StandardCharset;
+import io.jsonwebtoken.Jwts;
+import java.io.IOException;
+import java.security.Key;
+import java.time.Duration;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import org.apache.http.HttpStatus;
+import org.apache.http.client.entity.EntityBuilder;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
+
+@Singleton
+public class RiscSendHandler {
+  private static final Logger log = Logger.getLogger("RiscHandler");
+  private static final String URI = "https://risc.googleapis.com/v1beta/events:report";
+  private static int maxRetryCount = 3;
+  private static Duration retryIntervalTime = Duration.ofMinutes(10);
+  private static String webUrl =
+      System.getenv("WEB_URL") == null ? "localhost:8080" : System.getenv("WEB_URL");
+  private final OAuth2TokenService oauth2TokenService;
+  private final JwkStore jwkStore;
+  private long jtiValue = 0l;
+
+  @Inject
+  public RiscSendHandler(OAuth2TokenService oauth2TokenService, JwkStore jwkStore) {
+    this.oauth2TokenService = oauth2TokenService;
+    this.jwkStore = jwkStore;
+  }
+
+  public void RevokeTokenWithGoogle(String username, String clientID) {
+
+    List<OAuth2AccessToken> tokenList =
+        oauth2TokenService.listUserClientAccessTokens(username, clientID);
+
+    Optional<OAuth2RefreshToken> refreshToken =
+        oauth2TokenService.getUserClientRefreshToken(username, clientID);
+
+    for (OAuth2AccessToken token : tokenList) {
+      Thread thread = new sendEventThread(token);
+      thread.start();
+    }
+  }
+
+  private synchronized long getJtiValue() {
+    return jtiValue++;
+  }
+
+  private class sendEventThread extends Thread {
+    String tokenType;
+    private OAuth2AccessToken accessToken;
+    private OAuth2RefreshToken refreshToken;
+
+    sendEventThread(OAuth2AccessToken oauth2AccessToken) {
+      this.accessToken = oauth2AccessToken;
+      tokenType = TokenTypes.ACCESS_TOKEN;
+    }
+
+    sendEventThread(OAuth2RefreshToken oauth2RefreshToken) {
+      this.refreshToken = oauth2RefreshToken;
+      tokenType = TokenTypes.REFRESH_TOKEN;
+    }
+
+    public void run() {
+      boolean flag = false;
+      int sendCount = 0;
+      while (!flag && sendCount < maxRetryCount) {
+        sendCount++;
+        JWK jwk = jwkStore.getJWK();
+        Key key = null;
+        try {
+          key = jwk.toRSAKey().toPrivateKey();
+        } catch (JOSEException exception) {
+          log.log(Level.INFO, "jwk error", exception);
+        }
+
+        Map<String, Object> claims = new HashMap<String, Object>();
+
+        Map<String, Object> events = new HashMap<String, Object>();
+
+        events.put("subject_type", "oauth_token");
+        events.put("token_type", tokenType);
+        events.put("token_identifier_alg", "hash_SHA512_double");
+
+        if (tokenType.equals(TokenTypes.ACCESS_TOKEN)) {
+
+          byte[] hash =
+              Hashing.sha512()
+                  .hashString(accessToken.getAccessToken(), StandardCharset.UTF_8)
+                  .asBytes();
+          events.put("token", Hashing.sha512().hashBytes(hash).toString());
+        } else {
+          byte[] hash =
+              Hashing.sha512()
+                  .hashString(refreshToken.getRefreshToken(), StandardCharset.UTF_8)
+                  .asBytes();
+          events.put("token", Hashing.sha512().hashBytes(hash).toString());
+        }
+
+        claims.put("https://schemas.openid.net/secevent/oauth/event-type/token-revoked", events);
+
+        String jws =
+            Jwts.builder()
+                .setIssuer(webUrl + "/risc")
+                .setAudience("google_account_linking")
+                .setIssuedAt(new Date())
+                .setId(String.valueOf(getJtiValue()))
+                .claim("events", claims)
+                .signWith(key)
+                .setHeaderParam("kid", jwk.getKeyID())
+                .compact();
+
+        CloseableHttpClient httpClient = HttpClients.createDefault();
+        HttpPost httppost = new HttpPost(URI);
+        httppost.setHeader("Content-Type", "application/secevent+jwt");
+        httppost.setHeader("Accept", "application/json");
+        httppost.setEntity(EntityBuilder.create().setText(jws).build());
+        try {
+          CloseableHttpResponse response = httpClient.execute(httppost);
+          int status = response.getStatusLine().getStatusCode();
+          flag = status == HttpStatus.SC_ACCEPTED;
+        } catch (IOException exception) {
+          log.log(Level.INFO, "Jwt Key Error!", exception);
+        }
+        try {
+          Thread.sleep(retryIntervalTime.toMillis());
+        } catch (InterruptedException e) {
+          e.printStackTrace();
+        }
+      }
+    }
+  }
+}
