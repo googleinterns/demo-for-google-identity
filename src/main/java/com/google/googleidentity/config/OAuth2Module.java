@@ -47,7 +47,7 @@ public final class OAuth2Module extends AbstractModule {
             serve("/oauth2/consent").with(ConsentEndpoint.class);
             serve("/oauth2/token").with(TokenEndpoint.class);
             serve("/oauth2/revoke").with(TokenRevokeEndpoint.class);
-            serve("/oauth2/risc/.well-know/risc-configuration")
+            serve("/oauth2/risc/.well-known/risc-configuration")
                 .with(RiscDocEndpoint.class);
             serve("/oauth2/risc/key")
                 .with(JwkEndpoint.class);
