@@ -16,7 +16,11 @@
 
 package com.google.googleidentity.oauth2.jwt;
 
+import com.google.common.annotations.VisibleForTesting;
+import com.google.common.base.Charsets;
 import com.google.common.collect.ImmutableList;
+import com.google.common.hash.Hashing;
+import com.google.common.io.BaseEncoding;
 import com.google.googleidentity.oauth2.client.ClientDetails;
 import com.google.googleidentity.oauth2.client.ClientDetailsService;
 import com.google.googleidentity.oauth2.exception.InvalidRequestException;
@@ -41,6 +45,7 @@ import java.io.IOException;
 import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
+import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.servlet.http.HttpServletResponse;
@@ -56,12 +61,12 @@ public class JwtAssertionRequestHandler implements RequestHandler {
   private static final String GOOLE_ISS = "https://accounts.google.com";
   private static final String EMAIL = "email";
   private static final String SUB = "sub";
-  private static final String AUD = "567474276809-9j01no46fm5j26e0tk4sme835gd129df.apps.googleusercontent.com";
+  private static final String AUD =
+      "567474276809-9j01no46fm5j26e0tk4sme835gd129df.apps.googleusercontent.com";
   private final OAuth2TokenService oauth2TokenService;
   private final UserDetailsService userDetailsService;
 
   private final ClientDetailsService clientDetailsService;
-
   private final Logger log = Logger.getLogger("JwtAssertionTokenProcessor");
 
   @Inject
@@ -109,7 +114,8 @@ public class JwtAssertionRequestHandler implements RequestHandler {
     }
   }
 
-  public Pair<String, String> verifyAndGetInfoFromJwt(
+  @VisibleForTesting
+  Pair<String, String> verifyAndGetInfoFromJwt(
       String assertion, SigningKeyResolverAdapter keys) throws OAuth2Exception {
     Jws<Claims> jws;
 
@@ -132,7 +138,8 @@ public class JwtAssertionRequestHandler implements RequestHandler {
     return Pair.of(email, googleAccountId);
   }
 
-  public void handleCheckAssertion(
+  @VisibleForTesting
+  void handleCheckAssertion(
       HttpServletResponse response, String email, String googleAccountId) throws IOException {
     Optional<UserDetails> user =
         userDetailsService.getUserByEmailOrGoogleAccountId(email, googleAccountId);
@@ -150,7 +157,8 @@ public class JwtAssertionRequestHandler implements RequestHandler {
     response.getWriter().flush();
   }
 
-  public void handleGetAssertion(
+  @VisibleForTesting
+  void handleGetAssertion(
       HttpServletResponse response,
       String email,
       String googleAccountId,
@@ -177,7 +185,8 @@ public class JwtAssertionRequestHandler implements RequestHandler {
     }
   }
 
-  public void handleCreateAssertion(
+  @VisibleForTesting
+  void handleCreateAssertion(
       HttpServletResponse response,
       String email,
       String googleAccountId,
@@ -191,7 +200,7 @@ public class JwtAssertionRequestHandler implements RequestHandler {
     } else {
       UserDetails newUser =
           UserDetails.newBuilder()
-              .setUsername("GAL:" + email)
+              .setUsername(client.getClientId() + ":" + email)
               .setEmail(email)
               .setGoogleAccountId(googleAccountId)
               .build();

@@ -37,7 +37,9 @@ import com.google.googleidentity.oauth2.token.InMemoryOAuth2TokenService;
 import com.google.googleidentity.oauth2.token.OAuth2AccessToken;
 import com.google.googleidentity.oauth2.token.OAuth2RefreshToken;
 import com.google.googleidentity.oauth2.token.OAuth2TokenService;
+import com.google.googleidentity.oauth2.util.OAuth2Constants;
 import com.google.googleidentity.oauth2.util.OAuth2Enums.GrantType;
+import com.google.googleidentity.oauth2.util.OAuth2Enums.IntentType;
 import com.google.googleidentity.oauth2.util.OAuth2ParameterNames;
 import com.google.googleidentity.testtools.TestJwtSigningKeyResolver;
 import com.google.googleidentity.user.InMemoryUserDetailsService;
@@ -53,6 +55,7 @@ import java.security.Key;
 import java.time.Instant;
 import java.util.Date;
 import java.util.Optional;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import net.minidev.json.JSONObject;
 import net.minidev.json.parser.JSONParser;
@@ -409,7 +412,7 @@ public class JwtAssertionHandlerTest {
             .setIsScoped(true)
             .addAllScopes(CLIENT.getScopesList())
             .setClientId(CLIENTID)
-            .setUsername("GAL:b@gmail.com")
+            .setUsername(CLIENTID + ":b@gmail.com")
             .build();
     Optional<OAuth2AccessToken> accessToken = oauth2TokenService.readAccessToken(accessTokenString);
 
@@ -421,7 +424,7 @@ public class JwtAssertionHandlerTest {
         OAuth2RefreshToken.newBuilder()
             .setRefreshToken(refreshTokenString)
             .setClientId(CLIENTID)
-            .setUsername("GAL:b@gmail.com")
+            .setUsername(CLIENTID + ":b@gmail.com")
             .setIsScoped(CLIENT.getIsScoped())
             .addAllScopes(CLIENT.getScopesList())
             .build();
