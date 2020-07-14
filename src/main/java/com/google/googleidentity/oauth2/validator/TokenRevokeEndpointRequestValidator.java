@@ -22,6 +22,7 @@ import com.google.googleidentity.oauth2.exception.InvalidRequestException;
 import com.google.googleidentity.oauth2.exception.InvalidRequestException.ErrorCode;
 import com.google.googleidentity.oauth2.exception.OAuth2Exception;
 import com.google.googleidentity.oauth2.util.OAuth2Constants.TokenTypes;
+import com.google.googleidentity.oauth2.util.OAuth2EnumMap;
 import javax.servlet.http.HttpServletRequest;
 
 public final class TokenRevokeEndpointRequestValidator {
@@ -37,7 +38,7 @@ public final class TokenRevokeEndpointRequestValidator {
 
     String tokenTypeHint = request.getParameter("token_type_hint");
 
-    if (tokenTypeHint!=null && !SUPPORT_TOKEN_TYPES.contains(tokenTypeHint)) {
+    if (tokenTypeHint!=null && !OAuth2EnumMap.TOKEN_TYPE_MAP.containsKey(tokenTypeHint)) {
       throw new InvalidRequestException(ErrorCode.INVALID_TOKEN_TYPE);
     }
   }

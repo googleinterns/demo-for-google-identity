@@ -131,21 +131,15 @@ public class TokenRevokeEndpointTest {
   }
 
   @Test
-  public void testRevokeToken_nonexistentToken_throwInvalidGrantException() {
+  public void testRevokeToken_nonexistentToken_NoException() {
     HttpServletResponse response = mock(HttpServletResponse.class);
 
     OAuth2Request.Builder builder = OAuth2Request.newBuilder();
 
     builder.getRequestAuthBuilder().setClientId(CLIENTID);
+
     builder.getRequestBodyBuilder().setTokenTypeHint(TokenType.ACCESS).setTokenToRevoke("token");
-    OAuth2Exception e =
-        assertThrows(
-            OAuth2Exception.class,
-            () -> tokenRevokeEndpoint.revokeToken(response, builder.build()));
-
-    assertThat(e).isInstanceOf(InvalidGrantException.class);
-
-    assertThat(e.getErrorDescription()).isEqualTo("Token to be revoked does not exist!");
+    assertDoesNotThrow(() -> tokenRevokeEndpoint.revokeToken(response, builder.build()));
   }
 
   @Test

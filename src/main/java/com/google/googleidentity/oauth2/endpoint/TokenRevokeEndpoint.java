@@ -130,8 +130,9 @@ public class TokenRevokeEndpoint extends HttpServlet {
       case ACCESS:
         Optional<OAuth2AccessToken> oldAccessToken = oauth2TokenService.readAccessToken(token);
         if (!oldAccessToken.isPresent()) {
-          throw new InvalidGrantException(ErrorCode.NONEXISTENT_REVOKE_TOKEN);
-        } else if (!oldAccessToken
+          break;
+        }
+        if (!oldAccessToken
             .get()
             .getClientId()
             .equals(request.getRequestAuth().getClientId())) {
@@ -142,8 +143,9 @@ public class TokenRevokeEndpoint extends HttpServlet {
       case REFRESH:
         Optional<OAuth2RefreshToken> oldRefreshToken = oauth2TokenService.readRefreshToken(token);
         if (!oldRefreshToken.isPresent()) {
-          throw new InvalidGrantException(ErrorCode.NONEXISTENT_REVOKE_TOKEN);
-        } else if (!oldRefreshToken
+          break;
+        }
+        if (!oldRefreshToken
             .get()
             .getClientId()
             .equals(request.getRequestAuth().getClientId())) {
