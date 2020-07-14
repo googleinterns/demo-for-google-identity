@@ -17,6 +17,7 @@
 package com.google.googleidentity.oauth2.risc;
 
 import com.google.common.base.Preconditions;
+import com.google.common.base.Strings;
 import com.google.common.hash.Hashing;
 import com.google.googleidentity.oauth2.client.ClientDetails;
 import com.google.googleidentity.oauth2.client.ClientDetailsService;
@@ -73,11 +74,23 @@ public class RiscSendHandler {
 
   public void RevokeTokenWithClient(String username, String clientID) {
 
+    Optional<ClientDetails> client = clientDetailsService.getClientByID(clientID);
+
+    Preconditions.checkArgument(
+        clientDetailsService.getClientByID(clientID).isPresent(), "Client should exist");
+
     List<OAuth2AccessToken> tokenList =
         oauth2TokenService.listUserClientAccessTokens(username, clientID);
 
     Optional<OAuth2RefreshToken> refreshToken =
         oauth2TokenService.getUserClientRefreshToken(username, clientID);
+
+    oauth2TokenService.revokeUserClientTokens(username, clientID);
+
+    // Client does not support risc
+    if (Strings.isNullOrEmpty(client.get().getRiscUri())) {
+      return;
+    }
 
     for (OAuth2AccessToken token : tokenList) {
       Thread thread = new sendEventThread(token);
