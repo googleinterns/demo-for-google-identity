@@ -16,6 +16,7 @@
 
 package com.google.googleidentity.oauth2.endpoint;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
 import com.google.googleidentity.oauth2.client.ClientDetails;
 import com.google.googleidentity.oauth2.client.ClientDetailsService;
@@ -120,7 +121,8 @@ public class TokenRevokeEndpoint extends HttpServlet {
     response.getWriter().flush();
   }
 
-  public void revokeToken(HttpServletResponse response, OAuth2Request request)
+  @VisibleForTesting
+  void revokeToken(HttpServletResponse response, OAuth2Request request)
       throws InvalidGrantException {
     String token = request.getRequestBody().getTokenToRevoke();
 
