@@ -162,7 +162,7 @@ public class RiscSendHandler {
         sendCount++;
         String jws =
             Jwts.builder()
-                .setIssuer(WEB_URL + "/risc")
+                .setIssuer(WEB_URL + "/oauth2/risc")
                 .setAudience(client.get().getRiscAud())
                 .setIssuedAt(Date.from(Instant.now()))
                 .setId(String.valueOf(getJtiValue()))

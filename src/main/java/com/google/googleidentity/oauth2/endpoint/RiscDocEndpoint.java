@@ -43,7 +43,7 @@ public class RiscDocEndpoint extends HttpServlet {
 
   public void init() throws ServletException {
     json = new JSONObject();
-    json.appendField("issuer", WEB_URL + "/oauth/risc");
+    json.appendField("issuer", WEB_URL + "/oauth2/risc");
     json.appendField("jwks_uri", WEB_URL + "/oauth2/risc/key");
   }
 
