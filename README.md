@@ -68,7 +68,7 @@ Authorization Endpoint: https://gal-2020-summer-intern.appspot.com/oauth2/author
 
 Token Endpoint: https://gal-2020-summer-intern.appspot.com/oauth2/authorize
 
-RiscDoc Endpoint: https://gal-2020-summer-intern.appspot.com/oauth2/risc/.well-know/risc-configuration
+RiscDoc Endpoint: https://gal-2020-summer-intern.appspot.com/oauth2/risc/.well-known/risc-configuration
 
 Risc Issuer: https://gal-2020-summer-intern.appspot.com/oauth2/risc
 
