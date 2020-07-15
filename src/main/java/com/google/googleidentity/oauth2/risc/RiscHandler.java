@@ -52,46 +52,24 @@ import org.apache.http.impl.client.HttpClients;
 
 /** Revoke tokens between a user and a client. Send risc if the client support it. */
 @Singleton
-public class UnlinkHandler {
+public class RiscHandler {
   private static final Logger log = Logger.getLogger("RiscHandler");
   private static int MAX_RETRY_COUNT = 4;
   private static Duration RETRY_INTERVAL_TIME = Duration.ofMinutes(10);
   private static String WEB_URL =
       System.getenv("WEB_URL") == null ? "localhost:8080" : System.getenv("WEB_URL");
-  private final OAuth2TokenService oauth2TokenService;
   private final ClientDetailsService clientDetailsService;
   private final JwkStore jwkStore;
   private long jtiValue = 0l;
 
   @Inject
-  public UnlinkHandler(
-      OAuth2TokenService oauth2TokenService,
-      JwkStore jwkStore,
-      ClientDetailsService clientDetailsService) {
-    this.oauth2TokenService = oauth2TokenService;
+  public RiscHandler(JwkStore jwkStore, ClientDetailsService clientDetailsService) {
     this.jwkStore = jwkStore;
     this.clientDetailsService = clientDetailsService;
   }
 
-  public void RevokeTokenWithClient(String username, String clientID) {
-
-    Optional<ClientDetails> client = clientDetailsService.getClientByID(clientID);
-
-    Preconditions.checkArgument(
-        clientDetailsService.getClientByID(clientID).isPresent(), "Client should exist");
-
-    List<OAuth2AccessToken> accessTokenList =
-        oauth2TokenService.listUserClientAccessTokens(username, clientID);
-
-    Optional<OAuth2RefreshToken> refreshToken =
-        oauth2TokenService.getUserClientRefreshToken(username, clientID);
-
-    oauth2TokenService.revokeUserClientTokens(username, clientID);
-
-    // Client does not support risc
-    if (Strings.isNullOrEmpty(client.get().getRiscUri())) {
-      return;
-    }
+  public void SendRisc(
+      List<OAuth2AccessToken> accessTokenList, Optional<OAuth2RefreshToken> refreshToken) {
 
     for (OAuth2AccessToken token : accessTokenList) {
       Thread thread = new sendEventThread(token);
