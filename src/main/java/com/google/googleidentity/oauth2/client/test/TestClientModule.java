@@ -42,6 +42,8 @@ public class TestClientModule extends AbstractModule {
   private static final String TESTREDIRECTURI = "http://www.google.com";
   private static final String TESTREDIRECTURI1 = "https://oauth-redirect.googleusercontent.com/r";
   private static final String TESTREDIRECTURI2 = "https://oauth-redirect-sandbox.googleusercontent.com/r";
+  private static final String RISCURI = "https://risc.googleapis.com/v1beta/events:report";
+  private static final String RISCAUD = "google_account_linking";
 
 
   @Override
@@ -62,6 +64,8 @@ public class TestClientModule extends AbstractModule {
             .addRedirectUris(TESTREDIRECTURI)
             .addRedirectUris(TESTREDIRECTURI1)
             .addRedirectUris(TESTREDIRECTURI2)
+            .setRiscUri(RISCURI)
+            .setRiscAud(RISCAUD)
             .build();
     clientDetailsService.addClient(client);
     return clientDetailsService;

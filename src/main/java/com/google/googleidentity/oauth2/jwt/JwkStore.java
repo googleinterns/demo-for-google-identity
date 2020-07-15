@@ -19,6 +19,7 @@ package com.google.googleidentity.oauth2.jwt;
 import com.google.inject.Singleton;
 import com.nimbusds.jose.JOSEException;
 import com.nimbusds.jose.jwk.JWK;
+import com.nimbusds.jose.jwk.KeyUse;
 import com.nimbusds.jose.jwk.gen.RSAKeyGenerator;
 import java.util.HashMap;
 import java.util.Map;
@@ -37,7 +38,7 @@ public class JwkStore {
   public JwkStore() throws JOSEException {
     for (int i = 0; i < keyNum; i++) {
       String keyID = UUID.randomUUID().toString();
-      key.put(keyID, new RSAKeyGenerator(2048).keyID(keyID).generate());
+      key.put(keyID, new RSAKeyGenerator(2048).keyID(keyID).keyUse(KeyUse.SIGNATURE).generate());
     }
   }
 

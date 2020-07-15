@@ -4,6 +4,7 @@
     <sessions-enabled>true</sessions-enabled>
     <env-variables>
         <env-var name="AUTH_CODE_LENGTH" value="10" />
+        <env-var name="WEB_URL" value="https://gal-2020-summer-intern.wl.r.appspot.com" />
     </env-variables>
     <system-properties>
         <property name="java.util.logging.config.file" value="WEB-INF/logging.properties"/>

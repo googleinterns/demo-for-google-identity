@@ -41,4 +41,10 @@ message ClientDetails {
 
   // Redirect uri set for authorization endpoint
   repeated string redirect_uris = 6;
+
+  // The risc uri to notify when token is revoked
+  string risc_uri = 7;
+
+  // The Audience(aud) in risc
+  string risc_aud = 8;
 }

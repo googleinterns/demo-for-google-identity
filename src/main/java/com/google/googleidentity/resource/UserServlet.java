@@ -17,15 +17,18 @@
 package com.google.googleidentity.resource;
 
 import com.google.common.base.Preconditions;
+import com.google.googleidentity.oauth2.token.OAuth2TokenService;
 import com.google.googleidentity.oauth2.util.OAuth2Utils;
 import com.google.googleidentity.security.UserSession;
 import com.google.googleidentity.user.UserDetails;
+import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
 import freemarker.template.Version;
 
+import java.util.List;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -48,8 +51,13 @@ public final class UserServlet extends HttpServlet {
   private static final long serialVersionUID = 1L;
 
   private static final Logger log = Logger.getLogger("UserServlet");
-
+  private final OAuth2TokenService oauth2TokenService;
   private Configuration configuration;
+
+  @Inject
+  public UserServlet(OAuth2TokenService oauth2TokenService) {
+    this.oauth2TokenService = oauth2TokenService;
+  }
 
   public void init() throws ServletException {
 
@@ -91,6 +99,9 @@ public final class UserServlet extends HttpServlet {
     Map<String, Object> information = new HashMap<>();
 
     information.put("username", user.getUsername());
+
+    List<String> list = oauth2TokenService.listUserClient(user.getUsername());
+    information.put("clients", list);
 
     Template template = configuration.getTemplate("MainPage.ftl");
 
