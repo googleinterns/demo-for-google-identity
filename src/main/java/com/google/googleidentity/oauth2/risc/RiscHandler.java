@@ -41,6 +41,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.http.HttpStatus;
@@ -82,8 +83,12 @@ public class RiscHandler {
     }
   }
 
-  private synchronized long getJtiValue() {
-    return jtiValue++;
+  private String getJtiValue(String clientID, String username) {
+    return Hashing.sha512()
+        .hashString(
+            clientID + username + Instant.now().toString() + UUID.randomUUID().toString(),
+            StandardCharset.UTF_8)
+        .toString();
   }
 
   private class sendEventThread extends Thread {
@@ -127,6 +132,11 @@ public class RiscHandler {
       byte[] hash = Hashing.sha512().hashString(tokenValue, StandardCharset.UTF_8).asBytes();
       events.put("token", Hashing.sha512().hashBytes(hash).toString());
 
+      String jtiValue =
+          tokenType.equals(TokenTypes.ACCESS_TOKEN)
+              ? getJtiValue(accessToken.getClientId(), accessToken.getUsername())
+              : getJtiValue(refreshToken.getClientId(), refreshToken.getUsername());
+
       claims.put("https://schemas.openid.net/secevent/oauth/event-type/token-revoked", events);
 
       Optional<ClientDetails> client =
@@ -143,7 +153,7 @@ public class RiscHandler {
                 .setIssuer(WEB_URL + "/oauth2/risc")
                 .setAudience(client.get().getRiscAud())
                 .setIssuedAt(Date.from(Instant.now()))
-                .setId(String.valueOf(getJtiValue()))
+                .setId(jtiValue)
                 .claim("events", claims)
                 .signWith(key)
                 .setHeaderParam("kid", jwk.getKeyID())
