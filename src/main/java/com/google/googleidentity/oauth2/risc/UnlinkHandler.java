@@ -54,7 +54,7 @@ import org.apache.http.impl.client.HttpClients;
 @Singleton
 public class UnlinkHandler {
   private static final Logger log = Logger.getLogger("RiscHandler");
-  private static int MAX_RETRY_COUNT = 3;
+  private static int MAX_RETRY_COUNT = 4;
   private static Duration RETRY_INTERVAL_TIME = Duration.ofMinutes(10);
   private static String WEB_URL =
       System.getenv("WEB_URL") == null ? "localhost:8080" : System.getenv("WEB_URL");
