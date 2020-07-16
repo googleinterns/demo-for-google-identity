@@ -80,12 +80,12 @@ How to run it:
 3. Download, install Protocol Buffers from https://github.com/protocolbuffers/protobuf/releases/tag/v3.12.3
 4. Dompile all proto files in src/main/resources/proto
 5. Change web url (for risc issuer and key) in appengine-web.xml by setting system env.
-6. Choose whether use cloud sql or not in appengine-web.xml, if use also set database information.
+6. Choose whether use cloud sql or not in appengine-web.xml, if you want to use cloud sql, please also set database information.
 7. Test it locally or on app engine
 
 locally:
 
-If you want to user cloud sql locally, you have to create a service account following
+If you want to use cloud sql locally, you have to create a service account following
 
 https://cloud.google.com/sql/docs/mysql/connect-external-app#4_if_required_by_your_authentication_method_create_a_service_account
 
