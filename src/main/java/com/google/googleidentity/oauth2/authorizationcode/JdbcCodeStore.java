@@ -44,12 +44,14 @@ public class JdbcCodeStore implements CodeStore {
 
   @Override
   public Optional<OAuth2Request> consumeCode(String code) {
-    try{
-      Connection conn = dataSource.getConnection();
+    Connection conn = null;
+    PreparedStatement statement = null;
+    ResultSet result = null;
+    try {
       String stmt = "SELECT * FROM code WHERE code = ?;";
-      PreparedStatement statement = conn.prepareStatement(stmt);
+      statement = conn.prepareStatement(stmt);
       statement.setString(1, code);
-      ResultSet result = statement.executeQuery();
+      result = statement.executeQuery();
       if(result.next()){
         stmt = "DELETE FROM code WHERE code = ?;";
         statement = conn.prepareStatement(stmt);
@@ -59,26 +61,53 @@ public class JdbcCodeStore implements CodeStore {
             Optional.ofNullable(
                 OAuth2Request.parseFrom(
                     result.getBytes("request")));
-        result.close();
-        statement.close();
-        conn.close();
         return client;
       }
-
-    }catch(SQLException | InvalidProtocolBufferException exception){
-      log.log(Level.INFO, "Get Client Error.", exception);
+    } catch (SQLException | InvalidProtocolBufferException exception) {
+      log.log(Level.INFO, "Consume Code Error.", exception);
+      try {
+        if (conn != null) {
+          conn.rollback();
+        }
+      } catch (SQLException exception1) {
+        log.log(Level.INFO, "Roll Back Error.", exception1);
+      }
+    } finally {
+      if (result != null) {
+        try {
+          result.close();
+        } catch (SQLException exception2) {
+          log.log(Level.INFO, "Close result error.", exception2);
+        }
+      }
+      if (statement != null) {
+        try {
+          statement.close();
+        } catch (SQLException exception2) {
+          log.log(Level.INFO, "Close stmt error.", exception2);
+        }
+      }
+      if (conn != null) {
+        try {
+          conn.close();
+        } catch (SQLException exception3) {
+          log.log(Level.INFO, "Close conn error.", exception3);
+        }
+      }
     }
     return Optional.empty();
   }
 
   @Override
   public boolean setCode(String code, OAuth2Request request) {
-    try{
-      Connection conn = dataSource.getConnection();
+    Connection conn = null;
+    PreparedStatement statement = null;
+    ResultSet result = null;
+    try {
       String stmt = "SELECT * FROM code WHERE code = ?;";
-      PreparedStatement statement = conn.prepareStatement(stmt);
+      statement = conn.prepareStatement(stmt);
       statement.setString(1, code);
-      ResultSet result = statement.executeQuery();
+      result = statement.executeQuery();
       if(!result.next()){
         stmt = "INSERT INTO code VALUES(?, ?);";
         statement = conn.prepareStatement(stmt);
@@ -89,10 +118,40 @@ public class JdbcCodeStore implements CodeStore {
         statement.close();
         conn.close();
         return true;
+      } else {
+        return false;
       }
-
-    }catch(SQLException exception){
-      log.log(Level.INFO, "Get Client Error.", exception);
+    } catch (SQLException exception) {
+      log.log(Level.INFO, "Set Code Error.", exception);
+      try {
+        if (conn != null) {
+          conn.rollback();
+        }
+      } catch (SQLException exception1) {
+        log.log(Level.INFO, "Roll Back Error.", exception1);
+      }
+    } finally {
+      if (result != null) {
+        try {
+          result.close();
+        } catch (SQLException exception2) {
+          log.log(Level.INFO, "Close result error.", exception2);
+        }
+      }
+      if (statement != null) {
+        try {
+          statement.close();
+        } catch (SQLException exception2) {
+          log.log(Level.INFO, "Close stmt error.", exception2);
+        }
+      }
+      if (conn != null) {
+        try {
+          conn.close();
+        } catch (SQLException exception3) {
+          log.log(Level.INFO, "Close conn error.", exception3);
+        }
+      }
     }
     return false;
   }
