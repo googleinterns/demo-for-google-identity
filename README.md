@@ -64,7 +64,7 @@ Resource Page: https://gal-2020-summer-intern.appspot.com/resource/user
 
 Authorization Endpoint: https://gal-2020-summer-intern.appspot.com/oauth2/authorize
 
-Token Endpoint: https://gal-2020-summer-intern.appspot.com/oauth2/authorize
+Token Endpoint: https://gal-2020-summer-intern.appspot.com/oauth2/token
 
 Token Revoke Endpoint: https://gal-2020-summer-intern.appspot.com/oauth2/revoke
 
