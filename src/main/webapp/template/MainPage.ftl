@@ -15,51 +15,57 @@ limitations under the License.
 -->
 
 <!DOCTYPE html>
-<html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Login</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
-    <title>Main Page</title>
+    <link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=PT+Serif+Caption" /><link rel='stylesheet' href='//fonts.googleapis.com/css?family=Bevan' type='text/css' />
+    <#include "/incs/meta.ftl">
+    <#include "/incs/css.ftl">
+    <#include "/incs/js.ftl">
 </head>
 <body>
-<div style="text-align:center">
-    <div class="info">
-        ${username}
+<style type="text/css">
+       #home {
+		 	background-color: #16284C;
+		}
+    </style>
+
+<#include "/incs/header.ftl">
+<#include "/incs/banner.ftl">
+<div class="customContainer" style="margin-bottom: 15%">
+    <h2 style="text-align: center; padding-top: 4%; font-family: Georgia, serif">Main User Page</h2>
+    <div class="index-content">
+        <div class="row">
+            <div class="col-xl-4 col-lg-6 col-md-6 col-12" style="margin: 0px 0px 15px 0px;">
+                <a href="/resource/user/change_password">
+                    <div class="card h-100">
+                        <img class="card-img-top rounded" src="../images/bg1.jpg" alt="Card image cap">
+                        <div class="card-body" id="homeCard0">
+                            <p id="homeCardBody0">Change Password</p>
+                            <a href="/resource/user/change_password"  class="blue-button"  id="bottom-left0">Read More</a>
+                        </div>
+                    </div>
+            </div>
+            <div class="col-xl-4 col-lg-6 col-md-6 col-12" style="margin: 0px 0px 15px 0px;">
+                <a href="/resource/user/unlink">
+                    <div class="card h-100">
+                        <img class="card-img-top rounded" src="../images/bg1.jpg" alt="Card image cap">
+                        <div class="card-body" id="homeCard1">
+                            <p id="homeCardBody1">Unlink</p>
+                            <a href="/resource/user/unlink"  class="blue-button"  id="bottom-left1">Read More</a>
+                        </div>
+                    </div>
+            </div>
+            <div class="col-xl-4 col-lg-6 col-md-6 col-12" style="margin: 0px 0px 15px 0px;">
+                <a href="/resource/user/view_tokens">
+                    <div class="card h-100">
+                        <img class="card-img-top rounded" src="../images/bg1.jpg" alt="Card image cap">
+                        <div class="card-body" id="homeCard2">
+                            <p id="homeCardBody2">View Current Tokens</p>
+                            <a href="/resource/user/view_tokens"  class="blue-button"  id="bottom-left2">Read More</a>
+                        </div>
+                    </div>
+            </div>
+        </div>
     </div>
 </div>
-<div style="text-align:center">
-    <form action="/oauth2/unlink" method="post" >
-        <div class="dropdown">
-            <h1> Unlink With </h1>
-            <a class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                Choose..
-            </a>
-            <ul class="dropdown-menu" aria-labelledby="dLabel">
-                <#list clients as client>
-                <li>${client}</li>
-            </#list>
-            </ul>
-        </div>
-        <br>
-        <input type="hidden"  name="client" id ="clientid" value=""/>
-        <button type="submit" id="Unlink" class="btn btn-success btn-lg" style="">Unlink</button>
-    </form>
-</div>
-
-
+<#include "/incs/footer.ftl">
 </body>
-<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
-<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"></script>
-<script>
-$(function(){
-    $('.dropdown-menu').on('click', function(e) {
-	var $target = $(e.target);
-	$target.is('li') && $('#dropdownMenuButton').text($target.text());
-	$target.is('li') && $('#clientid').val($target.text());
-});
-});
-</script>
-</html>

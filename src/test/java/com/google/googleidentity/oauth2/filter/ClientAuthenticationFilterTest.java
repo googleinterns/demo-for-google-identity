@@ -14,7 +14,7 @@
     limitations under the License.
 */
 
-package com.google.googleidentity.oauth2;
+package com.google.googleidentity.oauth2.filter;
 
 import com.google.common.base.Charsets;
 import com.google.common.hash.Hashing;
@@ -68,31 +68,6 @@ public class ClientAuthenticationFilterTest {
     ClientDetailsService clientDetailsService = new InMemoryClientDetailsService();
     clientDetailsService.addClient(CLIENT);
     clientAuthenticationFilter = new ClientAuthenticationFilter(clientDetailsService);
-  }
-
-  @Test
-  public void testFilter_noGrantType_throwInvalidGrantException()
-      throws ServletException, IOException {
-    HttpServletRequest request = mock(HttpServletRequest.class);
-    HttpServletResponse response = mock(HttpServletResponse.class);
-    FilterChain chain = mock(FilterChain.class);
-    FakeHttpSession httpSession = new FakeHttpSession();
-
-    when(request.getSession()).thenReturn(httpSession);
-    when(request.getParameter(OAuth2ParameterNames.GRANT_TYPE)).thenReturn(null);
-
-    StringWriter stringWriter = new StringWriter();
-    PrintWriter writer = new PrintWriter(stringWriter);
-    when(response.getWriter()).thenReturn(writer);
-
-    clientAuthenticationFilter.doFilter(request, response, chain);
-
-    String expected =
-        OAuth2ExceptionHandler.getResponseBody(
-                new InvalidGrantException(InvalidGrantException.ErrorCode.NO_GRANT_TYPE))
-            .toJSONString();
-
-    assertThat(stringWriter.toString()).isEqualTo(expected + LINE);
   }
 
   @Test

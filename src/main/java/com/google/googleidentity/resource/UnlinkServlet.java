@@ -40,22 +40,18 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-/**
- * Demo UserServlet Read UserDetails.User Object {@link com.google.googleidentity.user.UserDetails}
- * stored in in the session through class {@link com.google.googleidentity.security.UserSession} and
- * display the username.
- */
+
 @Singleton
-public final class UserServlet extends HttpServlet {
+public final class UnlinkServlet extends HttpServlet {
 
-  private static final long serialVersionUID = 1L;
+  private static final long serialVersionUID = 17L;
 
-  private static final Logger log = Logger.getLogger("UserServlet");
+  private static final Logger log = Logger.getLogger("UnlinkServlet");
   private final OAuth2TokenService oauth2TokenService;
   private Configuration configuration;
 
   @Inject
-  public UserServlet(OAuth2TokenService oauth2TokenService) {
+  public UnlinkServlet(OAuth2TokenService oauth2TokenService) {
     this.oauth2TokenService = oauth2TokenService;
   }
 
@@ -70,9 +66,9 @@ public final class UserServlet extends HttpServlet {
       throws ServletException, IOException {
 
     try {
-      displayMainPage(request, response);
+      displayPage(request, response);
     } catch (TemplateException e) {
-      log.log(Level.INFO, "MainPage Error!", e);
+      log.log(Level.INFO, "display Page Error!", e);
     }
   }
 
@@ -80,13 +76,13 @@ public final class UserServlet extends HttpServlet {
       throws ServletException, IOException {
 
     try {
-      displayMainPage(request, response);
+      displayPage(request, response);
     } catch (TemplateException e) {
-      log.log(Level.INFO, "MainPage Error!", e);
+      log.log(Level.INFO, "display Page Error!", e);
     }
   }
 
-  private void displayMainPage(HttpServletRequest request, HttpServletResponse response)
+  private void displayPage(HttpServletRequest request, HttpServletResponse response)
       throws ServletException, IOException, TemplateException {
 
     UserSession userSession = OAuth2Utils.getUserSession(request);
@@ -100,7 +96,10 @@ public final class UserServlet extends HttpServlet {
 
     information.put("username", user.getUsername());
 
-    Template template = configuration.getTemplate("MainPage.ftl");
+    List<String> list = oauth2TokenService.listUserClient(user.getUsername());
+    information.put("clients", list);
+
+    Template template = configuration.getTemplate("Unlink.ftl");
 
     response.setCharacterEncoding("utf-8");
     PrintWriter printWriter = response.getWriter();

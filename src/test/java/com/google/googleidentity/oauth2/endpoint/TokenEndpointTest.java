@@ -29,6 +29,7 @@ import com.google.googleidentity.oauth2.client.ClientSession;
 import com.google.googleidentity.oauth2.client.InMemoryClientDetailsService;
 import com.google.googleidentity.oauth2.exception.InvalidRequestException;
 import com.google.googleidentity.oauth2.exception.OAuth2ExceptionHandler;
+import com.google.googleidentity.oauth2.filter.ClientAuthenticationFilterTest;
 import com.google.googleidentity.oauth2.request.MultipleRequestHandler;
 import com.google.googleidentity.oauth2.request.OAuth2Request;
 import com.google.googleidentity.oauth2.request.RequestHandler;
@@ -63,7 +64,7 @@ import static org.mockito.Mockito.when;
 /**
  * Tests for {@link TokenEndpoint}, the request check test have been done in {@link
  * com.google.googleidentity.oauth2.validator.TokenEndpointRequestValidatorTest} and {@link
- * com.google.googleidentity.oauth2.ClientAuthenticationFilterTest}. Here we do not do request check
+ * ClientAuthenticationFilterTest}. Here we do not do request check
  * tests.
  */
 public class TokenEndpointTest {

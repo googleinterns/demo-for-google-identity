@@ -17,6 +17,9 @@
 package com.google.googleidentity.resource;
 
 import com.google.common.base.Preconditions;
+import com.google.common.base.Strings;
+import com.google.common.collect.ImmutableList;
+import com.google.googleidentity.oauth2.token.OAuth2AccessToken;
 import com.google.googleidentity.oauth2.token.OAuth2TokenService;
 import com.google.googleidentity.oauth2.util.OAuth2Utils;
 import com.google.googleidentity.security.UserSession;
@@ -28,6 +31,8 @@ import freemarker.template.Template;
 import freemarker.template.TemplateException;
 import freemarker.template.Version;
 
+import java.time.Instant;
+import java.util.LinkedList;
 import java.util.List;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -40,22 +45,17 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-/**
- * Demo UserServlet Read UserDetails.User Object {@link com.google.googleidentity.user.UserDetails}
- * stored in in the session through class {@link com.google.googleidentity.security.UserSession} and
- * display the username.
- */
 @Singleton
-public final class UserServlet extends HttpServlet {
+public final class ViewTokensServlet extends HttpServlet {
 
-  private static final long serialVersionUID = 1L;
+  private static final long serialVersionUID = 17L;
 
-  private static final Logger log = Logger.getLogger("UserServlet");
+  private static final Logger log = Logger.getLogger("UnlinkServlet");
   private final OAuth2TokenService oauth2TokenService;
   private Configuration configuration;
 
   @Inject
-  public UserServlet(OAuth2TokenService oauth2TokenService) {
+  public ViewTokensServlet(OAuth2TokenService oauth2TokenService) {
     this.oauth2TokenService = oauth2TokenService;
   }
 
@@ -70,9 +70,9 @@ public final class UserServlet extends HttpServlet {
       throws ServletException, IOException {
 
     try {
-      displayMainPage(request, response);
+      displayPage(request, response);
     } catch (TemplateException e) {
-      log.log(Level.INFO, "MainPage Error!", e);
+      log.log(Level.INFO, "display Page Error!", e);
     }
   }
 
@@ -80,13 +80,13 @@ public final class UserServlet extends HttpServlet {
       throws ServletException, IOException {
 
     try {
-      displayMainPage(request, response);
+      displayPage(request, response);
     } catch (TemplateException e) {
-      log.log(Level.INFO, "MainPage Error!", e);
+      log.log(Level.INFO, "display Page Error!", e);
     }
   }
 
-  private void displayMainPage(HttpServletRequest request, HttpServletResponse response)
+  private void displayPage(HttpServletRequest request, HttpServletResponse response)
       throws ServletException, IOException, TemplateException {
 
     UserSession userSession = OAuth2Utils.getUserSession(request);
@@ -100,7 +100,24 @@ public final class UserServlet extends HttpServlet {
 
     information.put("username", user.getUsername());
 
-    Template template = configuration.getTemplate("MainPage.ftl");
+    List<List<String>> list = new LinkedList<>();
+    for (String client : oauth2TokenService.listUserClient(user.getUsername())) {
+      for (OAuth2AccessToken token :
+          oauth2TokenService.listUserClientAccessTokens(user.getUsername(), client)) {
+        list.add(
+            ImmutableList.of(
+                token.getAccessToken(),
+                token.getClientId(),
+                String.valueOf(token.getIsScoped()),
+                String.join("\t", token.getScopesList()),
+                Instant.ofEpochSecond(token.getExpiredTime()).toString(),
+                token.getRefreshToken()));
+      }
+    }
+
+    information.put("accessTokens", list);
+
+    Template template = configuration.getTemplate("ViewTokens.ftl");
 
     response.setCharacterEncoding("utf-8");
     PrintWriter printWriter = response.getWriter();

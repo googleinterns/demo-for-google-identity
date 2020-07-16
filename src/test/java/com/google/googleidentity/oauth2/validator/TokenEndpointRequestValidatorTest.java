@@ -30,6 +30,12 @@ import com.google.googleidentity.oauth2.util.OAuth2ParameterNames;
 import com.google.googleidentity.security.UserSession;
 import com.google.googleidentity.testtools.FakeHttpSession;
 import com.google.googleidentity.user.UserDetails;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import javax.servlet.FilterChain;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletResponse;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -88,6 +94,31 @@ public class TokenEndpointRequestValidatorTest {
     userSession.setUser(USER);
     clientSession = new ClientSession();
     clientSession.setClient(CLIENT);
+  }
+
+  @Test
+  public void test_validatePost_noGrantTypes_throwInvalidGrantException()
+      throws ServletException, IOException {
+    HttpServletRequest request = mock(HttpServletRequest.class);
+    FakeHttpSession httpSession = new FakeHttpSession();
+
+    httpSession.setAttribute("client_session", clientSession);
+
+    when(request.getParameter(OAuth2ParameterNames.GRANT_TYPE)).thenReturn(null);
+    when(request.getParameter(OAuth2ParameterNames.CLIENT_ID)).thenReturn(CLIENTID);
+    when(request.getParameter(OAuth2ParameterNames.REDIRECT_URI)).thenReturn(REDIRECT_URI);
+    when(request.getParameter(OAuth2ParameterNames.CODE)).thenReturn("auth_code");
+    when(request.getParameter(OAuth2ParameterNames.SCOPE)).thenReturn("read");
+    when(request.getSession()).thenReturn(httpSession);
+
+    OAuth2Exception e =
+        assertThrows(
+            OAuth2Exception.class, () -> TokenEndpointRequestValidator.validatePost(request));
+    assertThat(e).isInstanceOf(InvalidGrantException.class);
+    assertThat(e.getErrorDescription())
+        .isEqualTo(
+            new InvalidGrantException(InvalidGrantException.ErrorCode.NO_GRANT_TYPE)
+                .getErrorDescription());
   }
 
   @Test

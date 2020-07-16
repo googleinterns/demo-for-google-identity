@@ -25,10 +25,16 @@ import com.google.googleidentity.oauth2.endpoint.RiscDocEndpoint;
 import com.google.googleidentity.oauth2.endpoint.UnlinkEndpoint;
 import com.google.googleidentity.oauth2.endpoint.TokenEndpoint;
 import com.google.googleidentity.oauth2.endpoint.TokenRevokeEndpoint;
+import com.google.googleidentity.oauth2.endpoint.UserInfoEndpoint;
 import com.google.googleidentity.oauth2.filter.ClientAuthenticationFilter;
+import com.google.googleidentity.resource.UnlinkServlet;
 import com.google.googleidentity.resource.UserServlet;
+import com.google.googleidentity.resource.ViewTokensServlet;
+import com.google.googleidentity.security.ChangePasswordServlet;
 import com.google.googleidentity.security.LoginCheckServlet;
 import com.google.googleidentity.security.LoginServlet;
+import com.google.googleidentity.security.RegisterCheckServlet;
+import com.google.googleidentity.security.RegisterServlet;
 import com.google.inject.AbstractModule;
 import com.google.inject.servlet.ServletModule;
 
@@ -40,26 +46,31 @@ public final class OAuth2Module extends AbstractModule {
         new ServletModule() {
           @Override
           protected void configureServlets() {
-            serve("/resource/user", "resource/user;jsessionid.*").with(UserServlet.class);
+            serveRegex("/resource/user", "resource/user;jsessionid.*").with(UserServlet.class);
             serveRegex("/", "/login", "/login;jsessionid.*").with(LoginServlet.class);
-            serve("/login_check").with(LoginCheckServlet.class);
+            serveRegex("/login_check", "/login_check;jsessionid.*").with(LoginCheckServlet.class);
+            serveRegex("/register", "/register;jsessionid.*").with(RegisterServlet.class);
+            serveRegex("/register_check", "/register_check;jsessionid.*")
+                .with(RegisterCheckServlet.class);
+            serve("/resource/user/change_password").with(ChangePasswordServlet.class);
+            serve("/resource/user/view_tokens").with(ViewTokensServlet.class);
+            serve("/resource/user/unlink").with(UnlinkServlet.class);
             serve("/oauth2/authorize").with(AuthorizationEndpoint.class);
             serve("/oauth2/consent").with(ConsentEndpoint.class);
             serve("/oauth2/token").with(TokenEndpoint.class);
             serve("/oauth2/revoke").with(TokenRevokeEndpoint.class);
-            serve("/oauth2/risc/.well-known/risc-configuration")
-                .with(RiscDocEndpoint.class);
-            serve("/oauth2/risc/key")
-                .with(JwkEndpoint.class);
-            serve("/oauth2/unlink")
-                .with(UnlinkEndpoint.class);
+            serve("/oauth2/userinfo").with(UserInfoEndpoint.class);
+            serve("/oauth2/risc/.well-known/risc-configuration").with(RiscDocEndpoint.class);
+            serve("/oauth2/risc/key").with(JwkEndpoint.class);
+            serve("/oauth2/unlink").with(UnlinkEndpoint.class);
             // The filter order is same as the order they be introduced here, let token
             // authentication filter be at the first so that it can set client session from token to
             // let the request pass user authentication filter
             filterRegex("/resource/.*").through(OAuth2TokenAuthenticationFilter.class);
             filterRegex("/oauth2/authorize", "/resource/.*")
                 .through(UserAuthenticationFilter.class);
-            filter("/oauth2/token", "/oauth2/revoke").through(ClientAuthenticationFilter.class);
+            filter("/oauth2/token", "/oauth2/revoke")
+                .through(ClientAuthenticationFilter.class);
           }
         });
   }

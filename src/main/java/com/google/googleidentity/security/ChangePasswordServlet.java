@@ -14,81 +14,85 @@
     limitations under the License.
 */
 
-package com.google.googleidentity.resource;
+package com.google.googleidentity.security;
 
+import com.google.appengine.repackaged.com.google.api.client.http.HttpStatusCodes;
 import com.google.common.base.Preconditions;
-import com.google.googleidentity.oauth2.token.OAuth2TokenService;
 import com.google.googleidentity.oauth2.util.OAuth2Utils;
-import com.google.googleidentity.security.UserSession;
 import com.google.googleidentity.user.UserDetails;
+import com.google.googleidentity.user.UserDetailsService;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
 import freemarker.template.Version;
-
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
-/**
- * Demo UserServlet Read UserDetails.User Object {@link com.google.googleidentity.user.UserDetails}
- * stored in in the session through class {@link com.google.googleidentity.security.UserSession} and
- * display the username.
- */
 @Singleton
-public final class UserServlet extends HttpServlet {
+public class ChangePasswordServlet extends HttpServlet {
 
-  private static final long serialVersionUID = 1L;
+  private static final long serialVersionUID = 16L;
 
-  private static final Logger log = Logger.getLogger("UserServlet");
-  private final OAuth2TokenService oauth2TokenService;
+  private static final Logger log = Logger.getLogger("ChangePasswordServlet");
+
   private Configuration configuration;
 
+  private final UserDetailsService userDetailsService;
+
   @Inject
-  public UserServlet(OAuth2TokenService oauth2TokenService) {
-    this.oauth2TokenService = oauth2TokenService;
+  public ChangePasswordServlet(UserDetailsService userDetailsService) {
+    this.userDetailsService = userDetailsService;
   }
 
   public void init() throws ServletException {
-
     Version version = new Version("2.3.30");
+
     configuration = new Configuration(version);
+
     configuration.setServletContextForTemplateLoading(getServletContext(), "template");
   }
 
-  public void doGet(HttpServletRequest request, HttpServletResponse response)
+  protected void doGet(HttpServletRequest request, HttpServletResponse response)
       throws ServletException, IOException {
 
     try {
-      displayMainPage(request, response);
+      displayPage(request, response);
     } catch (TemplateException e) {
-      log.log(Level.INFO, "MainPage Error!", e);
+      log.log(Level.INFO, "Error when display change password page", e);
     }
   }
 
   protected void doPost(HttpServletRequest request, HttpServletResponse response)
       throws ServletException, IOException {
 
-    try {
-      displayMainPage(request, response);
-    } catch (TemplateException e) {
-      log.log(Level.INFO, "MainPage Error!", e);
-    }
+    String password = request.getParameter("password");
+
+    UserDetails user = OAuth2Utils.getUserSession(request).getUser().get();
+
+    userDetailsService.updateUser(UserDetails.newBuilder(user).setPassword(password).build());
+
+    OAuth2Utils.setUserSession(request, new UserSession());
+
+    response.setStatus(HttpStatusCodes.STATUS_CODE_OK);
+    response.getWriter().println("/login");
+    response.getWriter().flush();
   }
 
-  private void displayMainPage(HttpServletRequest request, HttpServletResponse response)
+  private void displayPage(HttpServletRequest request, HttpServletResponse response)
       throws ServletException, IOException, TemplateException {
 
+    Template template = configuration.getTemplate("ChangePassword.ftl");
     UserSession userSession = OAuth2Utils.getUserSession(request);
 
     Preconditions.checkArgument(
@@ -99,8 +103,6 @@ public final class UserServlet extends HttpServlet {
     Map<String, Object> information = new HashMap<>();
 
     information.put("username", user.getUsername());
-
-    Template template = configuration.getTemplate("MainPage.ftl");
 
     response.setCharacterEncoding("utf-8");
     PrintWriter printWriter = response.getWriter();

@@ -35,6 +35,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.apache.http.HttpStatus;
 
 /**
  * When user request to revoke token with a client , the request will be sent here. In the demo,
@@ -87,6 +88,7 @@ public class UnlinkEndpoint extends HttpServlet {
         }
       }
     }
-    response.sendRedirect("/resource/user");
+    response.setStatus(HttpStatus.SC_OK);
+    response.getWriter().flush();
   }
 }
