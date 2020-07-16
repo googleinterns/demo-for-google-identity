@@ -48,6 +48,8 @@ public class JdbcCodeStore implements CodeStore {
     PreparedStatement statement = null;
     ResultSet result = null;
     try {
+      conn = dataSource.getConnection();
+      conn.setAutoCommit(false);
       String stmt = "SELECT * FROM code WHERE code = ?;";
       statement = conn.prepareStatement(stmt);
       statement.setString(1, code);
@@ -61,6 +63,7 @@ public class JdbcCodeStore implements CodeStore {
             Optional.ofNullable(
                 OAuth2Request.parseFrom(
                     result.getBytes("request")));
+        conn.commit();
         return client;
       }
     } catch (SQLException | InvalidProtocolBufferException exception) {
@@ -104,6 +107,8 @@ public class JdbcCodeStore implements CodeStore {
     PreparedStatement statement = null;
     ResultSet result = null;
     try {
+      conn = dataSource.getConnection();
+      conn.setAutoCommit(false);
       String stmt = "SELECT * FROM code WHERE code = ?;";
       statement = conn.prepareStatement(stmt);
       statement.setString(1, code);
@@ -114,9 +119,7 @@ public class JdbcCodeStore implements CodeStore {
         statement.setString(1, code);
         statement.setBytes(2, request.toByteArray());
         statement.execute();
-        result.close();
-        statement.close();
-        conn.close();
+        conn.commit();
         return true;
       } else {
         return false;
