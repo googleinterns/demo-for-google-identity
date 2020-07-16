@@ -68,16 +68,18 @@ public class CloudSqlModule extends AbstractModule {
 
     DataSource pool = new HikariDataSource(config);
 
-    try {
-      dropTables(pool);
-    } catch (SQLException exception) {
-      log.log(Level.INFO, "Drop tables error.", exception);
-    }
+    if (("true").equals(System.getenv("CLEAR_TABLES"))) {
+      try {
+        dropTables(pool);
+      } catch (SQLException exception) {
+        log.log(Level.INFO, "Drop tables error.", exception);
+      }
 
-    try {
-      createTables(pool);
-    } catch (SQLException exception) {
-      log.log(Level.INFO, "Create tables error.", exception);
+      try {
+        createTables(pool);
+      } catch (SQLException exception) {
+        log.log(Level.INFO, "Create tables error.", exception);
+      }
     }
     return pool;
   }

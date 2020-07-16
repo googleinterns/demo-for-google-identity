@@ -10,6 +10,7 @@
         <env-var name="DB_PASS" value="123456789" />
         <env-var name="DB_NAME" value="oauth2demo" />
         <env-var name="USE_CLOUD_SQL" value="true" />
+        <env-var name="CLEAR_TABLES" value="true" />
     </env-variables>
     <system-properties>
         <property name="java.util.logging.config.file" value="WEB-INF/logging.properties"/>
