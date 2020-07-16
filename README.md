@@ -40,9 +40,7 @@ Support token revocation.
 
 Support Risc.
 
-In memory user information storage with sha256 based hashing on password.
-
-In memory client information storage with sha256 based hashing on secret.
+Support Cloud SQL storage or In Memory Storage (Change it in appengine-web.xml).
 
 Two test user added:
  
@@ -68,6 +66,8 @@ Authorization Endpoint: https://gal-2020-summer-intern.appspot.com/oauth2/author
 
 Token Endpoint: https://gal-2020-summer-intern.appspot.com/oauth2/authorize
 
+Token Revoke Endpoint: https://gal-2020-summer-intern.appspot.com/oauth2/revoke
+
 RiscDoc Endpoint: https://gal-2020-summer-intern.appspot.com/oauth2/risc/.well-known/risc-configuration
 
 Risc Issuer: https://gal-2020-summer-intern.appspot.com/oauth2/risc
@@ -82,9 +82,16 @@ How to run it:
 3. Download, install Protocol Buffers from https://github.com/protocolbuffers/protobuf/releases/tag/v3.12.3
 4. Dompile all proto files in src/main/resources/proto
 5. Change web url (for risc issuer and key) in appengine-web.xml by setting system env.
-6. Test it locally or on app engine
+6. Choose whether use cloud sql or not in appengine-web.xml, if you want to use cloud sql, please also set database information.
+7. Test it locally or on app engine
 
 locally:
+
+If you want to use cloud sql locally, you have to create a service account following
+
+https://cloud.google.com/sql/docs/mysql/connect-external-app#4_if_required_by_your_authentication_method_create_a_service_account
+
+Download the json key and set GOOGLE_APPLICATION_CREDENTIALS=(your path to the key) 
 
 mvn package appengine:run
 

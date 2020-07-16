@@ -22,6 +22,10 @@ public class TokenModule extends AbstractModule {
 
   @Override
   protected void configure() {
-    bind(OAuth2TokenService.class).to(InMemoryOAuth2TokenService.class);
+    bind(OAuth2TokenService.class)
+        .to(
+            ("true").equals(System.getenv("USE_CLOUD_SQL"))
+                ? JdbcOAuth2TokenService.class
+                : InMemoryOAuth2TokenService.class);
   }
 }

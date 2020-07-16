@@ -5,6 +5,12 @@
     <env-variables>
         <env-var name="AUTH_CODE_LENGTH" value="10" />
         <env-var name="WEB_URL" value="https://gal-2020-summer-intern.wl.r.appspot.com" />
+        <env-var name="CLOUD_SQL_CONNECTION_NAME" value="gal-2020-summer-intern:us-east1:galdemodatabase" />
+        <env-var name="DB_USER" value="root" />
+        <env-var name="DB_PASS" value="123456789" />
+        <env-var name="DB_NAME" value="oauth2demo" />
+        <env-var name="USE_CLOUD_SQL" value="true" />
+        <env-var name="CLEAR_TABLES" value="true" />
     </env-variables>
     <system-properties>
         <property name="java.util.logging.config.file" value="WEB-INF/logging.properties"/>

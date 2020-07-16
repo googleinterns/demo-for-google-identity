@@ -22,6 +22,10 @@ public class AuthorizationCodeModule extends AbstractModule {
 
   @Override
   protected void configure() {
-    bind(CodeStore.class).to(InMemoryCodeStore.class);
+    bind(CodeStore.class)
+        .to(
+            ("true").equals(System.getenv("USE_CLOUD_SQL"))
+                ? JdbcCodeStore.class
+                : InMemoryCodeStore.class);
   }
 }
