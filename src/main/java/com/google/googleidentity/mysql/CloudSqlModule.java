@@ -151,7 +151,6 @@ public class CloudSqlModule extends AbstractModule {
             + "PRIMARY KEY (username, client_id));";
     statement = conn.prepareStatement(stmt);
     statement.execute();
-
     statement.close();
     conn.close();
   }

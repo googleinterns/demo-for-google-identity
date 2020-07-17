@@ -523,12 +523,12 @@ public class JdbcOAuth2TokenService implements OAuth2TokenService {
       statement.setString(2, clientID);
       result = statement.executeQuery();
       if (result.next()) {
-        Optional.of(buildRefreshTokenFromJdbcResult(result));
+        return Optional.of(buildRefreshTokenFromJdbcResult(result));
       } else {
         return Optional.empty();
       }
     } catch (SQLException exception) {
-      log.log(Level.INFO, "Read User Client List error.", exception);
+      log.log(Level.INFO, "Read User Client Refresh Token error.", exception);
     } finally {
       if (result != null) {
         try {

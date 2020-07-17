@@ -12,6 +12,7 @@
     </style>
   <#include "/incs/header.ftl">
   <#include "/incs/banner.ftl">
+<div align="center">
   <h2 style="text-align: center; padding-top: 4%; padding-bottom: 7%; font-family: Georgia, serif">Current Access Tokens</h2>
   <form>
     <table class="simpletable"  id="datatable">
