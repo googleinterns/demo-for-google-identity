@@ -64,8 +64,8 @@ public class TestClientModule extends AbstractModule {
             .addRedirectUris(TESTREDIRECTURI)
             .addRedirectUris(TESTREDIRECTURI1)
             .addRedirectUris(TESTREDIRECTURI2)
-           // .setRiscUri(RISCURI)
-         //   .setRiscAud(RISCAUD)
+            .setRiscUri(RISCURI)
+            .setRiscAud(RISCAUD)
             .build();
     clientDetailsService.addClient(client);
     return clientDetailsService;
