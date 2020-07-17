@@ -62,4 +62,6 @@ public interface OAuth2TokenService {
 
   /** Get refresh token between a user and a client */
   Optional<OAuth2RefreshToken> getUserClientRefreshToken(String username, String clientID);
+
+  void reset();
 }

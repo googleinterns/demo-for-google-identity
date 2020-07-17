@@ -275,6 +275,53 @@ public class JdbcUserDetailsService implements UserDetailsService {
     return ImmutableList.copyOf(list);
   }
 
+  @Override
+  public void reset() {
+    Connection conn = null;
+    PreparedStatement statement = null;
+    ResultSet result = null;
+    try {
+      conn = dataSource.getConnection();
+      conn.setAutoCommit(false);
+      String stmt = "DELETE FROM user;";
+      statement = conn.prepareStatement(stmt);
+      statement.execute();
+      conn.commit();
+    } catch (SQLException exception) {
+      log.log(Level.INFO, "Reset Error.", exception);
+      try {
+        if (conn != null) {
+          conn.rollback();
+        }
+      } catch (SQLException exception1) {
+        log.log(Level.INFO, "Roll Back Error.", exception1);
+      }
+    } finally {
+      if (result != null) {
+        try {
+          result.close();
+        } catch (SQLException exception2) {
+          log.log(Level.INFO, "Close result error.", exception2);
+        }
+      }
+      if (statement != null) {
+        try {
+          statement.close();
+        } catch (SQLException exception2) {
+          log.log(Level.INFO, "Close stmt error.", exception2);
+        }
+      }
+      if (conn != null) {
+        try {
+          conn.close();
+        } catch (SQLException exception3) {
+          log.log(Level.INFO, "Close conn error.", exception3);
+        }
+      }
+    }
+
+  }
+
   private UserDetails buildUserFromJdbcResult(ResultSet result) throws SQLException {
     return UserDetails.newBuilder()
         .setUsername(result.getString("username"))

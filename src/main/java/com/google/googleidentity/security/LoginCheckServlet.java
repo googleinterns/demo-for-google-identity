@@ -60,14 +60,18 @@ public final class LoginCheckServlet extends HttpServlet {
 
     if (check(username, password)) {
       UserSession userSession = OAuth2Utils.getUserSession(request);
-
+      Optional<String> oldUri = userSession.getOlduri();
       userSession.setUser(
           UserDetails.newBuilder().setUsername(username).setPassword(password).build());
-
+      userSession.setOlduri(null);
       OAuth2Utils.setUserSession(request, userSession);
       response.setStatus(HttpStatusCodes.STATUS_CODE_OK);
-      response.getWriter().println(userSession.getOlduri().orElse("/resource/user"));
 
+      if (username.equals("admin")) {
+        response.getWriter().println("/resource/admin");
+      } else {
+        response.getWriter().println(oldUri.orElse("/resource/user"));
+      }
     } else {
       response.setStatus(HttpStatusCodes.STATUS_CODE_UNAUTHORIZED);
       response.getWriter().println("/login");

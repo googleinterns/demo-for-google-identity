@@ -16,6 +16,7 @@
 
 package com.google.googleidentity.security;
 
+import com.google.googleidentity.oauth2.client.ClientDetails;
 import com.google.googleidentity.user.UserDetails;
 
 import java.io.Serializable;
@@ -33,6 +34,8 @@ public final class UserSession implements Serializable {
 
   private UserDetails user = null;
 
+  private ClientDetails client = null;
+
   private String olduri = null;
 
   public Optional<UserDetails> getUser() {
@@ -41,6 +44,14 @@ public final class UserSession implements Serializable {
 
   public void setUser(UserDetails user) {
     this.user = user;
+  }
+
+  public Optional<ClientDetails> getClient() {
+    return Optional.ofNullable(client);
+  }
+
+  public void setClient(ClientDetails client) {
+    this.client = client;
   }
 
   public Optional<String> getOlduri() {
@@ -58,6 +69,11 @@ public final class UserSession implements Serializable {
     if (user != null) {
       sb.append("user:").append(user.toString()).append("\t");
     }
+
+    if (client != null) {
+      sb.append("client:").append(client.toString()).append("\t");
+    }
+
     if (olduri != null) {
       sb.append("olduri:").append(olduri).append("\t");
     }

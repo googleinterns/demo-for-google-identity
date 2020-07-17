@@ -63,12 +63,8 @@ public final class ClientAuthenticationFilter implements Filter {
     try {
       String grantType = request.getParameter(OAuth2ParameterNames.GRANT_TYPE);
 
-      if (Strings.isNullOrEmpty(grantType)) {
-        throw new InvalidGrantException(InvalidGrantException.ErrorCode.NO_GRANT_TYPE);
-      }
-
       // Set client for jwt assertion
-      if (grantType.equals(OAuth2Constants.GrantType.JWT_ASSERTION)) {
+      if (!Strings.isNullOrEmpty(grantType) && grantType.equals(OAuth2Constants.GrantType.JWT_ASSERTION)) {
         ClientSession clientSession = OAuth2Utils.getClientSession((HttpServletRequest) request);
         clientSession.setClient(clientDetailsService.getClientByID(GOOGLE_CLIENT_ID).get());
         OAuth2Utils.setClientSession((HttpServletRequest) request, clientSession);

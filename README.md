@@ -74,6 +74,8 @@ Risc Issuer: https://gal-2020-summer-intern.appspot.com/oauth2/risc
 
 Risc Jwk Endpoint: https://gal-2020-summer-intern.appspot.com/oauth2/risc/key
 
+User Info Endpoint: https://gal-2020-summer-intern.appspot.com/oauth2/userinfo
+
 All resources under /resource is protected (currently only have /resource/user)
 
 How to run it:

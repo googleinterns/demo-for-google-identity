@@ -51,4 +51,9 @@ public final class InMemoryCodeStore implements CodeStore {
       return true;
     }
   }
+
+  @Override
+  public void reset() {
+    codeStore.clear();
+  }
 }

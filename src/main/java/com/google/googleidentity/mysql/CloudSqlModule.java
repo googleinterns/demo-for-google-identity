@@ -84,7 +84,7 @@ public class CloudSqlModule extends AbstractModule {
     return pool;
   }
 
-  private void dropTables(DataSource pool) throws SQLException {
+  public static void dropTables(DataSource pool) throws SQLException {
     Connection conn = pool.getConnection();
     String stmt = "DROP TABLE IF EXISTS user, client, code, access_token, refresh_token;";
     PreparedStatement statement = conn.prepareStatement(stmt);
@@ -93,7 +93,7 @@ public class CloudSqlModule extends AbstractModule {
     conn.close();
   }
 
-  private void createTables(DataSource pool) throws SQLException {
+  public static void createTables(DataSource pool) throws SQLException {
     Connection conn = pool.getConnection();
 
     String stmt =
@@ -151,7 +151,6 @@ public class CloudSqlModule extends AbstractModule {
             + "PRIMARY KEY (username, client_id));";
     statement = conn.prepareStatement(stmt);
     statement.execute();
-
     statement.close();
     conn.close();
   }

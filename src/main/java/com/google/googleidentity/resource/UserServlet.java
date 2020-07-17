@@ -51,13 +51,8 @@ public final class UserServlet extends HttpServlet {
   private static final long serialVersionUID = 1L;
 
   private static final Logger log = Logger.getLogger("UserServlet");
-  private final OAuth2TokenService oauth2TokenService;
   private Configuration configuration;
 
-  @Inject
-  public UserServlet(OAuth2TokenService oauth2TokenService) {
-    this.oauth2TokenService = oauth2TokenService;
-  }
 
   public void init() throws ServletException {
 
@@ -99,9 +94,6 @@ public final class UserServlet extends HttpServlet {
     Map<String, Object> information = new HashMap<>();
 
     information.put("username", user.getUsername());
-
-    List<String> list = oauth2TokenService.listUserClient(user.getUsername());
-    information.put("clients", list);
 
     Template template = configuration.getTemplate("MainPage.ftl");
 

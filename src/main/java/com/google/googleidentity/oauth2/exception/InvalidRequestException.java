@@ -75,6 +75,10 @@ public final class InvalidRequestException extends OAuth2Exception {
         return "No token to revoke!";
       case INVALID_TOKEN_TYPE:
         return "Invalid token type!";
+      case NO_ACCESS_TOKEN:
+        return "No access token!";
+      case INVALID_ACCESS_TOKEN:
+        return "Invalid access token!";
       default:
         throw new IllegalArgumentException(String.valueOf(errorCode));
     }
@@ -101,6 +105,8 @@ public final class InvalidRequestException extends OAuth2Exception {
     INVALID_JWT,
     WRONG_JWT_AUD,
     NO_REVOKE_TOKEN,
-    INVALID_TOKEN_TYPE
+    INVALID_TOKEN_TYPE,
+    NO_ACCESS_TOKEN,
+    INVALID_ACCESS_TOKEN
   }
 }

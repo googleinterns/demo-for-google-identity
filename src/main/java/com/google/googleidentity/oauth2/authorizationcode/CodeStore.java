@@ -33,4 +33,9 @@ interface CodeStore {
    * @return success or not
    */
   boolean setCode(String code, OAuth2Request request);
+
+  /**
+   * reset data
+   */
+  void reset();
 }

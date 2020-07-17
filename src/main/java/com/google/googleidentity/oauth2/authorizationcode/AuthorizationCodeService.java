@@ -106,4 +106,8 @@ public final class AuthorizationCodeService {
     // Here we truncate the result since the encode hex may be longer the codeLength.
     return BaseEncoding.base64Url().withPadChar('*').encode(authCodeBytes).substring(0, codeLength);
   }
+
+  public void reset() {
+    codeStore.reset();
+  }
 }

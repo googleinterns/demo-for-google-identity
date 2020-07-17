@@ -20,6 +20,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableSet;
 import com.google.googleidentity.oauth2.client.ClientDetails;
+import com.google.googleidentity.oauth2.exception.InvalidGrantException;
 import com.google.googleidentity.oauth2.exception.InvalidRequestException;
 import com.google.googleidentity.oauth2.exception.OAuth2Exception;
 import com.google.googleidentity.oauth2.exception.UnauthorizedClientException;
@@ -57,9 +58,9 @@ public final class TokenEndpointRequestValidator {
 
     ClientDetails client = OAuth2Utils.getClientSession(request).getClient().get();
 
-    Preconditions.checkArgument(
-        !Strings.isNullOrEmpty(request.getParameter(OAuth2ParameterNames.GRANT_TYPE)),
-        "Grant type is not null since it has been checked in ClientAuthentication Filter");
+    if (Strings.isNullOrEmpty(request.getParameter(OAuth2ParameterNames.GRANT_TYPE))) {
+      throw new InvalidGrantException(InvalidGrantException.ErrorCode.NO_GRANT_TYPE);
+    }
 
     String grantType = request.getParameter(OAuth2ParameterNames.GRANT_TYPE);
 

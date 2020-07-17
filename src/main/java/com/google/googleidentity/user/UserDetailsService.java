@@ -49,4 +49,6 @@ public interface UserDetailsService {
 
   /** @return all users */
   List<UserDetails> listUser();
+
+  void reset();
 }

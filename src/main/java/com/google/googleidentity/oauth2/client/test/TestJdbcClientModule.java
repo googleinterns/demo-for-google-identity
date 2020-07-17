@@ -39,7 +39,7 @@ public class TestJdbcClientModule extends AbstractModule {
           GrantType.REFRESH_TOKEN,
           GrantType.JWT_ASSERTION);
 
-  private static final String TESTREDIRECTURI = "http://www.google.com";
+  private static final String TESTREDIRECTURI = "https://www.google.com";
   private static final String TESTREDIRECTURI1 = "https://oauth-redirect.googleusercontent.com/r";
   private static final String TESTREDIRECTURI2 = "https://oauth-redirect-sandbox.googleusercontent.com/r";
   private static final String RISCURI = "https://risc.googleapis.com/v1beta/events:report";

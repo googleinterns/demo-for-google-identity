@@ -46,4 +46,6 @@ public interface ClientDetailsService {
 
   /** @return all clients */
   List<ClientDetails> listClient();
+
+  void reset();
 }
