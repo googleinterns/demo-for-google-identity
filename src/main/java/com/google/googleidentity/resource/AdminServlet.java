@@ -163,6 +163,7 @@ public final class AdminServlet extends HttpServlet {
               .setPassword(Hashing.sha256().hashString(ADMINPASS, Charsets.UTF_8).toString())
               .build();
       userDetailsService.addUser(admin);
+      OAuth2Utils.setUserSession(request, new UserSession());
       response.setStatus(HttpStatus.SC_OK);
       response.getWriter().println("/login");
     } else {

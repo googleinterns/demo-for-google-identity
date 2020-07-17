@@ -31,6 +31,8 @@ public class TestJdbcUserModule extends AbstractModule {
   private static final String TESTUSERPASSWORD0 = "123456";
   private static final String TESTUSERNAME1 = "user1";
   private static final String TESTUSERPASSWORD1 = "12345678";
+  private static final String ADMIN = "admin";
+  private static final String ADMINPASS = "123456789";
 
   @Override
   protected void configure() {}
@@ -51,6 +53,13 @@ public class TestJdbcUserModule extends AbstractModule {
             .setUsername(TESTUSERNAME1)
             .setPassword(Hashing.sha256().hashString(TESTUSERPASSWORD1, Charsets.UTF_8).toString())
             .build();
+    userDetailsService.addUser(user1);
+    UserDetails admin =
+        UserDetails.newBuilder()
+            .setUsername(ADMIN)
+            .setPassword(Hashing.sha256().hashString(ADMINPASS, Charsets.UTF_8).toString())
+            .build();
+    userDetailsService.addUser(admin);
     return userDetailsService;
   }
 }
