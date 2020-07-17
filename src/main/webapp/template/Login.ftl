@@ -32,11 +32,11 @@ limitations under the License.
                 <div style="margin-left: 30%; margin-right: 30%">
                     <form id="msform">
                         <div class="form-group" style="margin-bottom: 10px">
-                            <label id="login_label0" style="text-align: left;color: #2177F3;">Username</label><br>
+                            <label id="login_label0" style="text-align: left;color: #FC1B10;">Username</label><br>
                             <input class="form-control" name="fname" id="username" type="text" placeholder="User Name">
                         </div>
                         <div class="form-group" style="margin-bottom: 10px">
-                            <label id="login_label1" style="text-align: left;color: #2177F3;">Password</label><br>
+                            <label id="login_label1" style="text-align: left;color: #FC1B10;">Password</label><br>
                             <input class="form-control" name="lname" id="password" type="password" placeholder="Password">
                         </div>
                         <div class="row" style="margin-top: 7%">

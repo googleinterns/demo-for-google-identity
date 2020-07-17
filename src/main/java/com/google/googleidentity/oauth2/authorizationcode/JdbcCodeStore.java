@@ -28,9 +28,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.sql.DataSource;
 
-/**
- * Jdbc implementation for {@link CodeStore}
- */
+/** Jdbc implementation for {@link CodeStore} */
 public class JdbcCodeStore implements CodeStore {
 
   private final DataSource dataSource;
@@ -38,7 +36,7 @@ public class JdbcCodeStore implements CodeStore {
   private final Logger log = Logger.getLogger("JdbcCodeStore");
 
   @Inject
-  public JdbcCodeStore(DataSource dataSource){
+  public JdbcCodeStore(DataSource dataSource) {
     this.dataSource = dataSource;
   }
 
@@ -54,15 +52,13 @@ public class JdbcCodeStore implements CodeStore {
       statement = conn.prepareStatement(stmt);
       statement.setString(1, code);
       result = statement.executeQuery();
-      if(result.next()){
+      if (result.next()) {
         stmt = "DELETE FROM code WHERE code = ?;";
         statement = conn.prepareStatement(stmt);
         statement.setString(1, code);
         statement.execute();
         Optional<OAuth2Request> client =
-            Optional.ofNullable(
-                OAuth2Request.parseFrom(
-                    result.getBytes("request")));
+            Optional.ofNullable(OAuth2Request.parseFrom(result.getBytes("request")));
         conn.commit();
         return client;
       }
@@ -113,7 +109,7 @@ public class JdbcCodeStore implements CodeStore {
       statement = conn.prepareStatement(stmt);
       statement.setString(1, code);
       result = statement.executeQuery();
-      if(!result.next()){
+      if (!result.next()) {
         stmt = "INSERT INTO code VALUES(?, ?);";
         statement = conn.prepareStatement(stmt);
         statement.setString(1, code);
@@ -157,5 +153,51 @@ public class JdbcCodeStore implements CodeStore {
       }
     }
     return false;
+  }
+
+  @Override
+  public void reset() {
+    Connection conn = null;
+    PreparedStatement statement = null;
+    ResultSet result = null;
+    try {
+      conn = dataSource.getConnection();
+      conn.setAutoCommit(false);
+      String stmt = "DELETE FROM code;";
+      statement = conn.prepareStatement(stmt);
+      statement.execute();
+      conn.commit();
+    } catch (SQLException exception) {
+      log.log(Level.INFO, "Reset Error.", exception);
+      try {
+        if (conn != null) {
+          conn.rollback();
+        }
+      } catch (SQLException exception1) {
+        log.log(Level.INFO, "Roll Back Error.", exception1);
+      }
+    } finally {
+      if (result != null) {
+        try {
+          result.close();
+        } catch (SQLException exception2) {
+          log.log(Level.INFO, "Close result error.", exception2);
+        }
+      }
+      if (statement != null) {
+        try {
+          statement.close();
+        } catch (SQLException exception2) {
+          log.log(Level.INFO, "Close stmt error.", exception2);
+        }
+      }
+      if (conn != null) {
+        try {
+          conn.close();
+        } catch (SQLException exception3) {
+          log.log(Level.INFO, "Close conn error.", exception3);
+        }
+      }
+    }
   }
 }

@@ -79,7 +79,6 @@ public class UserInfoEndpoint extends HttpServlet {
       JSONObject json = new JSONObject();
       json.appendField("username", user.getUsername());
       json.appendField("email", user.getEmail());
-      json.appendField("google_account_id", user.getGoogleAccountId());
 
       response.getWriter().println(json.toJSONString());
       response.getWriter().flush();

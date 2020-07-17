@@ -297,6 +297,11 @@ public class InMemoryOAuth2TokenService implements OAuth2TokenService {
     }
   }
 
+  @Override
+  public void reset() {
+    userTokensMap.clear();
+  }
+
   private class TokenCleaner implements Runnable {
 
     @Override

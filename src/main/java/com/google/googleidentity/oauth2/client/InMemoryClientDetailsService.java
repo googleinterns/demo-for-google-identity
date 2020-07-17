@@ -74,4 +74,9 @@ public final class InMemoryClientDetailsService implements ClientDetailsService 
   public List<ClientDetails> listClient() {
     return ImmutableList.copyOf(clientStore.values());
   }
+
+  @Override
+  public void reset() {
+    clientStore.clear();
+  }
 }

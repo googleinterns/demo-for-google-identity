@@ -10,16 +10,11 @@
   </div>
 
   <div class="navbar-collapse collapse" id="navbarNavDropdown" style="margin-left:3%; margin-right:3%">
-    <ul class="navbar-nav mr-auto">
-      <li class="nav-item">
-        <a class="nav-link" href="/client/change_setting" id="change">Change Setting</a>
-      </li>
-    </ul>
     <ul class="navbar-nav ml-md-auto d-md-flex">
       <li class="nav-item2 dropdown">
         <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
           <i class="fas fa-user-circle fa-fw"></i>
-          ${clientID}
+          ${username}
         </a>
         <div class="dropdown-menu" aria-labelledby="userDropdown">
           <a class="dropdown-item" href="/logout">Logout</a>

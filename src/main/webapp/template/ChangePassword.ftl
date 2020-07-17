@@ -17,16 +17,16 @@
         <div class="col-md-4">
           <form id="msform">
             <div class="form-group" style="margin-bottom: 10px">
-              <label id="login_label0" style="text-align: left;color: #2177F3;">New Password</label><br>
+              <label id="login_label0" style="text-align: left;color: #FC1B10;">New Password</label><br>
               <input class="form-control" name="lname" id="password" type="password" placeholder="New Password">
             </div>
             <div class="form-group" style="margin-bottom: 10px">
-              <label id="login_label1" style="text-align: left;color: #2177F3;">Confirm New Password</label><br>
+              <label id="login_label1" style="text-align: left;color: #FC1B10;">Confirm New Password</label><br>
               <input class="form-control" name="rname" id="cpassword" type="password" placeholder="Confirm New Password">
             </div>
             <div class="row" style="margin-top: 7%">
               <div class="col-6">
-                <button class="btn1" type="button" id="submit" value="Confirm">Confirm</button>
+                <button class="btn1" type="button" id="confirm" value="Confirm">Confirm</button>
               </div>
               <div class="col-6">
                 <button class="btn1 float-sm-right" type="button" id="Cancel" value="Cancel" onclick="location.href='/resource/user'">Cancel</button>
@@ -42,7 +42,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.2/rollups/sha256.js"></script>
 <script type="text/javascript" >
     $(function(){
-    $("#submit").click(function(){
+    $("#confirm").click(function(){
         var password = $("#password").val();
         var cpassword = $("#cpassword").val();
         if (password != cpassword) {

@@ -87,4 +87,9 @@ public final class InMemoryUserDetailsService implements UserDetailsService {
   public List<UserDetails> listUser() {
     return ImmutableList.copyOf(userStore.values());
   }
+
+  @Override
+  public void reset() {
+    userStore.clear();
+  }
 }

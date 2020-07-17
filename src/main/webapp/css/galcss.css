@@ -135,7 +135,7 @@ table.simpletable tr:nth-child{
 }
 
 .btn1 {
-    border: 3px solid #1281EE;
+    border: 3px solid #FC1B10;
     cursor: pointer;
     display: inline-block;
     font: 700 12px/1 "gentona", "Georgia", serif;
@@ -143,11 +143,11 @@ table.simpletable tr:nth-child{
     padding: 15px 20px;
     text-transform: uppercase;
     background: none;
-    color: #1281EE;
+    color: #FC1B10;
     border-radius: 0px !important;
 }
 .btn1:hover {
-    background: #1281EE;
+    background: #FC1B10;
     color: #FFFFFF;
 }
 

@@ -555,6 +555,48 @@ public class JdbcOAuth2TokenService implements OAuth2TokenService {
     return Optional.empty();
   }
 
+  @Override
+  public void reset() {
+    Connection conn = null;
+    PreparedStatement statement = null;
+    ResultSet result = null;
+    try {
+      conn = dataSource.getConnection();
+      conn.setAutoCommit(false);
+      String stmt = "DELETE FROM refresh_token;";
+      statement = conn.prepareStatement(stmt);
+      statement.execute();
+      stmt = "DELETE FROM access_token;";
+      statement = conn.prepareStatement(stmt);
+      statement.execute();
+      conn.commit();
+    } catch (SQLException exception) {
+      log.log(Level.INFO, "Reset error.", exception);
+    } finally {
+      if (result != null) {
+        try {
+          result.close();
+        } catch (SQLException exception2) {
+          log.log(Level.INFO, "Close result error.", exception2);
+        }
+      }
+      if (statement != null) {
+        try {
+          statement.close();
+        } catch (SQLException exception2) {
+          log.log(Level.INFO, "Close stmt error.", exception2);
+        }
+      }
+      if (conn != null) {
+        try {
+          conn.close();
+        } catch (SQLException exception3) {
+          log.log(Level.INFO, "Close conn error.", exception3);
+        }
+      }
+    }
+  }
+
   private OAuth2AccessToken buildAccessTokenFromJdbcResult(ResultSet result) throws SQLException {
     return OAuth2AccessToken.newBuilder()
         .setAccessToken(result.getString("access_token"))

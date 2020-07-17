@@ -28,7 +28,7 @@
           ${username}
         </a>
         <div class="dropdown-menu" aria-labelledby="userDropdown">
-          <a class="dropdown-item" href="/resource/user/logout">Logout</a>
+          <a class="dropdown-item" href="/logout">Logout</a>
         </div>
       </li>
     </ul>
