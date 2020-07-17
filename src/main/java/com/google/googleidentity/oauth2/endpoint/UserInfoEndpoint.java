@@ -64,18 +64,31 @@ public class UserInfoEndpoint extends HttpServlet {
 
   protected void doGet(HttpServletRequest request, HttpServletResponse response)
       throws ServletException, IOException, UnsupportedOperationException {
-      String accessToken = request.getParameter(OAuth2ParameterNames.ACCESS_TOKEN);
+    String accessToken = request.getParameter(OAuth2ParameterNames.ACCESS_TOKEN);
 
     try {
       if (Strings.isNullOrEmpty(accessToken)) {
+        String auth = request.getHeader("Authorization");
+        if (Strings.isNullOrEmpty(auth)) {
           throw new InvalidRequestException(ErrorCode.NO_ACCESS_TOKEN);
+        }
+        if (!auth.startsWith("Bearer ")) {
+          throw new InvalidRequestException(ErrorCode.INVALID_ACCESS_TOKEN);
+        }
+        if (auth.split("\t").length != 2) {
+          throw new InvalidRequestException(ErrorCode.INVALID_ACCESS_TOKEN);
+        }
+        accessToken = auth.split("\t")[1];
       }
 
       if (!oauth2TokenService.readAccessToken(accessToken).isPresent()) {
         throw new InvalidRequestException(ErrorCode.INVALID_ACCESS_TOKEN);
       }
 
-      UserDetails user = userDetailsService.getUserByName(oauth2TokenService.readAccessToken(accessToken).get().getUsername()).get();
+      UserDetails user =
+          userDetailsService
+              .getUserByName(oauth2TokenService.readAccessToken(accessToken).get().getUsername())
+              .get();
       JSONObject json = new JSONObject();
       json.appendField("username", user.getUsername());
       json.appendField("email", user.getEmail());
@@ -93,4 +106,4 @@ public class UserInfoEndpoint extends HttpServlet {
       return;
     }
   }
-  }
+}
