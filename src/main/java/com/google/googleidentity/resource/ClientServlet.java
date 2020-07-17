@@ -17,6 +17,7 @@
 package com.google.googleidentity.resource;
 
 import com.google.common.base.Preconditions;
+import com.google.googleidentity.oauth2.client.ClientDetails;
 import com.google.googleidentity.oauth2.token.OAuth2TokenService;
 import com.google.googleidentity.oauth2.util.OAuth2Utils;
 import com.google.googleidentity.security.UserSession;
@@ -46,7 +47,7 @@ import java.util.logging.Logger;
  * display the username.
  */
 @Singleton
-public final class UserServlet extends HttpServlet {
+public final class ClientServlet extends HttpServlet {
 
   private static final long serialVersionUID = 1L;
 
@@ -87,15 +88,15 @@ public final class UserServlet extends HttpServlet {
     UserSession userSession = OAuth2Utils.getUserSession(request);
 
     Preconditions.checkArgument(
-        userSession.getUser().isPresent(), "User should have been logged in already");
+        userSession.getClient().isPresent(), "Client should have been logged in already");
 
-    UserDetails user = userSession.getUser().get();
+    ClientDetails client = userSession.getClient().get();
 
     Map<String, Object> information = new HashMap<>();
 
-    information.put("username", user.getUsername());
+    information.put("clientID", client.getClientId());
 
-    Template template = configuration.getTemplate("MainPage.ftl");
+    Template template = configuration.getTemplate("ClientPage.ftl");
 
     response.setCharacterEncoding("utf-8");
     PrintWriter printWriter = response.getWriter();

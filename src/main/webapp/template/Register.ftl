@@ -9,7 +9,7 @@
 <#include "/incs/header.ftl">
 <div id="loginContainer">
   <div class="customContainer">
-    <h2 style="text-align: center; font-family: Georgia, serif">Medical Data Sharing System</h2>
+    <h2 style="text-align: center; font-family: Georgia, serif">Google Account Linking Demo</h2>
     <h3 style="text-align: center; padding-bottom: 8%; font-family: Georgia, serif">Register</h2>
       <div class="row">
         <div class="col-md-4"></div>

@@ -32,6 +32,24 @@
     </#list>
     </table>
   </form>
+<h2 style="text-align: center; padding-top: 4%; padding-bottom: 7%; font-family: Georgia, serif">Current Refresh Tokens</h2>
+<form>
+  <table class="simpletable"  id="datatable1">
+    <tr>
+      <th>refresh_token</th>
+      <th>client_id</th>
+      <th>is_scoped</th>
+      <th>scopes</th>
+    </tr>
+    <#list refreshTokens as refreshToken>
+    <tr>
+      <#list refreshToken as info>
+      <td>${info}</td>
+    </#list>
+    </tr>
+  </#list>
+  </table>
+</form>
 </div>
 </body>
 </html>

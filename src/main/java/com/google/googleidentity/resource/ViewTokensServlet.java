@@ -20,6 +20,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
 import com.google.googleidentity.oauth2.token.OAuth2AccessToken;
+import com.google.googleidentity.oauth2.token.OAuth2RefreshToken;
 import com.google.googleidentity.oauth2.token.OAuth2TokenService;
 import com.google.googleidentity.oauth2.util.OAuth2Utils;
 import com.google.googleidentity.security.UserSession;
@@ -100,11 +101,12 @@ public final class ViewTokensServlet extends HttpServlet {
 
     information.put("username", user.getUsername());
 
-    List<List<String>> list = new LinkedList<>();
+    List<List<String>> accessTokenList = new LinkedList<>();
+    List<List<String>> refreshTokenList = new LinkedList<>();
     for (String client : oauth2TokenService.listUserClient(user.getUsername())) {
       for (OAuth2AccessToken token :
           oauth2TokenService.listUserClientAccessTokens(user.getUsername(), client)) {
-        list.add(
+        accessTokenList.add(
             ImmutableList.of(
                 token.getAccessToken(),
                 token.getClientId(),
@@ -113,9 +115,20 @@ public final class ViewTokensServlet extends HttpServlet {
                 Instant.ofEpochSecond(token.getExpiredTime()).toString(),
                 token.getRefreshToken()));
       }
+      if (oauth2TokenService.getUserClientRefreshToken(user.getUsername(), client).isPresent()) {
+        OAuth2RefreshToken token =
+            oauth2TokenService.getUserClientRefreshToken(user.getUsername(), client).get();
+        refreshTokenList.add(
+            ImmutableList.of(
+                token.getRefreshToken(),
+                token.getClientId(),
+                String.valueOf(token.getIsScoped()),
+                String.join("\t", token.getScopesList())));
+      }
     }
 
-    information.put("accessTokens", list);
+    information.put("accessTokens", accessTokenList);
+    information.put("refreshTokens", refreshTokenList);
 
     Template template = configuration.getTemplate("ViewTokens.ftl");
 

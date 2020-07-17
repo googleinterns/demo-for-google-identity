@@ -85,7 +85,7 @@ public class UserInfoEndpoint extends HttpServlet {
       response.getWriter().flush();
     } catch (OAuth2Exception exception) {
       log.info(
-          "Failed when process request in Token Revoke Endpoint"
+          "Failed when process request in User Info Endpoint"
               + "Error Type: "
               + exception.getErrorType()
               + "Description: "

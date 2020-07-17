@@ -41,10 +41,18 @@ limitations under the License.
                         </div>
                         <div class="row" style="margin-top: 7%">
                             <div class="col-6">
-                                <button class="btn1" type="button" id="login" value="Login" >Login</button>
+                                <button class="btn1" type="button" id="login" value="Login" >Login(User)</button>
                             </div>
                             <div class="col-6">
-                                <button class="btn1 float-sm-right" type="button" id="Register" value="Register" onclick="location.href='/register'">Register</button>
+                                <button class="btn1 float-sm-right" type="button" id="Register0" value="Register" onclick="location.href='/register'">Register(User)</button>
+                            </div>
+                        </div>
+                            <div class="row" style="margin-top: 7%">
+                            <div class="col-6">
+                                <button class="btn1" type="button" id="loginc" value="Login" >Login(Client)</button>
+                            </div>
+                            <div class="col-6">
+                                <button class="btn1 float-sm-right" type="button" id="Register1" value="Register" onclick="location.href='/register_client'">Register(Client)</button>
                             </div>
                         </div>
                     </form>
@@ -67,6 +75,26 @@ limitations under the License.
             url : "/login_check",
             type : "POST",
             data : "username=" + username + "&password=" +password,
+            success : function(data){
+                window.location.href = data;
+            },
+            error : function(xhr){
+                alert("Login Failed!");
+                window.location.reload();
+            }
+        });
+    })
+});
+
+$(function(){
+    $("#loginc").click(function(){
+        var clientId = $("#username").val();
+        var secret = $("#password").val();
+        secret = CryptoJS.SHA256(secret);
+        $.ajax({
+            url : "/client_login_check",
+            type : "POST",
+            data : "client_id=" + clientId + "&secret=" +secret,
             success : function(data){
                 window.location.href = data;
             },

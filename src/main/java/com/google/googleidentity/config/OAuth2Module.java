@@ -16,6 +16,7 @@
 
 package com.google.googleidentity.config;
 
+import com.google.googleidentity.filter.ClientLoginFilter;
 import com.google.googleidentity.filter.OAuth2TokenAuthenticationFilter;
 import com.google.googleidentity.filter.UserAuthenticationFilter;
 import com.google.googleidentity.oauth2.endpoint.AuthorizationEndpoint;
@@ -27,10 +28,16 @@ import com.google.googleidentity.oauth2.endpoint.TokenEndpoint;
 import com.google.googleidentity.oauth2.endpoint.TokenRevokeEndpoint;
 import com.google.googleidentity.oauth2.endpoint.UserInfoEndpoint;
 import com.google.googleidentity.oauth2.filter.ClientAuthenticationFilter;
+import com.google.googleidentity.resource.ChangeSettingServlet;
+import com.google.googleidentity.resource.ClientServlet;
+import com.google.googleidentity.resource.LogoutServlet;
 import com.google.googleidentity.resource.UnlinkServlet;
 import com.google.googleidentity.resource.UserServlet;
 import com.google.googleidentity.resource.ViewTokensServlet;
 import com.google.googleidentity.security.ChangePasswordServlet;
+import com.google.googleidentity.security.ClientLoginCheckServlet;
+import com.google.googleidentity.security.ClientRegisterCheckServlet;
+import com.google.googleidentity.security.ClientRegisterServlet;
 import com.google.googleidentity.security.LoginCheckServlet;
 import com.google.googleidentity.security.LoginServlet;
 import com.google.googleidentity.security.RegisterCheckServlet;
@@ -55,6 +62,12 @@ public final class OAuth2Module extends AbstractModule {
             serve("/resource/user/change_password").with(ChangePasswordServlet.class);
             serve("/resource/user/view_tokens").with(ViewTokensServlet.class);
             serve("/resource/user/unlink").with(UnlinkServlet.class);
+            serve("/resource/user/logout").with(LogoutServlet.class);
+            serve("/client_login_check").with(ClientLoginCheckServlet.class);
+            serve("/register_client").with(ClientRegisterServlet.class);
+            serve("/client_register_check").with(ClientRegisterCheckServlet.class);
+            serve("/client").with(ClientServlet.class);
+            serve("/client/change_setting").with(ChangeSettingServlet.class);
             serve("/oauth2/authorize").with(AuthorizationEndpoint.class);
             serve("/oauth2/consent").with(ConsentEndpoint.class);
             serve("/oauth2/token").with(TokenEndpoint.class);
@@ -66,6 +79,7 @@ public final class OAuth2Module extends AbstractModule {
             // The filter order is same as the order they be introduced here, let token
             // authentication filter be at the first so that it can set client session from token to
             // let the request pass user authentication filter
+            filterRegex("/client","/client/.*").through(ClientLoginFilter.class);
             filterRegex("/resource/.*").through(OAuth2TokenAuthenticationFilter.class);
             filterRegex("/oauth2/authorize", "/resource/.*")
                 .through(UserAuthenticationFilter.class);
