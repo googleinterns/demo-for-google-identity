@@ -72,13 +72,13 @@ public class UserInfoEndpoint extends HttpServlet {
         if (Strings.isNullOrEmpty(auth)) {
           throw new InvalidRequestException(ErrorCode.NO_ACCESS_TOKEN);
         }
-        if (!auth.startsWith("Bearer ")) {
+        if (!auth.startsWith("Bearer")) {
           throw new InvalidRequestException(ErrorCode.INVALID_ACCESS_TOKEN);
         }
-        if (auth.split("\t").length != 2) {
+        if (auth.split("\\s+").length != 2) {
           throw new InvalidRequestException(ErrorCode.INVALID_ACCESS_TOKEN);
         }
-        accessToken = auth.split("\t")[1];
+        accessToken = auth.split("\\s+")[1];
       }
 
       if (!oauth2TokenService.readAccessToken(accessToken).isPresent()) {

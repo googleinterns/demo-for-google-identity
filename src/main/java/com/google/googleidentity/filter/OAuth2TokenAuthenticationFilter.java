@@ -74,9 +74,9 @@ public class OAuth2TokenAuthenticationFilter implements Filter {
     if (Strings.isNullOrEmpty(accessToken)) {
       String auth = ((HttpServletRequest) request).getHeader("Authorization");
       if (!Strings.isNullOrEmpty(auth)
-          && auth.startsWith("Bearer ")
-          && auth.split("\t").length == 2) {
-        accessToken = auth.split("\t")[1];
+          && auth.startsWith("Bearer")
+          && auth.split("\\s+").length == 2) {
+        accessToken = auth.split("\\s+")[1];
       }
     }
 
