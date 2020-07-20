@@ -47,6 +47,8 @@ public final class InvalidGrantException extends OAuth2Exception {
         return "Refresh token and client mismatch!";
       case REVOKE_TOKEN_CLIENT_MISMATCH:
         return "Token to be revoked and client id mismatch!";
+      case EXPIRED_ACCESS_TOKEN:
+        return "Token expired!";
       default:
         throw new IllegalArgumentException(String.valueOf(errorCode));
     }
@@ -59,6 +61,7 @@ public final class InvalidGrantException extends OAuth2Exception {
     CODE_REDIRECT_URI_MISMATCH,
     NONEXISTENT_REFRESH_TOKEN,
     REFRESH_TOKEN_CLIENT_MISMATCH,
-    REVOKE_TOKEN_CLIENT_MISMATCH
+    REVOKE_TOKEN_CLIENT_MISMATCH,
+    EXPIRED_ACCESS_TOKEN
   }
 }

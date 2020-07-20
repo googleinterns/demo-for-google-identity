@@ -20,6 +20,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import com.google.googleidentity.oauth2.client.ClientDetails;
 import com.google.googleidentity.oauth2.client.ClientDetailsService;
+import com.google.googleidentity.oauth2.exception.InvalidGrantException;
 import com.google.googleidentity.oauth2.exception.InvalidRequestException;
 import com.google.googleidentity.oauth2.exception.InvalidRequestException.ErrorCode;
 import com.google.googleidentity.oauth2.exception.OAuth2Exception;
@@ -37,6 +38,7 @@ import com.google.googleidentity.user.UserDetailsService;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import java.io.IOException;
+import java.time.Instant;
 import java.util.logging.Logger;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -83,6 +85,12 @@ public class UserInfoEndpoint extends HttpServlet {
 
       if (!oauth2TokenService.readAccessToken(accessToken).isPresent()) {
         throw new InvalidRequestException(ErrorCode.INVALID_ACCESS_TOKEN);
+      }
+
+      if (Instant.ofEpochSecond(
+              oauth2TokenService.readAccessToken(accessToken).get().getExpiredTime())
+          .isBefore(Instant.now())) {
+        throw new InvalidGrantException(InvalidGrantException.ErrorCode.EXPIRED_ACCESS_TOKEN);
       }
 
       UserDetails user =
