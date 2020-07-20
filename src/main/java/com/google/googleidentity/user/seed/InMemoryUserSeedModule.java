@@ -14,7 +14,7 @@
     limitations under the License.
 */
 
-package com.google.googleidentity.user.test;
+package com.google.googleidentity.user.seed;
 
 import com.google.common.base.Charsets;
 import com.google.common.hash.Hashing;
@@ -25,7 +25,7 @@ import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 import com.google.inject.Singleton;
 
-public class TestUserModule extends AbstractModule {
+public class InMemoryUserSeedModule extends AbstractModule {
 
   private static final String TESTUSERNAME0 = "user";
   private static final String TESTUSERPASSWORD0 = "123456";

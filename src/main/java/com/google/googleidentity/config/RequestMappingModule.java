@@ -46,7 +46,7 @@ import com.google.googleidentity.security.RegisterServlet;
 import com.google.inject.AbstractModule;
 import com.google.inject.servlet.ServletModule;
 
-public final class OAuth2Module extends AbstractModule {
+public final class RequestMappingModule extends AbstractModule {
 
   @Override
   protected void configure() {

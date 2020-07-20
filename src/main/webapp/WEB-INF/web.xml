@@ -12,7 +12,7 @@
    <url-pattern>/*</url-pattern>
  </filter-mapping>
  <listener>
-    <listener-class>com.google.googleidentity.config.OAuth2GuiceServletContextListener</listener-class>
+    <listener-class>com.google.googleidentity.config.TopGuiceServletContextListener</listener-class>
   </listener>
     <context-param>
         <param-name>org.mortbay.jetty.servlet.SessionURL</param-name>

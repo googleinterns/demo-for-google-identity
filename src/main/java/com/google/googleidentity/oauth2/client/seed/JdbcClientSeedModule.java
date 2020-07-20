@@ -14,7 +14,7 @@
     limitations under the License.
 */
 
-package com.google.googleidentity.oauth2.client.test;
+package com.google.googleidentity.oauth2.client.seed;
 
 import com.google.common.base.Charsets;
 import com.google.common.collect.ImmutableList;
@@ -27,7 +27,7 @@ import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 import com.google.inject.Singleton;
 
-public class TestJdbcClientModule extends AbstractModule {
+public class JdbcClientSeedModule extends AbstractModule {
 
   private static final String TESTCLIENTID = "google";
   private static final String TESTSECRET = "secret";
