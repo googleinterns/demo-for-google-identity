@@ -17,32 +17,32 @@
 package com.google.googleidentity.config;
 
 import com.google.googleidentity.mysql.CloudSqlModule;
-import com.google.googleidentity.oauth2.client.test.TestClientModule;
-import com.google.googleidentity.oauth2.client.test.TestJdbcClientModule;
+import com.google.googleidentity.oauth2.client.seed.InMemoryClientSeedModule;
+import com.google.googleidentity.oauth2.client.seed.JdbcClientSeedModule;
 import com.google.googleidentity.oauth2.config.OAuth2ServerModule;
-import com.google.googleidentity.user.test.TestJdbcUserModule;
-import com.google.googleidentity.user.test.TestUserModule;
+import com.google.googleidentity.user.seed.JdbcUserSeedModule;
+import com.google.googleidentity.user.seed.InMemoryUserSeedModule;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.google.inject.servlet.GuiceServletContextListener;
 
-/** Start GuiceServlet, Create an Injector for Guice in OAuth2Module{@link OAuth2Module} */
-public final class OAuth2GuiceServletContextListener extends GuiceServletContextListener {
+/** Start GuiceServlet, Create an Injector for Guice in OAuth2Module{@link RequestMappingModule} */
+public final class DemoGuiceServletContextListener extends GuiceServletContextListener {
   @Override
   protected Injector getInjector() {
     if (("true").equals(System.getenv("USE_CLOUD_SQL"))) {
       return Guice.createInjector(
-          new OAuth2Module(),
+          new RequestMappingModule(),
           new OAuth2ServerModule(),
-          new TestJdbcUserModule(),
-          new TestJdbcClientModule(),
+          new JdbcUserSeedModule(),
+          new JdbcClientSeedModule(),
           new CloudSqlModule());
     } else {
       return Guice.createInjector(
-          new OAuth2Module(),
+          new RequestMappingModule(),
           new OAuth2ServerModule(),
-          new TestUserModule(),
-          new TestClientModule());
+          new InMemoryUserSeedModule(),
+          new InMemoryClientSeedModule());
     }
   }
 }
