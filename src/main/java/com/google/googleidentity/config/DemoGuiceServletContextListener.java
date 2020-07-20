@@ -27,7 +27,7 @@ import com.google.inject.Injector;
 import com.google.inject.servlet.GuiceServletContextListener;
 
 /** Start GuiceServlet, Create an Injector for Guice in OAuth2Module{@link RequestMappingModule} */
-public final class TopGuiceServletContextListener extends GuiceServletContextListener {
+public final class DemoGuiceServletContextListener extends GuiceServletContextListener {
   @Override
   protected Injector getInjector() {
     if (("true").equals(System.getenv("USE_CLOUD_SQL"))) {
