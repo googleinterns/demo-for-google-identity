@@ -14,7 +14,7 @@
     limitations under the License.
 */
 
-package com.google.googleidentity.oauth2.implicit;
+package com.google.googleidentity.oauth2.request;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.mockito.Mockito.mock;
@@ -23,24 +23,17 @@ import static org.mockito.Mockito.verify;
 import com.google.common.base.Charsets;
 import com.google.common.hash.Hashing;
 import com.google.googleidentity.oauth2.client.ClientDetails;
-import com.google.googleidentity.oauth2.client.ClientDetailsService;
-import com.google.googleidentity.oauth2.client.InMemoryClientDetailsService;
-import com.google.googleidentity.oauth2.refresh.RefreshTokenRequestHandler;
-import com.google.googleidentity.oauth2.request.OAuth2Request;
 import com.google.googleidentity.oauth2.token.InMemoryOAuth2TokenService;
 import com.google.googleidentity.oauth2.token.OAuth2AccessToken;
 import com.google.googleidentity.oauth2.token.OAuth2TokenService;
 import com.google.googleidentity.oauth2.util.OAuth2Enums.GrantType;
 import com.google.googleidentity.oauth2.util.OAuth2Enums.ResponseType;
-import com.google.googleidentity.user.InMemoryUserDetailsService;
 import com.google.googleidentity.user.UserDetails;
-import com.google.googleidentity.user.UserDetailsService;
 import java.io.IOException;
 import java.util.List;
 import javax.servlet.http.HttpServletResponse;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.Matchers;
 
 public class ImplicitRequestHandlerTest {
   private static final String CLIENTID = "client";

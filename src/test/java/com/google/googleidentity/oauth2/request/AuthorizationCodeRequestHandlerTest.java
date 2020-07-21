@@ -14,15 +14,18 @@
     limitations under the License.
 */
 
-package com.google.googleidentity.oauth2.authorizationcode;
+package com.google.googleidentity.oauth2.request;
 
 import com.google.common.base.Charsets;
 import com.google.common.hash.Hashing;
+import com.google.googleidentity.oauth2.authorizationcode.AuthorizationCodeService;
+import com.google.googleidentity.oauth2.authorizationcode.InMemoryCodeStore;
 import com.google.googleidentity.oauth2.client.ClientDetails;
 import com.google.googleidentity.oauth2.client.ClientDetailsService;
 import com.google.googleidentity.oauth2.client.InMemoryClientDetailsService;
 import com.google.googleidentity.oauth2.exception.InvalidGrantException;
 import com.google.googleidentity.oauth2.exception.OAuth2Exception;
+import com.google.googleidentity.oauth2.request.AuthorizationCodeRequestHandler;
 import com.google.googleidentity.oauth2.request.OAuth2Request;
 import com.google.googleidentity.oauth2.token.InMemoryOAuth2TokenService;
 import com.google.googleidentity.oauth2.token.OAuth2AccessToken;

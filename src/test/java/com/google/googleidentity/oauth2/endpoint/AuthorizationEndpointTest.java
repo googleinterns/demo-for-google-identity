@@ -18,16 +18,11 @@ package com.google.googleidentity.oauth2.endpoint;
 
 import com.google.common.base.Charsets;
 import com.google.common.hash.Hashing;
-import com.google.googleidentity.oauth2.authorizationcode.AuthorizationCodeRequestHandler;
-import com.google.googleidentity.oauth2.authorizationcode.AuthorizationCodeService;
-import com.google.googleidentity.oauth2.authorizationcode.InMemoryCodeStore;
 import com.google.googleidentity.oauth2.client.ClientDetails;
 import com.google.googleidentity.oauth2.client.ClientDetailsService;
 import com.google.googleidentity.oauth2.client.InMemoryClientDetailsService;
-import com.google.googleidentity.oauth2.request.MultipleRequestHandler;
 import com.google.googleidentity.oauth2.request.RequestHandler;
 import com.google.googleidentity.oauth2.request.OAuth2Request;
-import com.google.googleidentity.oauth2.token.InMemoryOAuth2TokenService;
 import com.google.googleidentity.oauth2.util.OAuth2Constants;
 import com.google.googleidentity.oauth2.util.OAuth2Enums.GrantType;
 import com.google.googleidentity.oauth2.util.OAuth2Enums.ResponseType;
@@ -37,8 +32,6 @@ import com.google.googleidentity.testtools.FakeHttpSession;
 import com.google.googleidentity.user.InMemoryUserDetailsService;
 import com.google.googleidentity.user.UserDetails;
 import com.google.googleidentity.user.UserDetailsService;
-import java.util.HashMap;
-import java.util.Map;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -94,14 +87,9 @@ public class AuthorizationEndpointTest {
     userDetailsService.addUser(USER);
     userSession = new UserSession();
     userSession.setUser(USER);
-    Map<GrantType, RequestHandler> map = new HashMap<>();
-    map.put(
-        GrantType.AUTHORIZATION_CODE,
-        new AuthorizationCodeRequestHandler(
-            new AuthorizationCodeService(new InMemoryCodeStore()),
-            new InMemoryOAuth2TokenService()));
+    RequestHandler requestHandler = mock(RequestHandler.class);
     authorizationEndpoint =
-        new AuthorizationEndpoint(clientDetailsService, new MultipleRequestHandler(map));
+        new AuthorizationEndpoint(clientDetailsService, requestHandler);
   }
 
   @Test

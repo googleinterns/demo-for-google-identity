@@ -14,7 +14,7 @@
     limitations under the License.
 */
 
-package com.google.googleidentity.oauth2.refresh;
+package com.google.googleidentity.oauth2.request;
 
 import com.google.googleidentity.oauth2.exception.InvalidGrantException;
 import com.google.googleidentity.oauth2.exception.InvalidGrantException.ErrorCode;

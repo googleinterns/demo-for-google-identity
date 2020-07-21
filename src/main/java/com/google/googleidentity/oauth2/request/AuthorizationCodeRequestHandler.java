@@ -14,8 +14,9 @@
     limitations under the License.
 */
 
-package com.google.googleidentity.oauth2.authorizationcode;
+package com.google.googleidentity.oauth2.request;
 
+import com.google.googleidentity.oauth2.authorizationcode.AuthorizationCodeService;
 import com.google.googleidentity.oauth2.exception.InvalidGrantException;
 import com.google.googleidentity.oauth2.exception.OAuth2Exception;
 import com.google.googleidentity.oauth2.request.OAuth2Request;
@@ -37,7 +38,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /** An Implementation of {@link RequestHandler}, handle request in Authorization Code Flow. */
-public final class AuthorizationCodeRequestHandler implements RequestHandler {
+final class AuthorizationCodeRequestHandler implements RequestHandler {
 
   private final AuthorizationCodeService authorizationCodeService;
 

@@ -14,7 +14,7 @@
     limitations under the License.
 */
 
-package com.google.googleidentity.oauth2.jwt;
+package com.google.googleidentity.oauth2.request;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Charsets;
@@ -27,6 +27,7 @@ import com.google.googleidentity.oauth2.exception.InvalidRequestException;
 import com.google.googleidentity.oauth2.exception.InvalidRequestException.ErrorCode;
 import com.google.googleidentity.oauth2.exception.InvalidScopeException;
 import com.google.googleidentity.oauth2.exception.OAuth2Exception;
+import com.google.googleidentity.oauth2.jwt.JwtSigningKeyResolver;
 import com.google.googleidentity.oauth2.request.OAuth2Request;
 import com.google.googleidentity.oauth2.request.RequestHandler;
 import com.google.googleidentity.oauth2.token.OAuth2AccessToken;
@@ -54,8 +55,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.apache.http.HttpStatus;
 
 /** Processor for dealing JWT Assertion */
-@Singleton
-public class JwtAssertionRequestHandler implements RequestHandler {
+final class JwtAssertionRequestHandler implements RequestHandler {
 
   private static final String KEYURL = "https://www.googleapis.com/oauth2/v3/certs";
   private static final String GOOLE_ISS = "https://accounts.google.com";
