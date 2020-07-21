@@ -16,10 +16,6 @@
 
 package com.google.googleidentity.oauth2.request;
 
-import com.google.googleidentity.oauth2.authorizationcode.AuthorizationCodeRequestHandler;
-import com.google.googleidentity.oauth2.implicit.ImplicitRequestHandler;
-import com.google.googleidentity.oauth2.jwt.JwtAssertionRequestHandler;
-import com.google.googleidentity.oauth2.refresh.RefreshTokenRequestHandler;
 import com.google.googleidentity.oauth2.util.OAuth2Enums.GrantType;
 import com.google.inject.AbstractModule;
 import com.google.inject.multibindings.MapBinder;

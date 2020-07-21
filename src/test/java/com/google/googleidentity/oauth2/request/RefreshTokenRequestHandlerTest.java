@@ -14,7 +14,7 @@
     limitations under the License.
 */
 
-package com.google.googleidentity.oauth2.refresh;
+package com.google.googleidentity.oauth2.request;
 
 import static com.google.common.truth.Truth.assertThat;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
@@ -27,20 +27,15 @@ import com.google.common.hash.Hashing;
 import com.google.common.truth.Truth8;
 import com.google.common.truth.extensions.proto.ProtoTruth;
 import com.google.googleidentity.oauth2.client.ClientDetails;
-import com.google.googleidentity.oauth2.client.ClientDetailsService;
-import com.google.googleidentity.oauth2.client.InMemoryClientDetailsService;
 import com.google.googleidentity.oauth2.exception.InvalidGrantException;
 import com.google.googleidentity.oauth2.exception.OAuth2Exception;
-import com.google.googleidentity.oauth2.request.OAuth2Request;
 import com.google.googleidentity.oauth2.token.InMemoryOAuth2TokenService;
 import com.google.googleidentity.oauth2.token.OAuth2AccessToken;
 import com.google.googleidentity.oauth2.token.OAuth2TokenService;
 import com.google.googleidentity.oauth2.util.OAuth2Enums.GrantType;
 import com.google.googleidentity.oauth2.util.OAuth2Enums.ResponseType;
 import com.google.googleidentity.oauth2.util.OAuth2ParameterNames;
-import com.google.googleidentity.user.InMemoryUserDetailsService;
 import com.google.googleidentity.user.UserDetails;
-import com.google.googleidentity.user.UserDetailsService;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;

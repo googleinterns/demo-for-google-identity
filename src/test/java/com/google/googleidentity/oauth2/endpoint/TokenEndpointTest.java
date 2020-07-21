@@ -20,9 +20,6 @@ import com.google.common.base.Charsets;
 import com.google.common.collect.ImmutableList;
 import com.google.common.hash.Hashing;
 import com.google.common.truth.Truth;
-import com.google.googleidentity.oauth2.authorizationcode.AuthorizationCodeRequestHandler;
-import com.google.googleidentity.oauth2.authorizationcode.AuthorizationCodeService;
-import com.google.googleidentity.oauth2.authorizationcode.InMemoryCodeStore;
 import com.google.googleidentity.oauth2.client.ClientDetails;
 import com.google.googleidentity.oauth2.client.ClientDetailsService;
 import com.google.googleidentity.oauth2.client.ClientSession;
@@ -30,10 +27,8 @@ import com.google.googleidentity.oauth2.client.InMemoryClientDetailsService;
 import com.google.googleidentity.oauth2.exception.InvalidRequestException;
 import com.google.googleidentity.oauth2.exception.OAuth2ExceptionHandler;
 import com.google.googleidentity.oauth2.filter.ClientAuthenticationFilterTest;
-import com.google.googleidentity.oauth2.request.MultipleRequestHandler;
 import com.google.googleidentity.oauth2.request.OAuth2Request;
 import com.google.googleidentity.oauth2.request.RequestHandler;
-import com.google.googleidentity.oauth2.token.InMemoryOAuth2TokenService;
 import com.google.googleidentity.oauth2.util.OAuth2Constants;
 import com.google.googleidentity.oauth2.util.OAuth2Enums.GrantType;
 import com.google.googleidentity.oauth2.util.OAuth2Enums.IntentType;
@@ -44,8 +39,6 @@ import com.google.googleidentity.testtools.FakeHttpSession;
 import com.google.googleidentity.user.InMemoryUserDetailsService;
 import com.google.googleidentity.user.UserDetails;
 import com.google.googleidentity.user.UserDetailsService;
-import java.util.HashMap;
-import java.util.Map;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -110,13 +103,8 @@ public class TokenEndpointTest {
     clientSession = new ClientSession();
     clientSession.setClient(CLIENT);
     System.setProperty("AUTH_CODE_LENGTH", "10");
-    Map<GrantType, RequestHandler> map = new HashMap<>();
-    map.put(
-        GrantType.AUTHORIZATION_CODE,
-        new AuthorizationCodeRequestHandler(
-            new AuthorizationCodeService(new InMemoryCodeStore()),
-            new InMemoryOAuth2TokenService()));
-    tokenEndpoint = new TokenEndpoint(clientDetailsService, new MultipleRequestHandler(map));
+    RequestHandler requestHandler = mock(RequestHandler.class);
+    tokenEndpoint = new TokenEndpoint(clientDetailsService, requestHandler);
   }
 
   @Test

@@ -14,7 +14,7 @@
     limitations under the License.
 */
 
-package com.google.googleidentity.oauth2.implicit;
+package com.google.googleidentity.oauth2.request;
 
 import com.google.common.base.Strings;
 import com.google.googleidentity.oauth2.exception.OAuth2Exception;
@@ -31,7 +31,7 @@ import java.util.logging.Logger;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.http.client.utils.URIBuilder;
 
-public class ImplicitRequestHandler implements RequestHandler {
+final class ImplicitRequestHandler implements RequestHandler {
 
   private final OAuth2TokenService oauth2TokenService;
   private static final Logger log = Logger.getLogger("ImplicitRequestHandler");

@@ -14,7 +14,7 @@
     limitations under the License.
 */
 
-package com.google.googleidentity.oauth2.jwt;
+package com.google.googleidentity.oauth2.request;
 
 import static com.google.common.truth.Truth.assertThat;
 import static com.google.common.truth.Truth8.assertThat;
@@ -32,14 +32,14 @@ import com.google.googleidentity.oauth2.client.ClientDetailsService;
 import com.google.googleidentity.oauth2.client.InMemoryClientDetailsService;
 import com.google.googleidentity.oauth2.exception.InvalidRequestException;
 import com.google.googleidentity.oauth2.exception.OAuth2Exception;
+import com.google.googleidentity.oauth2.jwt.JwkStore;
+import com.google.googleidentity.oauth2.request.JwtAssertionRequestHandler;
 import com.google.googleidentity.oauth2.request.OAuth2Request;
 import com.google.googleidentity.oauth2.token.InMemoryOAuth2TokenService;
 import com.google.googleidentity.oauth2.token.OAuth2AccessToken;
 import com.google.googleidentity.oauth2.token.OAuth2RefreshToken;
 import com.google.googleidentity.oauth2.token.OAuth2TokenService;
-import com.google.googleidentity.oauth2.util.OAuth2Constants;
 import com.google.googleidentity.oauth2.util.OAuth2Enums.GrantType;
-import com.google.googleidentity.oauth2.util.OAuth2Enums.IntentType;
 import com.google.googleidentity.oauth2.util.OAuth2ParameterNames;
 import com.google.googleidentity.testtools.TestJwtSigningKeyResolver;
 import com.google.googleidentity.user.InMemoryUserDetailsService;
@@ -55,7 +55,6 @@ import java.security.Key;
 import java.time.Instant;
 import java.util.Date;
 import java.util.Optional;
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import net.minidev.json.JSONObject;
 import net.minidev.json.parser.JSONParser;
