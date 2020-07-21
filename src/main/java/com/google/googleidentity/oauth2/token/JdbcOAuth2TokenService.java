@@ -640,7 +640,7 @@ public class JdbcOAuth2TokenService implements OAuth2TokenService {
         conn.commit();
 
       } catch (SQLException exception) {
-        log.log(Level.INFO, "generate refresh token error.", exception);
+        log.log(Level.INFO, "Clear expired token error.", exception);
         try {
           if (conn != null) {
             conn.rollback();
