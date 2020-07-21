@@ -33,7 +33,7 @@ import javax.servlet.http.HttpServletResponse;
 import net.minidev.json.JSONObject;
 
 /** TokenProcessor for refresh token request */
-public class RefreshTokenRequestHandler implements RequestHandler {
+final class RefreshTokenRequestHandler implements RequestHandler {
 
   private final OAuth2TokenService oauth2TokenService;
 
