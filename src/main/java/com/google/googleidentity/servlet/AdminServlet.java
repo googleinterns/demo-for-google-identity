@@ -14,22 +14,21 @@
     limitations under the License.
 */
 
-package com.google.googleidentity.resource;
+package com.google.googleidentity.servlet;
 
 import com.google.common.base.Charsets;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.hash.Hashing;
-import com.google.googleidentity.mysql.CloudSqlModule;
 import com.google.googleidentity.oauth2.authorizationcode.AuthorizationCodeService;
 import com.google.googleidentity.oauth2.client.ClientDetails;
 import com.google.googleidentity.oauth2.client.ClientDetailsService;
 import com.google.googleidentity.oauth2.token.OAuth2TokenService;
 import com.google.googleidentity.oauth2.util.OAuth2Enums.GrantType;
 import com.google.googleidentity.oauth2.util.OAuth2Utils;
-import com.google.googleidentity.security.UserSession;
 import com.google.googleidentity.user.UserDetails;
 import com.google.googleidentity.user.UserDetailsService;
+import com.google.googleidentity.user.UserSession;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import freemarker.template.Configuration;
@@ -38,8 +37,6 @@ import freemarker.template.TemplateException;
 import freemarker.template.Version;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
@@ -48,8 +45,6 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.sql.DataSource;
-import jnr.ffi.annotations.In;
 import org.apache.http.HttpStatus;
 
 @Singleton

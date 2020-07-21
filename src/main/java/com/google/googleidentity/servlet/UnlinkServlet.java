@@ -14,85 +14,77 @@
     limitations under the License.
 */
 
-package com.google.googleidentity.security;
+package com.google.googleidentity.servlet;
 
-import com.google.appengine.repackaged.com.google.api.client.http.HttpStatusCodes;
 import com.google.common.base.Preconditions;
+import com.google.googleidentity.oauth2.token.OAuth2TokenService;
 import com.google.googleidentity.oauth2.util.OAuth2Utils;
 import com.google.googleidentity.user.UserDetails;
-import com.google.googleidentity.user.UserDetailsService;
+import com.google.googleidentity.user.UserSession;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
 import freemarker.template.Version;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.util.HashMap;
+
 import java.util.List;
-import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 
 @Singleton
-public class ChangePasswordServlet extends HttpServlet {
+public final class UnlinkServlet extends HttpServlet {
 
-  private static final long serialVersionUID = 16L;
+  private static final long serialVersionUID = 17L;
 
-  private static final Logger log = Logger.getLogger("ChangePasswordServlet");
-
+  private static final Logger log = Logger.getLogger("UnlinkServlet");
+  private final OAuth2TokenService oauth2TokenService;
   private Configuration configuration;
 
-  private final UserDetailsService userDetailsService;
-
   @Inject
-  public ChangePasswordServlet(UserDetailsService userDetailsService) {
-    this.userDetailsService = userDetailsService;
+  public UnlinkServlet(OAuth2TokenService oauth2TokenService) {
+    this.oauth2TokenService = oauth2TokenService;
   }
 
   public void init() throws ServletException {
+
     Version version = new Version("2.3.30");
-
     configuration = new Configuration(version);
-
     configuration.setServletContextForTemplateLoading(getServletContext(), "template");
   }
 
-  protected void doGet(HttpServletRequest request, HttpServletResponse response)
+  public void doGet(HttpServletRequest request, HttpServletResponse response)
       throws ServletException, IOException {
 
     try {
       displayPage(request, response);
     } catch (TemplateException e) {
-      log.log(Level.INFO, "Error when display change password page", e);
+      log.log(Level.INFO, "display Page Error!", e);
     }
   }
 
   protected void doPost(HttpServletRequest request, HttpServletResponse response)
       throws ServletException, IOException {
 
-    String password = request.getParameter("password");
-
-    UserDetails user = OAuth2Utils.getUserSession(request).getUser().get();
-
-    userDetailsService.updateUser(UserDetails.newBuilder(user).setPassword(password).build());
-
-    OAuth2Utils.setUserSession(request, new UserSession());
-
-    response.setStatus(HttpStatusCodes.STATUS_CODE_OK);
-    response.getWriter().println("/login");
-    response.getWriter().flush();
+    try {
+      displayPage(request, response);
+    } catch (TemplateException e) {
+      log.log(Level.INFO, "display Page Error!", e);
+    }
   }
 
   private void displayPage(HttpServletRequest request, HttpServletResponse response)
       throws ServletException, IOException, TemplateException {
 
-    Template template = configuration.getTemplate("ChangePassword.ftl");
     UserSession userSession = OAuth2Utils.getUserSession(request);
 
     Preconditions.checkArgument(
@@ -103,6 +95,11 @@ public class ChangePasswordServlet extends HttpServlet {
     Map<String, Object> information = new HashMap<>();
 
     information.put("username", user.getUsername());
+
+    List<String> list = oauth2TokenService.listUserClient(user.getUsername());
+    information.put("clients", list);
+
+    Template template = configuration.getTemplate("Unlink.ftl");
 
     response.setCharacterEncoding("utf-8");
     PrintWriter printWriter = response.getWriter();

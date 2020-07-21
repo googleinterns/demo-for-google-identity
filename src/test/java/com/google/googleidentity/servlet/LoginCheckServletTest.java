@@ -14,9 +14,10 @@
     limitations under the License.
 */
 
-package com.google.googleidentity.security;
+package com.google.googleidentity.servlet;
 
 
+import com.google.googleidentity.user.UserSession;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;

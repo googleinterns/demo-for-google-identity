@@ -17,7 +17,7 @@
 package com.google.googleidentity.filter;
 
 import com.google.googleidentity.oauth2.util.OAuth2Utils;
-import com.google.googleidentity.security.UserSession;
+import com.google.googleidentity.user.UserSession;
 import com.google.inject.Singleton;
 import java.io.IOException;
 import java.net.URISyntaxException;

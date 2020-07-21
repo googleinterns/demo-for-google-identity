@@ -17,7 +17,7 @@
 package com.google.googleidentity.filter;
 
 import com.google.googleidentity.oauth2.util.OAuth2Utils;
-import com.google.googleidentity.security.UserSession;
+import com.google.googleidentity.user.UserSession;
 import com.google.inject.Singleton;
 import org.apache.http.client.utils.URIBuilder;
 
@@ -39,10 +39,10 @@ import java.util.logging.Logger;
 /**
  * The filter to protect resources using username password authentication. Once A user logged in, A
  * UserDetails.User Object {@link com.google.googleidentity.user.UserDetails} will stored in the
- * session through class {@link com.google.googleidentity.security.UserSession}. If the object in
+ * session through class {@link UserSession}. If the object in
  * the session is null, then the request will be blocked and redirected to login page. The original
  * request will be stored in the session through class {@link
- * com.google.googleidentity.security.UserSession}.
+ * UserSession}.
  */
 @Singleton
 public final class UserAuthenticationFilter implements Filter {

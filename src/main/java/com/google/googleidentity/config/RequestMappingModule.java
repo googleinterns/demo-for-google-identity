@@ -28,21 +28,21 @@ import com.google.googleidentity.oauth2.endpoint.TokenEndpoint;
 import com.google.googleidentity.oauth2.endpoint.TokenRevokeEndpoint;
 import com.google.googleidentity.oauth2.endpoint.UserInfoEndpoint;
 import com.google.googleidentity.oauth2.filter.ClientAuthenticationFilter;
-import com.google.googleidentity.resource.AdminServlet;
-import com.google.googleidentity.resource.ChangeSettingServlet;
-import com.google.googleidentity.resource.ClientServlet;
-import com.google.googleidentity.resource.LogoutServlet;
-import com.google.googleidentity.resource.UnlinkServlet;
-import com.google.googleidentity.resource.UserServlet;
-import com.google.googleidentity.resource.ViewTokensServlet;
-import com.google.googleidentity.security.ChangePasswordServlet;
-import com.google.googleidentity.security.ClientLoginCheckServlet;
-import com.google.googleidentity.security.ClientRegisterCheckServlet;
-import com.google.googleidentity.security.ClientRegisterServlet;
-import com.google.googleidentity.security.LoginCheckServlet;
-import com.google.googleidentity.security.LoginServlet;
-import com.google.googleidentity.security.RegisterCheckServlet;
-import com.google.googleidentity.security.RegisterServlet;
+import com.google.googleidentity.servlet.AdminServlet;
+import com.google.googleidentity.servlet.ChangeSettingServlet;
+import com.google.googleidentity.servlet.ClientServlet;
+import com.google.googleidentity.servlet.LogoutServlet;
+import com.google.googleidentity.servlet.UnlinkServlet;
+import com.google.googleidentity.servlet.UserServlet;
+import com.google.googleidentity.servlet.ViewTokensServlet;
+import com.google.googleidentity.servlet.ChangePasswordServlet;
+import com.google.googleidentity.servlet.ClientLoginCheckServlet;
+import com.google.googleidentity.servlet.ClientRegisterCheckServlet;
+import com.google.googleidentity.servlet.ClientRegisterServlet;
+import com.google.googleidentity.servlet.LoginCheckServlet;
+import com.google.googleidentity.servlet.LoginServlet;
+import com.google.googleidentity.servlet.RegisterCheckServlet;
+import com.google.googleidentity.servlet.RegisterServlet;
 import com.google.inject.AbstractModule;
 import com.google.inject.servlet.ServletModule;
 
@@ -81,12 +81,11 @@ public final class RequestMappingModule extends AbstractModule {
             // The filter order is same as the order they be introduced here, let token
             // authentication filter be at the first so that it can set client session from token to
             // let the request pass user authentication filter
-            filterRegex("/client","/client/.*").through(ClientLoginFilter.class);
+            filterRegex("/client", "/client/.*").through(ClientLoginFilter.class);
             filterRegex("/resource/.*").through(OAuth2TokenAuthenticationFilter.class);
             filterRegex("/oauth2/authorize", "/resource/.*")
                 .through(UserAuthenticationFilter.class);
-            filter("/oauth2/token", "/oauth2/revoke")
-                .through(ClientAuthenticationFilter.class);
+            filter("/oauth2/token", "/oauth2/revoke").through(ClientAuthenticationFilter.class);
           }
         });
   }

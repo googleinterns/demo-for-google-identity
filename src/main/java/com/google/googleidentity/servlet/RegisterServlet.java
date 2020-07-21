@@ -14,61 +14,48 @@
     limitations under the License.
 */
 
-package com.google.googleidentity.resource;
+package com.google.googleidentity.servlet;
 
-import com.google.common.base.Preconditions;
-import com.google.googleidentity.oauth2.token.OAuth2TokenService;
-import com.google.googleidentity.oauth2.util.OAuth2Utils;
-import com.google.googleidentity.security.UserSession;
-import com.google.googleidentity.user.UserDetails;
-import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
 import freemarker.template.Version;
-
-import java.util.List;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 @Singleton
-public final class UnlinkServlet extends HttpServlet {
+public class RegisterServlet extends HttpServlet {
 
-  private static final long serialVersionUID = 17L;
+  private static final long serialVersionUID = 15L;
 
-  private static final Logger log = Logger.getLogger("UnlinkServlet");
-  private final OAuth2TokenService oauth2TokenService;
+  private static final Logger log = Logger.getLogger("RegisterServlet");
+
   private Configuration configuration;
 
-  @Inject
-  public UnlinkServlet(OAuth2TokenService oauth2TokenService) {
-    this.oauth2TokenService = oauth2TokenService;
-  }
-
   public void init() throws ServletException {
-
     Version version = new Version("2.3.30");
+
     configuration = new Configuration(version);
+
     configuration.setServletContextForTemplateLoading(getServletContext(), "template");
   }
 
-  public void doGet(HttpServletRequest request, HttpServletResponse response)
+  protected void doGet(HttpServletRequest request, HttpServletResponse response)
       throws ServletException, IOException {
 
     try {
-      displayPage(request, response);
+      displayPage(response);
     } catch (TemplateException e) {
-      log.log(Level.INFO, "display Page Error!", e);
+      log.log(Level.INFO, "Error when display register page", e);
     }
   }
 
@@ -76,36 +63,20 @@ public final class UnlinkServlet extends HttpServlet {
       throws ServletException, IOException {
 
     try {
-      displayPage(request, response);
+      displayPage(response);
     } catch (TemplateException e) {
-      log.log(Level.INFO, "display Page Error!", e);
+      log.log(Level.INFO, "Error when display register page", e);
     }
   }
 
-  private void displayPage(HttpServletRequest request, HttpServletResponse response)
+  private void displayPage(HttpServletResponse response)
       throws ServletException, IOException, TemplateException {
 
-    UserSession userSession = OAuth2Utils.getUserSession(request);
-
-    Preconditions.checkArgument(
-        userSession.getUser().isPresent(), "User should have been logged in already");
-
-    UserDetails user = userSession.getUser().get();
-
+    Template template = configuration.getTemplate("Register.ftl");
     Map<String, Object> information = new HashMap<>();
-
-    information.put("username", user.getUsername());
-
-    List<String> list = oauth2TokenService.listUserClient(user.getUsername());
-    information.put("clients", list);
-
-    Template template = configuration.getTemplate("Unlink.ftl");
-
     response.setCharacterEncoding("utf-8");
     PrintWriter printWriter = response.getWriter();
-
     template.process(information, printWriter);
-
     printWriter.flush();
   }
 }

@@ -14,7 +14,7 @@
     limitations under the License.
 */
 
-package com.google.googleidentity.resource;
+package com.google.googleidentity.servlet;
 
 import com.google.appengine.repackaged.com.google.api.client.http.HttpStatusCodes;
 import com.google.common.base.Preconditions;
@@ -25,9 +25,7 @@ import com.google.googleidentity.oauth2.util.OAuth2EnumMap;
 import com.google.googleidentity.oauth2.util.OAuth2Enums;
 import com.google.googleidentity.oauth2.util.OAuth2Enums.GrantType;
 import com.google.googleidentity.oauth2.util.OAuth2Utils;
-import com.google.googleidentity.security.UserSession;
-import com.google.googleidentity.user.UserDetails;
-import com.google.googleidentity.user.UserDetailsService;
+import com.google.googleidentity.user.UserSession;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import freemarker.template.Configuration;
