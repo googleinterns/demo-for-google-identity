@@ -17,13 +17,11 @@
 package com.google.googleidentity.filter;
 
 import com.google.common.base.Strings;
-import com.google.googleidentity.oauth2.exception.InvalidRequestException;
-import com.google.googleidentity.oauth2.exception.InvalidRequestException.ErrorCode;
 import com.google.googleidentity.oauth2.token.OAuth2AccessToken;
 import com.google.googleidentity.oauth2.token.OAuth2TokenService;
 import com.google.googleidentity.oauth2.util.OAuth2ParameterNames;
 import com.google.googleidentity.oauth2.util.OAuth2Utils;
-import com.google.googleidentity.security.UserSession;
+import com.google.googleidentity.user.UserSession;
 import com.google.googleidentity.user.UserDetailsService;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;

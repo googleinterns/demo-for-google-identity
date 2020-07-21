@@ -18,7 +18,7 @@ package com.google.googleidentity.oauth2.util;
 
 import com.google.common.collect.ImmutableSet;
 import com.google.googleidentity.oauth2.client.ClientSession;
-import com.google.googleidentity.security.UserSession;
+import com.google.googleidentity.user.UserSession;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;

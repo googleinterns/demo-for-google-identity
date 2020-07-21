@@ -14,32 +14,30 @@
     limitations under the License.
 */
 
-package com.google.googleidentity.security;
+package com.google.googleidentity.servlet;
 
 import com.google.inject.Singleton;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
 import freemarker.template.Version;
-
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
-/** Demo Login Servlet Just Bind the login Servlet with a freemarker template. */
 @Singleton
-public final class LoginServlet extends HttpServlet {
+public class ClientRegisterServlet extends HttpServlet {
 
-  private static final long serialVersionUID = 1L;
+  private static final long serialVersionUID = 22L;
 
-  private static final Logger log = Logger.getLogger("LoginServlet");
+  private static final Logger log = Logger.getLogger("ClientRegisterServlet");
 
   private Configuration configuration;
 
@@ -55,9 +53,9 @@ public final class LoginServlet extends HttpServlet {
       throws ServletException, IOException {
 
     try {
-      displayLoginPage(response);
+      displayPage(response);
     } catch (TemplateException e) {
-      log.log(Level.INFO, "Error when display login page", e);
+      log.log(Level.INFO, "Error when display page", e);
     }
   }
 
@@ -65,16 +63,16 @@ public final class LoginServlet extends HttpServlet {
       throws ServletException, IOException {
 
     try {
-      displayLoginPage(response);
+      displayPage(response);
     } catch (TemplateException e) {
-      log.log(Level.INFO, "Error when display login page", e);
+      log.log(Level.INFO, "Error when display page", e);
     }
   }
 
-  private void displayLoginPage(HttpServletResponse response)
+  private void displayPage(HttpServletResponse response)
       throws ServletException, IOException, TemplateException {
 
-    Template template = configuration.getTemplate("Login.ftl");
+    Template template = configuration.getTemplate("ClientRegister.ftl");
     Map<String, Object> information = new HashMap<>();
     response.setCharacterEncoding("utf-8");
     PrintWriter printWriter = response.getWriter();

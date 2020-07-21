@@ -14,18 +14,12 @@
     limitations under the License.
 */
 
-package com.google.googleidentity.resource;
+package com.google.googleidentity.servlet;
 
-import com.google.googleidentity.oauth2.token.OAuth2TokenService;
 import com.google.googleidentity.oauth2.util.OAuth2Utils;
-import com.google.googleidentity.security.UserSession;
-import com.google.inject.Inject;
+import com.google.googleidentity.user.UserSession;
 import com.google.inject.Singleton;
-import freemarker.template.Configuration;
-import freemarker.template.TemplateException;
-import freemarker.template.Version;
 import java.io.IOException;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;

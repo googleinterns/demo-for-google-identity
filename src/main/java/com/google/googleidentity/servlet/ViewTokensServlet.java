@@ -14,17 +14,16 @@
     limitations under the License.
 */
 
-package com.google.googleidentity.resource;
+package com.google.googleidentity.servlet;
 
 import com.google.common.base.Preconditions;
-import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
 import com.google.googleidentity.oauth2.token.OAuth2AccessToken;
 import com.google.googleidentity.oauth2.token.OAuth2RefreshToken;
 import com.google.googleidentity.oauth2.token.OAuth2TokenService;
 import com.google.googleidentity.oauth2.util.OAuth2Utils;
-import com.google.googleidentity.security.UserSession;
 import com.google.googleidentity.user.UserDetails;
+import com.google.googleidentity.user.UserSession;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import freemarker.template.Configuration;

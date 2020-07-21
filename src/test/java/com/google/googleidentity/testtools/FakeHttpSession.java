@@ -17,7 +17,7 @@
 package com.google.googleidentity.testtools;
 
 import com.google.googleidentity.oauth2.client.ClientSession;
-import com.google.googleidentity.security.UserSession;
+import com.google.googleidentity.user.UserSession;
 
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpSession;

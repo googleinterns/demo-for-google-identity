@@ -14,7 +14,7 @@
     limitations under the License.
 */
 
-package com.google.googleidentity.security;
+package com.google.googleidentity.servlet;
 
 import com.google.appengine.repackaged.com.google.api.client.http.HttpStatusCodes;
 import com.google.common.collect.ImmutableList;

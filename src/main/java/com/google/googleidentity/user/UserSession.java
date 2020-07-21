@@ -14,7 +14,7 @@
     limitations under the License.
 */
 
-package com.google.googleidentity.security;
+package com.google.googleidentity.user;
 
 import com.google.googleidentity.oauth2.client.ClientDetails;
 import com.google.googleidentity.user.UserDetails;

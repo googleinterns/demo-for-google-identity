@@ -14,32 +14,41 @@
     limitations under the License.
 */
 
-package com.google.googleidentity.security;
+package com.google.googleidentity.servlet;
 
 import com.google.appengine.repackaged.com.google.api.client.http.HttpStatusCodes;
 import com.google.googleidentity.oauth2.util.OAuth2Utils;
 import com.google.googleidentity.user.UserDetails;
 import com.google.googleidentity.user.UserDetailsService;
+import com.google.googleidentity.user.UserSession;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
-import java.io.IOException;
-import java.util.Objects;
-import java.util.Optional;
+
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.util.Objects;
+import java.util.Optional;
 
-// User register check page
+/**
+ * Demo Login Check Servlet Check the username and password in the post request, return the redirect
+ * link. For a success login request, a UserDetails.User Object {@link
+ * com.google.googleidentity.user.UserDetails} will be stored in the session through class {@link
+ * UserSession}. The redirect link for a success request is to
+ * the original request or the default as /resource/user. The redirect link for a failed request is
+ * still the login page.
+ */
 @Singleton
-public class RegisterCheckServlet extends HttpServlet {
+public final class LoginCheckServlet extends HttpServlet {
 
-  private static final long serialVersionUID = 14L;
+  private static final long serialVersionUID = 4L;
 
   private final UserDetailsService userDetailsService;
 
   @Inject
-  public RegisterCheckServlet(UserDetailsService userDetailsService) {
+  public LoginCheckServlet(UserDetailsService userDetailsService) {
     this.userDetailsService = userDetailsService;
   }
 
@@ -50,16 +59,31 @@ public class RegisterCheckServlet extends HttpServlet {
 
     response.setContentType("text/html;charset=utf-8");
 
-    if (userDetailsService.getUserByName(username).isPresent()) {
-      response.setStatus(HttpStatusCodes.STATUS_CODE_UNAUTHORIZED);
-    } else {
-      userDetailsService.addUser(
+    if (check(username, password)) {
+      UserSession userSession = OAuth2Utils.getUserSession(request);
+      Optional<String> oldUri = userSession.getOlduri();
+      userSession.setUser(
           UserDetails.newBuilder().setUsername(username).setPassword(password).build());
-
+      userSession.setOlduri(null);
+      OAuth2Utils.setUserSession(request, userSession);
       response.setStatus(HttpStatusCodes.STATUS_CODE_OK);
+
+      if (username.equals("admin")) {
+        response.getWriter().println("/resource/admin");
+      } else {
+        response.getWriter().println(oldUri.orElse("/resource/user"));
+      }
+    } else {
+      response.setStatus(HttpStatusCodes.STATUS_CODE_UNAUTHORIZED);
+      response.getWriter().println("/login");
     }
-    response.getWriter().println("/login");
+
     response.getWriter().flush();
   }
 
+  private boolean check(String username, String password) {
+    Optional<UserDetails> user = userDetailsService.getUserByName(username);
+
+    return user.isPresent() && Objects.equals(password, user.get().getPassword());
+  }
 }
