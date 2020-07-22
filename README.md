@@ -81,8 +81,9 @@ All resources under /resource is protected (currently only have /resource/user)
 How to run it:
 1. Download, install maven from https://maven.apache.org/
 2. Download, install google cloud SDK following https://cloud.google.com/sdk/docs/quickstarts
-3. Download, install Protocol Buffers from https://github.com/protocolbuffers/protobuf/releases/tag/v3.12.3
-4. Dompile all proto files in src/main/resources/proto
+3. Download, install Protocol Buffers from https://github.com/protocolbuffers/protobuf/releases
+4. Compile all proto files in src/main/resources/proto. The command is like following(do not change -I and --java_out parameters):
+    protoc -I=src/main/resources --java_out=src/main/java proto/googleidentity/xxx.proto
 5. Change web url (for risc issuer and key) in appengine-web.xml by setting system env.
 6. Choose whether use cloud sql or not in appengine-web.xml, if you want to use cloud sql, please also set database information.
 7. Test it locally or on app engine
