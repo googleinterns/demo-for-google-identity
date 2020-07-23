@@ -56,7 +56,7 @@ final class ImplicitRequestHandler implements RequestHandler {
       }
       response.sendRedirect(uriBuilder.build().toString());
     } catch (URISyntaxException e) {
-      throw new OAuth2ServerException(e);
+      throw new OAuth2ServerException("Error when parsing response url for implicit flow.", e);
     }
   }
 }

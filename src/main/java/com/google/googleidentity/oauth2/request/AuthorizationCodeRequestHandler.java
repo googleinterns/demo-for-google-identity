@@ -68,7 +68,7 @@ final class AuthorizationCodeRequestHandler implements RequestHandler {
         }
         response.sendRedirect(uriBuilder.build().toString());
       } catch (URISyntaxException e) {
-        throw new OAuth2ServerException(e);
+        throw new OAuth2ServerException("Error when parse redirect uri to return auth code!", e);
       }
 
     } else if (oauth2Request
