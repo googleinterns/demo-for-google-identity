@@ -113,8 +113,6 @@ public class UserInfoEndpoint extends HttpServlet {
               + exception.getErrorDescription());
       OAuth2ExceptionHandler.handle(exception, response);
       return;
-    } catch (OAuth2ServerException exception) {
-      throw exception;
     }
   }
 }

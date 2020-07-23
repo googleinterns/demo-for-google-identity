@@ -116,8 +116,6 @@ public class TokenRevokeEndpoint extends HttpServlet {
               + exception.getErrorDescription());
       OAuth2ExceptionHandler.handle(exception, response);
       return;
-    } catch (OAuth2ServerException exception) {
-      throw exception;
     }
     JSONObject json = new JSONObject();
     response.setContentType("application/json;charset=UTF-8");

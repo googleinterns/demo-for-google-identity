@@ -153,8 +153,6 @@ public final class AuthorizationEndpoint extends HttpServlet {
               + "Description: "
               + exception.getErrorDescription());
       OAuth2ExceptionHandler.handle(exception, response);
-    } catch (OAuth2ServerException exception) {
-      throw exception;
     }
   }
 
