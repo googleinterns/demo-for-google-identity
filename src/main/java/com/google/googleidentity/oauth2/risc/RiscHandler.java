@@ -70,15 +70,15 @@ public class RiscHandler {
   }
 
   public void SendRisc(
-      List<OAuth2AccessToken> accessTokenList, Optional<OAuth2RefreshToken> refreshToken) {
+      List<OAuth2AccessToken> accessTokenList, List<OAuth2RefreshToken> refreshTokenList) {
 
     for (OAuth2AccessToken token : accessTokenList) {
       Thread thread = new sendEventThread(token);
       thread.start();
     }
 
-    if (refreshToken.isPresent()) {
-      Thread thread = new sendEventThread(refreshToken.get());
+    for (OAuth2RefreshToken token : refreshTokenList) {
+      Thread thread = new sendEventThread(token);
       thread.start();
     }
   }

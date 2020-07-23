@@ -60,8 +60,8 @@ public interface OAuth2TokenService {
   /** List all access tokens between a user and a client */
   List<OAuth2AccessToken> listUserClientAccessTokens(String username, String clientID);
 
-  /** Get refresh token between a user and a client */
-  Optional<OAuth2RefreshToken> getUserClientRefreshToken(String username, String clientID);
+  /** List all refresh tokens between a user and a client */
+  List<OAuth2RefreshToken> listUserClientRefreshTokens(String username, String clientID);
 
   void reset();
 }

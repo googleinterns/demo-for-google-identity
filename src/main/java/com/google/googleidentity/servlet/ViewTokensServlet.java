@@ -114,9 +114,9 @@ public final class ViewTokensServlet extends HttpServlet {
                 Instant.ofEpochSecond(token.getExpiredTime()).toString(),
                 token.getRefreshToken()));
       }
-      if (oauth2TokenService.getUserClientRefreshToken(user.getUsername(), client).isPresent()) {
-        OAuth2RefreshToken token =
-            oauth2TokenService.getUserClientRefreshToken(user.getUsername(), client).get();
+
+      for (OAuth2RefreshToken token :
+          oauth2TokenService.listUserClientRefreshTokens(user.getUsername(), client)) {
         refreshTokenList.add(
             ImmutableList.of(
                 token.getRefreshToken(),

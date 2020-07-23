@@ -16,6 +16,7 @@
 
 package com.google.googleidentity.oauth2.token;
 
+import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
 import com.google.googleidentity.oauth2.request.OAuth2Request;
 import com.google.googleidentity.oauth2.util.OAuth2Utils;
@@ -70,34 +71,13 @@ public class JdbcOAuth2TokenService implements OAuth2TokenService {
 
     Optional<String> refreshTokenString = Optional.empty();
 
-    OAuth2Request actualRequest = request;
-
     Connection conn = null;
     PreparedStatement statement = null;
     ResultSet result = null;
     try {
+      conn = dataSource.getConnection();
+      conn.setAutoCommit(false);
       if (request.getRequestBody().getRefreshable()) {
-        Optional<OAuth2RefreshToken> oldRefreshToken =
-            getUserClientRefreshToken(username, clientID);
-        OAuth2Request.Builder updatedRequestBuilder = OAuth2Request.newBuilder(request);
-        conn = dataSource.getConnection();
-        conn.setAutoCommit(false);
-        if (oldRefreshToken.isPresent()) {
-          if (request.getRequestBody().getIsScoped() && oldRefreshToken.get().getIsScoped()) {
-            HashSet<String> scopes = new HashSet<>(request.getRequestBody().getScopesList());
-            scopes.addAll(oldRefreshToken.get().getScopesList());
-            updatedRequestBuilder.getRequestBodyBuilder().clearScopes().addAllScopes(scopes);
-          } else {
-            updatedRequestBuilder.getRequestBodyBuilder().setIsScoped(false).clearScopes();
-          }
-          actualRequest = updatedRequestBuilder.build();
-          String stmt = "DELETE FROM refresh_token WHERE username = ? AND client_id = ?;";
-          statement = conn.prepareStatement(stmt);
-          statement.setString(1, username);
-          statement.setString(2, clientID);
-          statement.execute();
-          conn.commit();
-        }
         String refreshTokenValue = UUID.randomUUID().toString();
         while (readRefreshToken(refreshTokenValue).isPresent()) {
           refreshTokenValue = UUID.randomUUID().toString();
@@ -108,8 +88,8 @@ public class JdbcOAuth2TokenService implements OAuth2TokenService {
         statement.setString(1, refreshTokenValue);
         statement.setString(2, clientID);
         statement.setString(3, username);
-        statement.setBoolean(4, actualRequest.getRequestBody().getIsScoped());
-        statement.setString(5, String.join("\t", actualRequest.getRequestBody().getScopesList()));
+        statement.setBoolean(4, request.getRequestBody().getIsScoped());
+        statement.setString(5, String.join("\t", request.getRequestBody().getScopesList()));
 
         statement.execute();
         conn.commit();
@@ -147,7 +127,7 @@ public class JdbcOAuth2TokenService implements OAuth2TokenService {
         }
       }
     }
-    return getNewAccessToken(actualRequest, refreshTokenString);
+    return getNewAccessToken(request, refreshTokenString);
   }
 
   @Override
@@ -347,9 +327,46 @@ public class JdbcOAuth2TokenService implements OAuth2TokenService {
         || Instant.ofEpochSecond(token.get().getExpiredTime()).isBefore(Instant.now())) {
       return false;
     }
+    if (!Strings.isNullOrEmpty(token.get().getRefreshToken())) {
+      return revokeByRefreshToken(token.get().getRefreshToken());
+    }
 
-    revokeUserClientTokens(token.get().getUsername(), token.get().getClientId());
-
+    Connection conn = null;
+    PreparedStatement statement = null;
+    ResultSet result = null;
+    try {
+      conn = dataSource.getConnection();
+      conn.setAutoCommit(false);
+      String stmt = "DELETE FROM access_token WHERE access_token = ?;";
+      statement = conn.prepareStatement(stmt);
+      statement.setString(1, accessToken);
+      statement.execute();
+      conn.commit();
+    } catch (SQLException exception) {
+      log.log(Level.INFO, "Revoke token error.", exception);
+    } finally {
+      if (result != null) {
+        try {
+          result.close();
+        } catch (SQLException exception2) {
+          log.log(Level.INFO, "Close result error.", exception2);
+        }
+      }
+      if (statement != null) {
+        try {
+          statement.close();
+        } catch (SQLException exception2) {
+          log.log(Level.INFO, "Close stmt error.", exception2);
+        }
+      }
+      if (conn != null) {
+        try {
+          conn.close();
+        } catch (SQLException exception3) {
+          log.log(Level.INFO, "Close conn error.", exception3);
+        }
+      }
+    }
     return true;
   }
 
@@ -361,8 +378,46 @@ public class JdbcOAuth2TokenService implements OAuth2TokenService {
       return false;
     }
 
-    revokeUserClientTokens(token.get().getUsername(), token.get().getClientId());
-
+    Connection conn = null;
+    PreparedStatement statement = null;
+    ResultSet result = null;
+    try {
+      conn = dataSource.getConnection();
+      conn.setAutoCommit(false);
+      String stmt = "DELETE FROM refresh_token WHERE refresh_token = ?;";
+      statement = conn.prepareStatement(stmt);
+      statement.setString(1, refreshToken);
+      statement.execute();
+      stmt = "DELETE FROM access_token WHERE refresh_token = ?;";
+      statement = conn.prepareStatement(stmt);
+      statement.setString(1, refreshToken);
+      statement.execute();
+      conn.commit();
+    } catch (SQLException exception) {
+      log.log(Level.INFO, "Revoke token error.", exception);
+    } finally {
+      if (result != null) {
+        try {
+          result.close();
+        } catch (SQLException exception2) {
+          log.log(Level.INFO, "Close result error.", exception2);
+        }
+      }
+      if (statement != null) {
+        try {
+          statement.close();
+        } catch (SQLException exception2) {
+          log.log(Level.INFO, "Close stmt error.", exception2);
+        }
+      }
+      if (conn != null) {
+        try {
+          conn.close();
+        } catch (SQLException exception3) {
+          log.log(Level.INFO, "Close conn error.", exception3);
+        }
+      }
+    }
     return true;
   }
 
@@ -511,7 +566,8 @@ public class JdbcOAuth2TokenService implements OAuth2TokenService {
   }
 
   @Override
-  public Optional<OAuth2RefreshToken> getUserClientRefreshToken(String username, String clientID) {
+  public List<OAuth2RefreshToken> listUserClientRefreshTokens(String username, String clientID) {
+    List<OAuth2RefreshToken> tokenList = new LinkedList<>();
     Connection conn = null;
     PreparedStatement statement = null;
     ResultSet result = null;
@@ -522,10 +578,8 @@ public class JdbcOAuth2TokenService implements OAuth2TokenService {
       statement.setString(1, username);
       statement.setString(2, clientID);
       result = statement.executeQuery();
-      if (result.next()) {
-        return Optional.of(buildRefreshTokenFromJdbcResult(result));
-      } else {
-        return Optional.empty();
+      while (result.next()) {
+        tokenList.add(buildRefreshTokenFromJdbcResult(result));
       }
     } catch (SQLException exception) {
       log.log(Level.INFO, "Read User Client Refresh Token error.", exception);
@@ -552,7 +606,7 @@ public class JdbcOAuth2TokenService implements OAuth2TokenService {
         }
       }
     }
-    return Optional.empty();
+    return ImmutableList.copyOf(tokenList);
   }
 
   @Override

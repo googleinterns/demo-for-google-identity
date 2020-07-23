@@ -178,7 +178,7 @@ public class TokenRevokeEndpointTest {
         .setTokenToRevoke(token.getAccessToken());
     assertDoesNotThrow(() -> tokenRevokeEndpoint.revokeToken(response, builder.build()));
 
-    assertThat(oauth2TokenService.getUserClientRefreshToken(USERNAME, CLIENTID)).isEmpty();
+    assertThat(oauth2TokenService.listUserClientRefreshTokens(USERNAME, CLIENTID)).isEmpty();
     assertThat(oauth2TokenService.listUserClientAccessTokens(USERNAME, CLIENTID)).isEmpty();
   }
 
@@ -196,7 +196,7 @@ public class TokenRevokeEndpointTest {
         .setTokenToRevoke(token.getRefreshToken());
     assertDoesNotThrow(() -> tokenRevokeEndpoint.revokeToken(response, builder.build()));
 
-    assertThat(oauth2TokenService.getUserClientRefreshToken(USERNAME, CLIENTID)).isEmpty();
+    assertThat(oauth2TokenService.listUserClientRefreshTokens(USERNAME, CLIENTID)).isEmpty();
     assertThat(oauth2TokenService.listUserClientAccessTokens(USERNAME, CLIENTID)).isEmpty();
   }
 }

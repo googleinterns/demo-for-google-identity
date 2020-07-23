@@ -253,7 +253,7 @@ public class InMemoryOAuth2TokenServiceTest {
 
     assertThat(tokenService.listUserClientAccessTokens(USERNAME, CLIENTID)).isEmpty();
 
-    assertThat(tokenService.getUserClientRefreshToken(USERNAME, CLIENTID)).isEmpty();
+    assertThat(tokenService.listUserClientRefreshTokens(USERNAME, CLIENTID)).isEmpty();
   }
 
   @Test
@@ -277,7 +277,7 @@ public class InMemoryOAuth2TokenServiceTest {
 
     assertThat(tokenService.readRefreshToken(token.getRefreshToken())).isEmpty();
 
-    assertThat(tokenService.getUserClientRefreshToken(USERNAME, CLIENTID)).isEmpty();
+    assertThat(tokenService.listUserClientRefreshTokens(USERNAME, CLIENTID)).isEmpty();
 
     assertThat(tokenService.listUserClientAccessTokens(USERNAME, CLIENTID)).isEmpty();
   }

@@ -78,13 +78,13 @@ public class UnlinkEndpoint extends HttpServlet {
         List<OAuth2AccessToken> accessTokenList =
             oauth2TokenService.listUserClientAccessTokens(username, clientID);
 
-        Optional<OAuth2RefreshToken> refreshToken =
-            oauth2TokenService.getUserClientRefreshToken(username, clientID);
+        List<OAuth2RefreshToken> refreshTokenList =
+            oauth2TokenService.listUserClientRefreshTokens(username, clientID);
 
         oauth2TokenService.revokeUserClientTokens(username, clientID);
 
         if (!Strings.isNullOrEmpty(client.get().getRiscUri())) {
-          riscHandler.SendRisc(accessTokenList, refreshToken);
+          riscHandler.SendRisc(accessTokenList, refreshTokenList);
         }
       }
     }
