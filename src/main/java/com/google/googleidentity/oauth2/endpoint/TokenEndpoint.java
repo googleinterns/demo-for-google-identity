@@ -22,6 +22,7 @@ import com.google.googleidentity.oauth2.client.ClientDetailsService;
 import com.google.googleidentity.oauth2.exception.InvalidRequestException;
 import com.google.googleidentity.oauth2.exception.OAuth2Exception;
 import com.google.googleidentity.oauth2.exception.OAuth2ExceptionHandler;
+import com.google.googleidentity.oauth2.exception.OAuth2ServerException;
 import com.google.googleidentity.oauth2.request.OAuth2Request;
 import com.google.googleidentity.oauth2.request.RequestHandler;
 import com.google.googleidentity.oauth2.util.OAuth2Constants;
@@ -33,6 +34,7 @@ import com.google.googleidentity.oauth2.validator.TokenEndpointRequestValidator;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
+import java.sql.SQLException;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -97,6 +99,8 @@ public class TokenEndpoint extends HttpServlet {
               + "Description: "
               + exception.getErrorDescription());
       OAuth2ExceptionHandler.handle(exception, response);
+    } catch (OAuth2ServerException exception) {
+      throw exception;
     }
   }
 

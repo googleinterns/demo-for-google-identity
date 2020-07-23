@@ -148,7 +148,7 @@ public class CloudSqlModule extends AbstractModule {
             + "username VARCHAR(255) NOT NULL, "
             + "is_scoped BOOLEAN,"
             + "scopes VARCHAR(2047), "
-            + "PRIMARY KEY (username, client_id));";
+            + "PRIMARY KEY (refresh_token));";
     statement = conn.prepareStatement(stmt);
     statement.execute();
     statement.close();

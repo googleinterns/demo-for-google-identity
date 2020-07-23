@@ -18,6 +18,7 @@ package com.google.googleidentity.oauth2.token;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
+import com.google.googleidentity.oauth2.exception.OAuth2ServerException;
 import com.google.googleidentity.oauth2.request.OAuth2Request;
 import com.google.googleidentity.oauth2.util.OAuth2Utils;
 import java.sql.Connection;
@@ -35,7 +36,6 @@ import java.util.UUID;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.inject.Inject;
 import javax.sql.DataSource;
@@ -94,36 +94,35 @@ public class JdbcOAuth2TokenService implements OAuth2TokenService {
         statement.execute();
         conn.commit();
       }
-
     } catch (SQLException exception) {
-      log.log(Level.INFO, "generate refresh token error.", exception);
       try {
         if (conn != null) {
           conn.rollback();
         }
       } catch (SQLException exception1) {
-        log.log(Level.INFO, "Roll Back Error.", exception1);
+        throw new OAuth2ServerException(exception1);
       }
+      throw new OAuth2ServerException(exception);
     } finally {
       if (result != null) {
         try {
           result.close();
         } catch (SQLException exception2) {
-          log.log(Level.INFO, "Close result error.", exception2);
+          throw new OAuth2ServerException(exception2);
         }
       }
       if (statement != null) {
         try {
           statement.close();
-        } catch (SQLException exception2) {
-          log.log(Level.INFO, "Close stmt error.", exception2);
+        } catch (SQLException exception3) {
+          throw new OAuth2ServerException(exception3);
         }
       }
       if (conn != null) {
         try {
           conn.close();
-        } catch (SQLException exception3) {
-          log.log(Level.INFO, "Close conn error.", exception3);
+        } catch (SQLException exception4) {
+          throw new OAuth2ServerException(exception4);
         }
       }
     }
@@ -199,34 +198,34 @@ public class JdbcOAuth2TokenService implements OAuth2TokenService {
       statement.execute();
       conn.commit();
     } catch (SQLException exception) {
-      log.log(Level.INFO, "Generate new access token error.", exception);
       try {
         if (conn != null) {
           conn.rollback();
         }
       } catch (SQLException exception1) {
-        log.log(Level.INFO, "Roll Back Error.", exception1);
+        throw new OAuth2ServerException(exception1);
       }
+      throw new OAuth2ServerException(exception);
     } finally {
       if (result != null) {
         try {
           result.close();
         } catch (SQLException exception2) {
-          log.log(Level.INFO, "Close result error.", exception2);
+          throw new OAuth2ServerException(exception2);
         }
       }
       if (statement != null) {
         try {
           statement.close();
-        } catch (SQLException exception2) {
-          log.log(Level.INFO, "Close stmt error.", exception2);
+        } catch (SQLException exception3) {
+          throw new OAuth2ServerException(exception3);
         }
       }
       if (conn != null) {
         try {
           conn.close();
-        } catch (SQLException exception3) {
-          log.log(Level.INFO, "Close conn error.", exception3);
+        } catch (SQLException exception4) {
+          throw new OAuth2ServerException(exception4);
         }
       }
     }
@@ -249,27 +248,27 @@ public class JdbcOAuth2TokenService implements OAuth2TokenService {
         return Optional.ofNullable(token);
       }
     } catch (SQLException exception) {
-      log.log(Level.INFO, "Read access token error.", exception);
+      throw new OAuth2ServerException(exception);
     } finally {
       if (result != null) {
         try {
           result.close();
         } catch (SQLException exception2) {
-          log.log(Level.INFO, "Close result error.", exception2);
+          throw new OAuth2ServerException(exception2);
         }
       }
       if (statement != null) {
         try {
           statement.close();
-        } catch (SQLException exception2) {
-          log.log(Level.INFO, "Close stmt error.", exception2);
+        } catch (SQLException exception3) {
+          throw new OAuth2ServerException(exception3);
         }
       }
       if (conn != null) {
         try {
           conn.close();
-        } catch (SQLException exception3) {
-          log.log(Level.INFO, "Close conn error.", exception3);
+        } catch (SQLException exception4) {
+          throw new OAuth2ServerException(exception4);
         }
       }
     }
@@ -292,27 +291,27 @@ public class JdbcOAuth2TokenService implements OAuth2TokenService {
         return Optional.ofNullable(token);
       }
     } catch (SQLException exception) {
-      log.log(Level.INFO, "Read refresh token error.", exception);
+      throw new OAuth2ServerException(exception);
     } finally {
       if (result != null) {
         try {
           result.close();
         } catch (SQLException exception2) {
-          log.log(Level.INFO, "Close result error.", exception2);
+          throw new OAuth2ServerException(exception2);
         }
       }
       if (statement != null) {
         try {
           statement.close();
-        } catch (SQLException exception2) {
-          log.log(Level.INFO, "Close stmt error.", exception2);
+        } catch (SQLException exception3) {
+          throw new OAuth2ServerException(exception3);
         }
       }
       if (conn != null) {
         try {
           conn.close();
-        } catch (SQLException exception3) {
-          log.log(Level.INFO, "Close conn error.", exception3);
+        } catch (SQLException exception4) {
+          throw new OAuth2ServerException(exception4);
         }
       }
     }
@@ -343,27 +342,34 @@ public class JdbcOAuth2TokenService implements OAuth2TokenService {
       statement.execute();
       conn.commit();
     } catch (SQLException exception) {
-      log.log(Level.INFO, "Revoke token error.", exception);
+      try {
+        if (conn != null) {
+          conn.rollback();
+        }
+      } catch (SQLException exception1) {
+        throw new OAuth2ServerException(exception1);
+      }
+      throw new OAuth2ServerException(exception);
     } finally {
       if (result != null) {
         try {
           result.close();
         } catch (SQLException exception2) {
-          log.log(Level.INFO, "Close result error.", exception2);
+          throw new OAuth2ServerException(exception2);
         }
       }
       if (statement != null) {
         try {
           statement.close();
-        } catch (SQLException exception2) {
-          log.log(Level.INFO, "Close stmt error.", exception2);
+        } catch (SQLException exception3) {
+          throw new OAuth2ServerException(exception3);
         }
       }
       if (conn != null) {
         try {
           conn.close();
-        } catch (SQLException exception3) {
-          log.log(Level.INFO, "Close conn error.", exception3);
+        } catch (SQLException exception4) {
+          throw new OAuth2ServerException(exception4);
         }
       }
     }
@@ -394,27 +400,34 @@ public class JdbcOAuth2TokenService implements OAuth2TokenService {
       statement.execute();
       conn.commit();
     } catch (SQLException exception) {
-      log.log(Level.INFO, "Revoke token error.", exception);
+      try {
+        if (conn != null) {
+          conn.rollback();
+        }
+      } catch (SQLException exception1) {
+        throw new OAuth2ServerException(exception1);
+      }
+      throw new OAuth2ServerException(exception);
     } finally {
       if (result != null) {
         try {
           result.close();
         } catch (SQLException exception2) {
-          log.log(Level.INFO, "Close result error.", exception2);
+          throw new OAuth2ServerException(exception2);
         }
       }
       if (statement != null) {
         try {
           statement.close();
-        } catch (SQLException exception2) {
-          log.log(Level.INFO, "Close stmt error.", exception2);
+        } catch (SQLException exception3) {
+          throw new OAuth2ServerException(exception3);
         }
       }
       if (conn != null) {
         try {
           conn.close();
-        } catch (SQLException exception3) {
-          log.log(Level.INFO, "Close conn error.", exception3);
+        } catch (SQLException exception4) {
+          throw new OAuth2ServerException(exception4);
         }
       }
     }
@@ -444,27 +457,34 @@ public class JdbcOAuth2TokenService implements OAuth2TokenService {
       statement.execute();
       conn.commit();
     } catch (SQLException exception) {
-      log.log(Level.INFO, "Revoke token error.", exception);
+      try {
+        if (conn != null) {
+          conn.rollback();
+        }
+      } catch (SQLException exception1) {
+        throw new OAuth2ServerException(exception1);
+      }
+      throw new OAuth2ServerException(exception);
     } finally {
       if (result != null) {
         try {
           result.close();
         } catch (SQLException exception2) {
-          log.log(Level.INFO, "Close result error.", exception2);
+          throw new OAuth2ServerException(exception2);
         }
       }
       if (statement != null) {
         try {
           statement.close();
-        } catch (SQLException exception2) {
-          log.log(Level.INFO, "Close stmt error.", exception2);
+        } catch (SQLException exception3) {
+          throw new OAuth2ServerException(exception3);
         }
       }
       if (conn != null) {
         try {
           conn.close();
-        } catch (SQLException exception3) {
-          log.log(Level.INFO, "Close conn error.", exception3);
+        } catch (SQLException exception4) {
+          throw new OAuth2ServerException(exception4);
         }
       }
     }
@@ -494,27 +514,27 @@ public class JdbcOAuth2TokenService implements OAuth2TokenService {
         clients.add(result.getString("client_id"));
       }
     } catch (SQLException exception) {
-      log.log(Level.INFO, "Read User Client List error.", exception);
+      throw new OAuth2ServerException(exception);
     } finally {
       if (result != null) {
         try {
           result.close();
         } catch (SQLException exception2) {
-          log.log(Level.INFO, "Close result error.", exception2);
+          throw new OAuth2ServerException(exception2);
         }
       }
       if (statement != null) {
         try {
           statement.close();
-        } catch (SQLException exception2) {
-          log.log(Level.INFO, "Close stmt error.", exception2);
+        } catch (SQLException exception3) {
+          throw new OAuth2ServerException(exception3);
         }
       }
       if (conn != null) {
         try {
           conn.close();
-        } catch (SQLException exception3) {
-          log.log(Level.INFO, "Close conn error.", exception3);
+        } catch (SQLException exception4) {
+          throw new OAuth2ServerException(exception4);
         }
       }
     }
@@ -538,27 +558,27 @@ public class JdbcOAuth2TokenService implements OAuth2TokenService {
         tokenList.add(buildAccessTokenFromJdbcResult(result));
       }
     } catch (SQLException exception) {
-      log.log(Level.INFO, "Read User Client List error.", exception);
+      throw new OAuth2ServerException(exception);
     } finally {
       if (result != null) {
         try {
           result.close();
         } catch (SQLException exception2) {
-          log.log(Level.INFO, "Close result error.", exception2);
+          throw new OAuth2ServerException(exception2);
         }
       }
       if (statement != null) {
         try {
           statement.close();
-        } catch (SQLException exception2) {
-          log.log(Level.INFO, "Close stmt error.", exception2);
+        } catch (SQLException exception3) {
+          throw new OAuth2ServerException(exception3);
         }
       }
       if (conn != null) {
         try {
           conn.close();
-        } catch (SQLException exception3) {
-          log.log(Level.INFO, "Close conn error.", exception3);
+        } catch (SQLException exception4) {
+          throw new OAuth2ServerException(exception4);
         }
       }
     }
@@ -582,27 +602,27 @@ public class JdbcOAuth2TokenService implements OAuth2TokenService {
         tokenList.add(buildRefreshTokenFromJdbcResult(result));
       }
     } catch (SQLException exception) {
-      log.log(Level.INFO, "Read User Client Refresh Token error.", exception);
+      throw new OAuth2ServerException(exception);
     } finally {
       if (result != null) {
         try {
           result.close();
         } catch (SQLException exception2) {
-          log.log(Level.INFO, "Close result error.", exception2);
+          throw new OAuth2ServerException(exception2);
         }
       }
       if (statement != null) {
         try {
           statement.close();
-        } catch (SQLException exception2) {
-          log.log(Level.INFO, "Close stmt error.", exception2);
+        } catch (SQLException exception3) {
+          throw new OAuth2ServerException(exception3);
         }
       }
       if (conn != null) {
         try {
           conn.close();
-        } catch (SQLException exception3) {
-          log.log(Level.INFO, "Close conn error.", exception3);
+        } catch (SQLException exception4) {
+          throw new OAuth2ServerException(exception4);
         }
       }
     }
@@ -625,27 +645,34 @@ public class JdbcOAuth2TokenService implements OAuth2TokenService {
       statement.execute();
       conn.commit();
     } catch (SQLException exception) {
-      log.log(Level.INFO, "Reset error.", exception);
+      try {
+        if (conn != null) {
+          conn.rollback();
+        }
+      } catch (SQLException exception1) {
+        throw new OAuth2ServerException(exception1);
+      }
+      throw new OAuth2ServerException(exception);
     } finally {
       if (result != null) {
         try {
           result.close();
         } catch (SQLException exception2) {
-          log.log(Level.INFO, "Close result error.", exception2);
+          throw new OAuth2ServerException(exception2);
         }
       }
       if (statement != null) {
         try {
           statement.close();
-        } catch (SQLException exception2) {
-          log.log(Level.INFO, "Close stmt error.", exception2);
+        } catch (SQLException exception3) {
+          throw new OAuth2ServerException(exception3);
         }
       }
       if (conn != null) {
         try {
           conn.close();
-        } catch (SQLException exception3) {
-          log.log(Level.INFO, "Close conn error.", exception3);
+        } catch (SQLException exception4) {
+          throw new OAuth2ServerException(exception4);
         }
       }
     }
@@ -694,34 +721,34 @@ public class JdbcOAuth2TokenService implements OAuth2TokenService {
         conn.commit();
 
       } catch (SQLException exception) {
-        log.log(Level.INFO, "Clear expired token error.", exception);
         try {
           if (conn != null) {
             conn.rollback();
           }
         } catch (SQLException exception1) {
-          log.log(Level.INFO, "Roll Back Error.", exception1);
+          throw new OAuth2ServerException(exception1);
         }
+        throw new OAuth2ServerException(exception);
       } finally {
         if (result != null) {
           try {
             result.close();
           } catch (SQLException exception2) {
-            log.log(Level.INFO, "Close result error.", exception2);
+            throw new OAuth2ServerException(exception2);
           }
         }
         if (statement != null) {
           try {
             statement.close();
-          } catch (SQLException exception2) {
-            log.log(Level.INFO, "Close stmt error.", exception2);
+          } catch (SQLException exception3) {
+            throw new OAuth2ServerException(exception3);
           }
         }
         if (conn != null) {
           try {
             conn.close();
-          } catch (SQLException exception3) {
-            log.log(Level.INFO, "Close conn error.", exception3);
+          } catch (SQLException exception4) {
+            throw new OAuth2ServerException(exception4);
           }
         }
       }

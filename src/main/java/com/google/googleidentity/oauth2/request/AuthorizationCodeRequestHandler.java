@@ -19,8 +19,6 @@ package com.google.googleidentity.oauth2.request;
 import com.google.googleidentity.oauth2.authorizationcode.AuthorizationCodeService;
 import com.google.googleidentity.oauth2.exception.InvalidGrantException;
 import com.google.googleidentity.oauth2.exception.OAuth2Exception;
-import com.google.googleidentity.oauth2.request.OAuth2Request;
-import com.google.googleidentity.oauth2.request.RequestHandler;
 import com.google.googleidentity.oauth2.token.OAuth2AccessToken;
 import com.google.googleidentity.oauth2.token.OAuth2TokenService;
 import com.google.googleidentity.oauth2.util.OAuth2Enums;

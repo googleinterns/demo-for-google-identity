@@ -116,7 +116,6 @@ public class InMemoryOAuth2TokenService implements OAuth2TokenService {
               .setIsScoped(request.getRequestBody().getIsScoped())
               .addAllScopes(request.getRequestBody().getScopesList())
               .build();
-
       user.addRefreshToken(clientID, refreshToken);
     }
 
@@ -157,9 +156,10 @@ public class InMemoryOAuth2TokenService implements OAuth2TokenService {
 
     UserTokens user = getUser(username);
 
-    String accessTokenValue = UUID.randomUUID().toString();
+    String accessTokenString = "";
 
-    String accessTokenString =
+    String accessTokenValue = UUID.randomUUID().toString();
+    accessTokenString =
         new UserClientTokenInfo(username, clientID, accessTokenValue).getEncryptTokenString(aesKey);
 
     while (user.readAccessToken(clientID, accessTokenString).isPresent()) {
@@ -168,7 +168,6 @@ public class InMemoryOAuth2TokenService implements OAuth2TokenService {
           new UserClientTokenInfo(username, clientID, accessTokenValue)
               .getEncryptTokenString(aesKey);
     }
-
     OAuth2AccessToken.Builder builder =
         OAuth2AccessToken.newBuilder()
             .setAccessToken(accessTokenString)

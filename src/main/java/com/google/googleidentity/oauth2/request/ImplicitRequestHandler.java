@@ -18,8 +18,6 @@ package com.google.googleidentity.oauth2.request;
 
 import com.google.common.base.Strings;
 import com.google.googleidentity.oauth2.exception.OAuth2Exception;
-import com.google.googleidentity.oauth2.request.OAuth2Request;
-import com.google.googleidentity.oauth2.request.RequestHandler;
 import com.google.googleidentity.oauth2.token.OAuth2AccessToken;
 import com.google.googleidentity.oauth2.token.OAuth2TokenService;
 import com.google.googleidentity.oauth2.util.OAuth2ParameterNames;
@@ -33,8 +31,8 @@ import org.apache.http.client.utils.URIBuilder;
 
 final class ImplicitRequestHandler implements RequestHandler {
 
-  private final OAuth2TokenService oauth2TokenService;
   private static final Logger log = Logger.getLogger("ImplicitRequestHandler");
+  private final OAuth2TokenService oauth2TokenService;
 
   @Inject
   public ImplicitRequestHandler(OAuth2TokenService oauth2TokenService) {

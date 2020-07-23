@@ -18,6 +18,7 @@ package com.google.googleidentity.oauth2.token;
 
 import com.google.common.io.BaseEncoding;
 
+import com.google.googleidentity.oauth2.exception.OAuth2ServerException;
 import javax.crypto.Cipher;
 import java.nio.charset.StandardCharsets;
 import java.security.InvalidParameterException;
@@ -77,16 +78,15 @@ final class UserClientTokenInfo {
    * to user as token string.
    */
   public String getEncryptTokenString(Key aesKey) {
-    String tokenInfo = username + delimiter + clientID + delimiter + tokenValue;
     try {
+      String tokenInfo = username + delimiter + clientID + delimiter + tokenValue;
       Cipher cipher = Cipher.getInstance("AES");
       cipher.init(Cipher.ENCRYPT_MODE, aesKey);
       byte[] bytesToEncrypt = tokenInfo.getBytes(StandardCharsets.UTF_8);
       byte[] encryptedBytes = cipher.doFinal(bytesToEncrypt);
       return BaseEncoding.base64Url().withPadChar('*').encode(encryptedBytes);
     } catch (Exception e) {
-      log.log(Level.INFO, "Error when encrypting tokenString!", e);
-      return null;
+      throw new OAuth2ServerException(e);
     }
   }
 }
