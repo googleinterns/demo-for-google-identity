@@ -16,6 +16,7 @@
 
 package com.google.googleidentity.servlet;
 
+import com.google.googleidentity.oauth2.exception.OAuth2ServerException;
 import com.google.inject.Singleton;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
@@ -55,19 +56,10 @@ public class RegisterServlet extends HttpServlet {
     try {
       displayPage(response);
     } catch (TemplateException e) {
-      log.log(Level.INFO, "Error when display register page", e);
+      throw new OAuth2ServerException("Error when display register page", e);
     }
   }
 
-  protected void doPost(HttpServletRequest request, HttpServletResponse response)
-      throws ServletException, IOException {
-
-    try {
-      displayPage(response);
-    } catch (TemplateException e) {
-      log.log(Level.INFO, "Error when display register page", e);
-    }
-  }
 
   private void displayPage(HttpServletResponse response)
       throws ServletException, IOException, TemplateException {

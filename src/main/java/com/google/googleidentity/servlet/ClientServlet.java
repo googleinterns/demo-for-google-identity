@@ -18,6 +18,7 @@ package com.google.googleidentity.servlet;
 
 import com.google.common.base.Preconditions;
 import com.google.googleidentity.oauth2.client.ClientDetails;
+import com.google.googleidentity.oauth2.exception.OAuth2ServerException;
 import com.google.googleidentity.oauth2.util.OAuth2Utils;
 import com.google.googleidentity.user.UserSession;
 import com.google.inject.Singleton;
@@ -64,20 +65,9 @@ public final class ClientServlet extends HttpServlet {
     try {
       displayMainPage(request, response);
     } catch (TemplateException e) {
-      log.log(Level.INFO, "MainPage Error!", e);
+      throw new OAuth2ServerException("Display client MainPage Error!", e);
     }
   }
-
-  protected void doPost(HttpServletRequest request, HttpServletResponse response)
-      throws ServletException, IOException {
-
-    try {
-      displayMainPage(request, response);
-    } catch (TemplateException e) {
-      log.log(Level.INFO, "MainPage Error!", e);
-    }
-  }
-
   private void displayMainPage(HttpServletRequest request, HttpServletResponse response)
       throws ServletException, IOException, TemplateException {
 

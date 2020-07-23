@@ -23,6 +23,7 @@ import com.google.common.hash.Hashing;
 import com.google.googleidentity.oauth2.authorizationcode.AuthorizationCodeService;
 import com.google.googleidentity.oauth2.client.ClientDetails;
 import com.google.googleidentity.oauth2.client.ClientDetailsService;
+import com.google.googleidentity.oauth2.exception.OAuth2ServerException;
 import com.google.googleidentity.oauth2.token.OAuth2TokenService;
 import com.google.googleidentity.oauth2.util.OAuth2Enums.GrantType;
 import com.google.googleidentity.oauth2.util.OAuth2Utils;
@@ -105,7 +106,7 @@ public final class AdminServlet extends HttpServlet {
     try {
       displayPage(request, response);
     } catch (TemplateException e) {
-      log.log(Level.INFO, "Display Page Error!", e);
+      throw new OAuth2ServerException("Display Admin Page Error!", e);
     }
   }
 

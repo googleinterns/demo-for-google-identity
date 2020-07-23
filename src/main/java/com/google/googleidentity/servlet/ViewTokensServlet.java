@@ -18,6 +18,7 @@ package com.google.googleidentity.servlet;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
+import com.google.googleidentity.oauth2.exception.OAuth2ServerException;
 import com.google.googleidentity.oauth2.token.OAuth2AccessToken;
 import com.google.googleidentity.oauth2.token.OAuth2RefreshToken;
 import com.google.googleidentity.oauth2.token.OAuth2TokenService;
@@ -72,17 +73,7 @@ public final class ViewTokensServlet extends HttpServlet {
     try {
       displayPage(request, response);
     } catch (TemplateException e) {
-      log.log(Level.INFO, "display Page Error!", e);
-    }
-  }
-
-  protected void doPost(HttpServletRequest request, HttpServletResponse response)
-      throws ServletException, IOException {
-
-    try {
-      displayPage(request, response);
-    } catch (TemplateException e) {
-      log.log(Level.INFO, "display Page Error!", e);
+      throw new OAuth2ServerException("display view token Page Error!", e);
     }
   }
 

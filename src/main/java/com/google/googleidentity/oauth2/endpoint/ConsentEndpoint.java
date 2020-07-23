@@ -17,6 +17,7 @@
 package com.google.googleidentity.oauth2.endpoint;
 
 import com.google.common.base.Preconditions;
+import com.google.googleidentity.oauth2.exception.OAuth2ServerException;
 import com.google.googleidentity.oauth2.request.OAuth2Request;
 import com.google.googleidentity.oauth2.util.OAuth2Utils;
 import com.google.inject.Inject;
@@ -64,7 +65,7 @@ public class ConsentEndpoint extends HttpServlet {
     try {
       toConsentPage(request, response);
     } catch (TemplateException e) {
-      log.log(Level.INFO, "Display Consent Page Error!", e);
+      throw new OAuth2ServerException(e);
     }
   }
 

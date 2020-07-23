@@ -18,6 +18,7 @@ package com.google.googleidentity.servlet;
 
 import com.google.appengine.repackaged.com.google.api.client.http.HttpStatusCodes;
 import com.google.common.base.Preconditions;
+import com.google.googleidentity.oauth2.exception.OAuth2ServerException;
 import com.google.googleidentity.oauth2.util.OAuth2Utils;
 import com.google.googleidentity.user.UserDetails;
 import com.google.googleidentity.user.UserDetailsService;
@@ -69,7 +70,7 @@ public class ChangePasswordServlet extends HttpServlet {
     try {
       displayPage(request, response);
     } catch (TemplateException e) {
-      log.log(Level.INFO, "Error when display change password page", e);
+      throw new OAuth2ServerException("Error when display change password page", e);
     }
   }
 

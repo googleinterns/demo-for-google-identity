@@ -21,6 +21,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.googleidentity.oauth2.client.ClientDetails;
 import com.google.googleidentity.oauth2.client.ClientDetailsService;
+import com.google.googleidentity.oauth2.exception.OAuth2ServerException;
 import com.google.googleidentity.oauth2.util.OAuth2EnumMap;
 import com.google.googleidentity.oauth2.util.OAuth2Enums;
 import com.google.googleidentity.oauth2.util.OAuth2Enums.GrantType;
@@ -75,7 +76,7 @@ public class ChangeSettingServlet extends HttpServlet {
     try {
       displayPage(request, response);
     } catch (TemplateException e) {
-      log.log(Level.INFO, "Error when display  page", e);
+      throw new OAuth2ServerException("Error when display  page", e);
     }
   }
 
