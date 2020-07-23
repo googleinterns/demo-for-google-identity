@@ -25,6 +25,7 @@ import com.google.googleidentity.oauth2.exception.InvalidGrantException.ErrorCod
 import com.google.googleidentity.oauth2.exception.InvalidRequestException;
 import com.google.googleidentity.oauth2.exception.OAuth2Exception;
 import com.google.googleidentity.oauth2.exception.OAuth2ExceptionHandler;
+import com.google.googleidentity.oauth2.exception.OAuth2ServerException;
 import com.google.googleidentity.oauth2.request.OAuth2Request;
 import com.google.googleidentity.oauth2.token.OAuth2AccessToken;
 import com.google.googleidentity.oauth2.token.OAuth2RefreshToken;
@@ -36,6 +37,7 @@ import com.google.googleidentity.oauth2.validator.TokenRevokeEndpointRequestVali
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.Optional;
 import java.util.logging.Logger;
 import javax.servlet.ServletException;
@@ -132,10 +134,7 @@ public class TokenRevokeEndpoint extends HttpServlet {
         if (!oldAccessToken.isPresent()) {
           break;
         }
-        if (!oldAccessToken
-            .get()
-            .getClientId()
-            .equals(request.getRequestAuth().getClientId())) {
+        if (!oldAccessToken.get().getClientId().equals(request.getRequestAuth().getClientId())) {
           throw new InvalidGrantException(ErrorCode.REVOKE_TOKEN_CLIENT_MISMATCH);
         }
         oauth2TokenService.revokeByAccessToken(token);
@@ -145,10 +144,7 @@ public class TokenRevokeEndpoint extends HttpServlet {
         if (!oldRefreshToken.isPresent()) {
           break;
         }
-        if (!oldRefreshToken
-            .get()
-            .getClientId()
-            .equals(request.getRequestAuth().getClientId())) {
+        if (!oldRefreshToken.get().getClientId().equals(request.getRequestAuth().getClientId())) {
           throw new InvalidGrantException(ErrorCode.REVOKE_TOKEN_CLIENT_MISMATCH);
         }
         oauth2TokenService.revokeByRefreshToken(token);

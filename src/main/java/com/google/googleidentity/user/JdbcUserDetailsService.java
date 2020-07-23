@@ -17,6 +17,7 @@
 package com.google.googleidentity.user;
 
 import com.google.common.collect.ImmutableList;
+import com.google.googleidentity.oauth2.exception.OAuth2ServerException;
 import com.google.inject.Inject;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -57,27 +58,27 @@ public class JdbcUserDetailsService implements UserDetailsService {
         return user;
       }
     } catch (SQLException exception) {
-      log.log(Level.INFO, "Get User Error.", exception);
+      throw new OAuth2ServerException(exception);
     } finally {
       if (result != null) {
         try {
           result.close();
         } catch (SQLException exception2) {
-          log.log(Level.INFO, "Close result error.", exception2);
+          throw new OAuth2ServerException(exception2);
         }
       }
       if (statement != null) {
         try {
           statement.close();
-        } catch (SQLException exception2) {
-          log.log(Level.INFO, "Close stmt error.", exception2);
+        } catch (SQLException exception3) {
+          throw new OAuth2ServerException(exception3);
         }
       }
       if (conn != null) {
         try {
           conn.close();
-        } catch (SQLException exception3) {
-          log.log(Level.INFO, "Close conn error.", exception3);
+        } catch (SQLException exception4) {
+          throw new OAuth2ServerException(exception4);
         }
       }
     }
@@ -104,31 +105,30 @@ public class JdbcUserDetailsService implements UserDetailsService {
       conn.commit();
       return count == 1;
     } catch (SQLException exception) {
-      log.log(Level.INFO, "Update User Error.", exception);
       try {
         if (conn != null) {
           conn.rollback();
         }
       } catch (SQLException exception1) {
-        log.log(Level.INFO, "Roll Back Error.", exception1);
+        throw new OAuth2ServerException(exception1);
       }
+      throw new OAuth2ServerException(exception);
     } finally {
       if (statement != null) {
         try {
           statement.close();
-        } catch (SQLException exception2) {
-          log.log(Level.INFO, "Close stmt error.", exception2);
+        } catch (SQLException exception3) {
+          throw new OAuth2ServerException(exception3);
         }
       }
       if (conn != null) {
         try {
           conn.close();
-        } catch (SQLException exception3) {
-          log.log(Level.INFO, "Close conn error.", exception3);
+        } catch (SQLException exception4) {
+          throw new OAuth2ServerException(exception4);
         }
       }
     }
-    return false;
   }
 
   @Override
@@ -155,34 +155,34 @@ public class JdbcUserDetailsService implements UserDetailsService {
         return true;
       }
     } catch (SQLException exception) {
-      log.log(Level.INFO, "Add User Error.", exception);
       try {
         if (conn != null) {
           conn.rollback();
         }
       } catch (SQLException exception1) {
-        log.log(Level.INFO, "Roll Back Error.", exception1);
+        throw new OAuth2ServerException(exception1);
       }
+      throw new OAuth2ServerException(exception);
     } finally {
       if (result != null) {
         try {
           result.close();
         } catch (SQLException exception2) {
-          log.log(Level.INFO, "Close result error.", exception2);
+          throw new OAuth2ServerException(exception2);
         }
       }
       if (statement != null) {
         try {
           statement.close();
-        } catch (SQLException exception2) {
-          log.log(Level.INFO, "Close stmt error.", exception2);
+        } catch (SQLException exception3) {
+          throw new OAuth2ServerException(exception3);
         }
       }
       if (conn != null) {
         try {
           conn.close();
-        } catch (SQLException exception3) {
-          log.log(Level.INFO, "Close conn error.", exception3);
+        } catch (SQLException exception4) {
+          throw new OAuth2ServerException(exception4);
         }
       }
     }
@@ -206,27 +206,27 @@ public class JdbcUserDetailsService implements UserDetailsService {
         return user;
       }
     } catch (SQLException exception) {
-      log.log(Level.INFO, "getUserByEmailOrGoogleAccountId Error.", exception);
+      throw new OAuth2ServerException(exception);
     } finally {
       if (result != null) {
         try {
           result.close();
         } catch (SQLException exception2) {
-          log.log(Level.INFO, "Close result error.", exception2);
+          throw new OAuth2ServerException(exception2);
         }
       }
       if (statement != null) {
         try {
           statement.close();
-        } catch (SQLException exception2) {
-          log.log(Level.INFO, "Close stmt error.", exception2);
+        } catch (SQLException exception3) {
+          throw new OAuth2ServerException(exception3);
         }
       }
       if (conn != null) {
         try {
           conn.close();
-        } catch (SQLException exception3) {
-          log.log(Level.INFO, "Close conn error.", exception3);
+        } catch (SQLException exception4) {
+          throw new OAuth2ServerException(exception4);
         }
       }
     }
@@ -248,27 +248,27 @@ public class JdbcUserDetailsService implements UserDetailsService {
         list.add(buildUserFromJdbcResult(result));
       }
     } catch (SQLException exception) {
-      log.log(Level.INFO, "list Users Error.", exception);
+      throw new OAuth2ServerException(exception);
     } finally {
       if (result != null) {
         try {
           result.close();
         } catch (SQLException exception2) {
-          log.log(Level.INFO, "Close result error.", exception2);
+          throw new OAuth2ServerException(exception2);
         }
       }
       if (statement != null) {
         try {
           statement.close();
-        } catch (SQLException exception2) {
-          log.log(Level.INFO, "Close stmt error.", exception2);
+        } catch (SQLException exception3) {
+          throw new OAuth2ServerException(exception3);
         }
       }
       if (conn != null) {
         try {
           conn.close();
-        } catch (SQLException exception3) {
-          log.log(Level.INFO, "Close conn error.", exception3);
+        } catch (SQLException exception4) {
+          throw new OAuth2ServerException(exception4);
         }
       }
     }
@@ -288,34 +288,34 @@ public class JdbcUserDetailsService implements UserDetailsService {
       statement.execute();
       conn.commit();
     } catch (SQLException exception) {
-      log.log(Level.INFO, "Reset Error.", exception);
       try {
         if (conn != null) {
           conn.rollback();
         }
       } catch (SQLException exception1) {
-        log.log(Level.INFO, "Roll Back Error.", exception1);
+        throw new OAuth2ServerException(exception1);
       }
+      throw new OAuth2ServerException(exception);
     } finally {
       if (result != null) {
         try {
           result.close();
         } catch (SQLException exception2) {
-          log.log(Level.INFO, "Close result error.", exception2);
+          throw new OAuth2ServerException(exception2);
         }
       }
       if (statement != null) {
         try {
           statement.close();
-        } catch (SQLException exception2) {
-          log.log(Level.INFO, "Close stmt error.", exception2);
+        } catch (SQLException exception3) {
+          throw new OAuth2ServerException(exception3);
         }
       }
       if (conn != null) {
         try {
           conn.close();
-        } catch (SQLException exception3) {
-          log.log(Level.INFO, "Close conn error.", exception3);
+        } catch (SQLException exception4) {
+          throw new OAuth2ServerException(exception4);
         }
       }
     }

@@ -17,26 +17,20 @@
 package com.google.googleidentity.oauth2.request;
 
 import com.google.common.annotations.VisibleForTesting;
-import com.google.common.base.Charsets;
-import com.google.common.collect.ImmutableList;
-import com.google.common.hash.Hashing;
-import com.google.common.io.BaseEncoding;
 import com.google.googleidentity.oauth2.client.ClientDetails;
 import com.google.googleidentity.oauth2.client.ClientDetailsService;
+import com.google.googleidentity.oauth2.exception.OAuth2ServerException;
 import com.google.googleidentity.oauth2.exception.InvalidRequestException;
 import com.google.googleidentity.oauth2.exception.InvalidRequestException.ErrorCode;
 import com.google.googleidentity.oauth2.exception.InvalidScopeException;
 import com.google.googleidentity.oauth2.exception.OAuth2Exception;
 import com.google.googleidentity.oauth2.jwt.JwtSigningKeyResolver;
-import com.google.googleidentity.oauth2.request.OAuth2Request;
-import com.google.googleidentity.oauth2.request.RequestHandler;
 import com.google.googleidentity.oauth2.token.OAuth2AccessToken;
 import com.google.googleidentity.oauth2.token.OAuth2TokenService;
 import com.google.googleidentity.oauth2.util.OAuth2ParameterNames;
 import com.google.googleidentity.user.UserDetails;
 import com.google.googleidentity.user.UserDetailsService;
 import com.google.inject.Inject;
-import com.google.inject.Singleton;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.JwtException;
@@ -46,7 +40,6 @@ import java.io.IOException;
 import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
-import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.servlet.http.HttpServletResponse;
@@ -81,7 +74,7 @@ final class JwtAssertionRequestHandler implements RequestHandler {
 
   @Override
   public void handle(HttpServletResponse response, OAuth2Request oauth2Request)
-      throws IOException, OAuth2Exception {
+      throws IOException, OAuth2Exception, OAuth2ServerException {
     Pair<String, String> info =
         verifyAndGetInfoFromJwt(
             oauth2Request.getRequestBody().getAssertion(), new JwtSigningKeyResolver(KEYURL));
@@ -115,8 +108,8 @@ final class JwtAssertionRequestHandler implements RequestHandler {
   }
 
   @VisibleForTesting
-  Pair<String, String> verifyAndGetInfoFromJwt(
-      String assertion, SigningKeyResolverAdapter keys) throws OAuth2Exception {
+  Pair<String, String> verifyAndGetInfoFromJwt(String assertion, SigningKeyResolverAdapter keys)
+      throws OAuth2Exception {
     Jws<Claims> jws;
 
     String email = null;
@@ -139,8 +132,8 @@ final class JwtAssertionRequestHandler implements RequestHandler {
   }
 
   @VisibleForTesting
-  void handleCheckAssertion(
-      HttpServletResponse response, String email, String googleAccountId) throws IOException {
+  void handleCheckAssertion(HttpServletResponse response, String email, String googleAccountId)
+      throws IOException {
     Optional<UserDetails> user =
         userDetailsService.getUserByEmailOrGoogleAccountId(email, googleAccountId);
     JSONObject json = new JSONObject();
@@ -164,7 +157,7 @@ final class JwtAssertionRequestHandler implements RequestHandler {
       String googleAccountId,
       List<String> scopes,
       ClientDetails client)
-      throws IOException, InvalidScopeException {
+      throws IOException, InvalidScopeException, OAuth2ServerException {
     Optional<UserDetails> user =
         userDetailsService.getUserByEmailOrGoogleAccountId(email, googleAccountId);
     if (user.isPresent()) {
@@ -192,7 +185,7 @@ final class JwtAssertionRequestHandler implements RequestHandler {
       String googleAccountId,
       List<String> scopes,
       ClientDetails client)
-      throws IOException, InvalidScopeException {
+      throws IOException, InvalidScopeException, OAuth2ServerException {
     Optional<UserDetails> user =
         userDetailsService.getUserByEmailOrGoogleAccountId(email, googleAccountId);
     if (user.isPresent()) {
@@ -232,6 +225,7 @@ final class JwtAssertionRequestHandler implements RequestHandler {
         .addAllScopes(scopes)
         .setRefreshable(true);
     OAuth2AccessToken token = oauth2TokenService.generateAccessToken(tokenRequestBuilder.build());
+
     JSONObject json = new JSONObject();
 
     json.appendField("token_type", "Bearer");

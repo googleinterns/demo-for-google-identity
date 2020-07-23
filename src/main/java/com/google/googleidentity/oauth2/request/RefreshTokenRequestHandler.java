@@ -19,8 +19,6 @@ package com.google.googleidentity.oauth2.request;
 import com.google.googleidentity.oauth2.exception.InvalidGrantException;
 import com.google.googleidentity.oauth2.exception.InvalidGrantException.ErrorCode;
 import com.google.googleidentity.oauth2.exception.OAuth2Exception;
-import com.google.googleidentity.oauth2.request.OAuth2Request;
-import com.google.googleidentity.oauth2.request.RequestHandler;
 import com.google.googleidentity.oauth2.token.OAuth2AccessToken;
 import com.google.googleidentity.oauth2.token.OAuth2RefreshToken;
 import com.google.googleidentity.oauth2.token.OAuth2TokenService;
@@ -29,6 +27,7 @@ import com.google.inject.Inject;
 import java.io.IOException;
 import java.time.Instant;
 import java.util.Optional;
+import java.util.logging.Logger;
 import javax.servlet.http.HttpServletResponse;
 import net.minidev.json.JSONObject;
 
@@ -36,6 +35,8 @@ import net.minidev.json.JSONObject;
 final class RefreshTokenRequestHandler implements RequestHandler {
 
   private final OAuth2TokenService oauth2TokenService;
+
+  private final Logger log = Logger.getLogger("RefreshTokenRequestHandler");
 
   @Inject
   public RefreshTokenRequestHandler(OAuth2TokenService oauth2TokenService) {

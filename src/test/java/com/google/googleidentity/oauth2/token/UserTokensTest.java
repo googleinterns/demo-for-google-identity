@@ -58,10 +58,10 @@ public class UserTokensTest {
   public void testAddAccessToken_canReadOut() {
     UserTokens user = new UserTokens(USERNAME);
 
-    String tokenValue = UUID.randomUUID().toString();
-    user.addAccessToken(CLIENTID, tokenValue, TEST_ACCESS_TOKEN);
+    user.addAccessToken(CLIENTID, TEST_ACCESS_TOKEN);
 
-    assertThat(user.readAccessToken(CLIENTID, tokenValue)).hasValue(TEST_ACCESS_TOKEN);
+    assertThat(user.readAccessToken(CLIENTID, TEST_ACCESS_TOKEN.getAccessToken()))
+        .hasValue(TEST_ACCESS_TOKEN);
 
     assertThat(user.listAccessTokens(CLIENTID)).containsExactly(TEST_ACCESS_TOKEN);
   }
@@ -81,9 +81,9 @@ public class UserTokensTest {
             .setRefreshToken(tokenString)
             .build();
 
-    user.setRefreshToken(CLIENTID, TEST_REFRESH_TOKEN);
+    user.addRefreshToken(CLIENTID, TEST_REFRESH_TOKEN);
 
-    assertThat(user.getRefreshToken(CLIENTID)).hasValue(TEST_REFRESH_TOKEN);
+    assertThat(user.listRefreshTokens(CLIENTID)).containsExactly(TEST_REFRESH_TOKEN);
 
     assertThat(user.readRefreshToken(CLIENTID, tokenString)).hasValue(TEST_REFRESH_TOKEN);
   }
@@ -103,11 +103,11 @@ public class UserTokensTest {
             .setRefreshToken(tokenString)
             .build();
 
-    user.setRefreshToken(CLIENTID, TEST_REFRESH_TOKEN);
+    user.addRefreshToken(CLIENTID, TEST_REFRESH_TOKEN);
 
     user.revokeUserClientTokens(CLIENTID);
 
-    assertThat(user.getRefreshToken(CLIENTID)).isEmpty();
+    assertThat(user.listRefreshTokens(CLIENTID)).isEmpty();
 
     assertThat(user.isEmpty()).isTrue();
   }
@@ -116,12 +116,10 @@ public class UserTokensTest {
   public void testClearExpiredTokens_tokenRemoved() {
     UserTokens user = new UserTokens(USERNAME);
 
-    String tokenString = UUID.randomUUID().toString();
-
-    user.addAccessToken(CLIENTID, tokenString, TEST_ACCESS_TOKEN);
+    user.addAccessToken(CLIENTID, TEST_ACCESS_TOKEN);
 
     user.clearExpiredTokens();
 
-    assertThat(user.getRefreshToken(CLIENTID)).isEmpty();
+    assertThat(user.listRefreshTokens(CLIENTID)).isEmpty();
   }
 }

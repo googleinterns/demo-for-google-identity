@@ -16,12 +16,16 @@
 
 package com.google.googleidentity.oauth2.token;
 
+import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
 
 import java.time.Instant;
+import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 /** Store user tokens in memory */
@@ -42,25 +46,25 @@ public final class UserTokens {
     }
   }
 
-  public void addAccessToken(String clientID, String tokenValue, OAuth2AccessToken token) {
+  public void addAccessToken(String clientID, OAuth2AccessToken token) {
     if (!clientTokensMap.containsKey(clientID)) {
       clientTokensMap.put(clientID, new ClientTokens(clientID));
     }
-    clientTokensMap.get(clientID).addAccessToken(tokenValue, token);
+    clientTokensMap.get(clientID).addAccessToken(token);
   }
 
-  public void setRefreshToken(String clientID, OAuth2RefreshToken token) {
+  public void addRefreshToken(String clientID, OAuth2RefreshToken token) {
     if (!clientTokensMap.containsKey(clientID)) {
       clientTokensMap.put(clientID, new ClientTokens(clientID));
     }
-    clientTokensMap.get(clientID).setRefreshToken(token);
+    clientTokensMap.get(clientID).addRefreshToken(token);
   }
 
-  public Optional<OAuth2RefreshToken> getRefreshToken(String clientID) {
+  public List<OAuth2RefreshToken> listRefreshTokens(String clientID) {
     if (clientTokensMap.containsKey(clientID)) {
-      return clientTokensMap.get(clientID).getRefreshToken();
+      return clientTokensMap.get(clientID).listRefreshTokens();
     } else {
-      return Optional.empty();
+      return ImmutableList.of();
     }
   }
 
@@ -97,6 +101,41 @@ public final class UserTokens {
     }
   }
 
+  public boolean revokeByAccessToken(OAuth2AccessToken accessToken) {
+    if (Strings.isNullOrEmpty(accessToken.getRefreshToken())) {
+      clientTokensMap
+          .get(accessToken.getClientId())
+          .accessTokenMap
+          .remove(accessToken.getAccessToken());
+      return true;
+    } else {
+      Optional<OAuth2RefreshToken> refreshToken =
+          clientTokensMap
+              .get(accessToken.getClientId())
+              .readRefreshToken(accessToken.getRefreshToken());
+      if (!refreshToken.isPresent()) {
+        return false;
+      }
+      return revokeByRefreshToken(refreshToken.get());
+    }
+  }
+
+  public boolean revokeByRefreshToken(OAuth2RefreshToken refreshToken) {
+    for (String accessToken :
+        clientTokensMap
+            .get(refreshToken.getClientId())
+            .refreshTokenMap
+            .get(refreshToken.getRefreshToken())
+            .accessTokens) {
+      clientTokensMap.get(refreshToken.getClientId()).accessTokenMap.remove(accessToken);
+    }
+    clientTokensMap
+        .get(refreshToken.getClientId())
+        .refreshTokenMap
+        .remove(refreshToken.getRefreshToken());
+    return true;
+  }
+
   public boolean revokeUserClientTokens(String clientID) {
     boolean result = clientTokensMap.containsKey(clientID);
     clientTokensMap.remove(clientID);
@@ -104,52 +143,83 @@ public final class UserTokens {
   }
 
   private static final class ClientTokens {
+
     private final String clientID;
-    private final Map<String, OAuth2AccessToken> tokenMap = new ConcurrentHashMap<>();
-    private Optional<OAuth2RefreshToken> refreshToken = Optional.empty();
+    private final Map<String, OAuth2AccessToken> accessTokenMap = new ConcurrentHashMap<>();
+    private final Map<String, TokenGroup> refreshTokenMap = new ConcurrentHashMap<>();
 
     ClientTokens(String clientID) {
       this.clientID = clientID;
     }
 
     public Optional<OAuth2AccessToken> readAccessToken(String tokenValue) {
-      return Optional.ofNullable(tokenMap.get(tokenValue));
+      return Optional.ofNullable(accessTokenMap.get(tokenValue));
     }
 
-    public void addAccessToken(String tokenValue, OAuth2AccessToken token) {
-      tokenMap.put(tokenValue, token);
+    public void addAccessToken(OAuth2AccessToken token) {
+      accessTokenMap.put(token.getAccessToken(), token);
+      if (!Strings.isNullOrEmpty(token.getRefreshToken())) {
+        refreshTokenMap.get(token.getRefreshToken()).getAccessTokens().add(token.getAccessToken());
+      }
     }
 
-    public Optional<OAuth2RefreshToken> getRefreshToken() {
-      return refreshToken;
-    }
-
-    public void setRefreshToken(OAuth2RefreshToken token) {
-      refreshToken = Optional.ofNullable(token);
+    public void addRefreshToken(OAuth2RefreshToken token) {
+      refreshTokenMap.put(token.getRefreshToken(), new TokenGroup(token));
     }
 
     public Optional<OAuth2RefreshToken> readRefreshToken(String tokenString) {
-      if (refreshToken.isPresent() && refreshToken.get().getRefreshToken().equals(tokenString)) {
-        return refreshToken;
+      if (refreshTokenMap.containsKey(tokenString)) {
+        return Optional.of(refreshTokenMap.get(tokenString).getRefreshToken());
       } else {
         return Optional.empty();
       }
     }
 
     public void clearExpiredTokens() {
-      for (Map.Entry<String, OAuth2AccessToken> token : tokenMap.entrySet()) {
+      for (Map.Entry<String, OAuth2AccessToken> token : accessTokenMap.entrySet()) {
         if (Instant.ofEpochSecond(token.getValue().getExpiredTime()).isBefore(Instant.now())) {
-          tokenMap.remove(token.getKey());
+          if (!Strings.isNullOrEmpty(token.getValue().getRefreshToken())) {
+            refreshTokenMap
+                .get(token.getValue().getRefreshToken())
+                .getAccessTokens()
+                .remove(token.getKey());
+          }
+          accessTokenMap.remove(token.getKey());
         }
       }
     }
 
     public boolean isEmpty() {
-      return tokenMap.isEmpty() && !refreshToken.isPresent();
+      return accessTokenMap.isEmpty() && refreshTokenMap.isEmpty();
+    }
+
+    public List<OAuth2RefreshToken> listRefreshTokens() {
+      List<OAuth2RefreshToken> list = new LinkedList<>();
+      for (TokenGroup tokens : refreshTokenMap.values()) {
+        list.add(tokens.getRefreshToken());
+      }
+      return ImmutableList.copyOf(list);
     }
 
     public List<OAuth2AccessToken> listAccessTokens() {
-      return ImmutableList.copyOf(tokenMap.values());
+      return ImmutableList.copyOf(accessTokenMap.values());
+    }
+
+    private static final class TokenGroup {
+      private final OAuth2RefreshToken refreshToken;
+      private Set<String> accessTokens = new HashSet<>();
+
+      TokenGroup(OAuth2RefreshToken refreshToken) {
+        this.refreshToken = refreshToken;
+      }
+
+      public OAuth2RefreshToken getRefreshToken() {
+        return refreshToken;
+      }
+
+      public Set<String> getAccessTokens() {
+        return accessTokens;
+      }
     }
   }
 }
