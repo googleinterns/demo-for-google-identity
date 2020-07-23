@@ -74,7 +74,7 @@ public class CloudSqlModule extends AbstractModule {
         dropTables(pool);
         createTables(pool);
       } catch (SQLException exception) {
-        throw new OAuth2ServerException(exception);
+        throw new OAuth2ServerException("Init database, error", exception);
       }
     }
     return pool;

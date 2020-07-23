@@ -65,12 +65,9 @@ public class ConsentEndpoint extends HttpServlet {
     try {
       toConsentPage(request, response);
     } catch (TemplateException e) {
-      throw new OAuth2ServerException(e);
+      throw new OAuth2ServerException("Display consent page error", e);
     }
   }
-
-  protected void doPost(HttpServletRequest request, HttpServletResponse response)
-      throws ServletException, IOException {}
 
   private void toConsentPage(HttpServletRequest request, HttpServletResponse response)
       throws IOException, TemplateException {

@@ -16,6 +16,7 @@
 
 package com.google.googleidentity.filter;
 
+import com.google.googleidentity.oauth2.exception.OAuth2ServerException;
 import com.google.googleidentity.oauth2.util.OAuth2Utils;
 import com.google.googleidentity.user.UserSession;
 import com.google.inject.Singleton;
@@ -61,7 +62,7 @@ public class ClientLoginFilter implements Filter {
       try {
         userSession.setOlduri(fetchOldUri(httpRequest));
       } catch (URISyntaxException e) {
-        log.log(Level.INFO, "URI Error!", e);
+        throw new OAuth2ServerException( "Fetch old uri error!", e);
       }
       OAuth2Utils.setUserSession(httpRequest, userSession);
       httpResponse.sendRedirect("/login");

@@ -74,7 +74,7 @@ public final class UserAuthenticationFilter implements Filter {
       try {
         userSession.setOlduri(fetchOldUri(httpRequest));
       } catch (URISyntaxException e) {
-        throw new OAuth2ServerException(e);
+        throw new OAuth2ServerException("fetch old uri error!", e);
       }
       OAuth2Utils.setUserSession(httpRequest, userSession);
       httpResponse.sendRedirect("/login");
