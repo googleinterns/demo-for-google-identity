@@ -16,6 +16,7 @@
 
 package com.google.googleidentity.oauth2.jwt;
 
+import com.google.googleidentity.oauth2.exception.OAuth2ServerException;
 import com.nimbusds.jose.jwk.JWK;
 import com.nimbusds.jose.jwk.KeyConverter;
 import com.nimbusds.jose.util.JSONObjectUtils;
@@ -65,7 +66,7 @@ public class JwtSigningKeyResolver extends SigningKeyResolverAdapter {
         keyMap.put(key.getKeyID(), keyList.get(i));
       }
     } catch (IOException | ParseException exception) {
-      log.info("Jwt Key Error!");
+      throw new OAuth2ServerException(exception);
     }
   }
 

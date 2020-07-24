@@ -17,6 +17,7 @@
 package com.google.googleidentity.servlet;
 
 import com.google.common.base.Preconditions;
+import com.google.googleidentity.oauth2.exception.OAuth2ServerException;
 import com.google.googleidentity.oauth2.token.OAuth2TokenService;
 import com.google.googleidentity.oauth2.util.OAuth2Utils;
 import com.google.googleidentity.user.UserDetails;
@@ -68,17 +69,7 @@ public final class UnlinkServlet extends HttpServlet {
     try {
       displayPage(request, response);
     } catch (TemplateException e) {
-      log.log(Level.INFO, "display Page Error!", e);
-    }
-  }
-
-  protected void doPost(HttpServletRequest request, HttpServletResponse response)
-      throws ServletException, IOException {
-
-    try {
-      displayPage(request, response);
-    } catch (TemplateException e) {
-      log.log(Level.INFO, "display Page Error!", e);
+      throw new OAuth2ServerException("display Unlink Page Error!", e);
     }
   }
 

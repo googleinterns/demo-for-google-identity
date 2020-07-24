@@ -23,4 +23,8 @@ public class OAuth2ServerException extends RuntimeException{
   public OAuth2ServerException(Exception e){
     super(e);
   }
+
+  public OAuth2ServerException(String info, Exception e){
+    super(info, e);
+  }
 }

@@ -16,6 +16,7 @@
 
 package com.google.googleidentity.mysql;
 
+import com.google.googleidentity.oauth2.exception.OAuth2ServerException;
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 import com.google.inject.Singleton;
@@ -71,14 +72,9 @@ public class CloudSqlModule extends AbstractModule {
     if (("true").equals(System.getenv("CLEAR_TABLES"))) {
       try {
         dropTables(pool);
-      } catch (SQLException exception) {
-        log.log(Level.INFO, "Drop tables error.", exception);
-      }
-
-      try {
         createTables(pool);
       } catch (SQLException exception) {
-        log.log(Level.INFO, "Create tables error.", exception);
+        throw new OAuth2ServerException("Init database, error", exception);
       }
     }
     return pool;

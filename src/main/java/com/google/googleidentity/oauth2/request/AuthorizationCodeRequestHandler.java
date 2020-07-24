@@ -19,6 +19,7 @@ package com.google.googleidentity.oauth2.request;
 import com.google.googleidentity.oauth2.authorizationcode.AuthorizationCodeService;
 import com.google.googleidentity.oauth2.exception.InvalidGrantException;
 import com.google.googleidentity.oauth2.exception.OAuth2Exception;
+import com.google.googleidentity.oauth2.exception.OAuth2ServerException;
 import com.google.googleidentity.oauth2.token.OAuth2AccessToken;
 import com.google.googleidentity.oauth2.token.OAuth2TokenService;
 import com.google.googleidentity.oauth2.util.OAuth2Enums;
@@ -67,7 +68,7 @@ final class AuthorizationCodeRequestHandler implements RequestHandler {
         }
         response.sendRedirect(uriBuilder.build().toString());
       } catch (URISyntaxException e) {
-        log.log(Level.INFO, "Error when parse redirect uri to return auth code!", e);
+        throw new OAuth2ServerException("Error when parse redirect uri to return auth code!", e);
       }
 
     } else if (oauth2Request

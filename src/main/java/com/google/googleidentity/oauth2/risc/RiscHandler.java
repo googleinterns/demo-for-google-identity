@@ -21,6 +21,7 @@ import com.google.common.base.Strings;
 import com.google.common.hash.Hashing;
 import com.google.googleidentity.oauth2.client.ClientDetails;
 import com.google.googleidentity.oauth2.client.ClientDetailsService;
+import com.google.googleidentity.oauth2.exception.OAuth2ServerException;
 import com.google.googleidentity.oauth2.jwt.JwkStore;
 import com.google.googleidentity.oauth2.token.OAuth2AccessToken;
 import com.google.googleidentity.oauth2.token.OAuth2RefreshToken;
@@ -169,12 +170,12 @@ public class RiscHandler {
           int status = response.getStatusLine().getStatusCode();
           successfullySentEvent = status == HttpStatus.SC_ACCEPTED;
         } catch (IOException exception) {
-          log.log(Level.INFO, "Send risc error!", exception);
+          throw new OAuth2ServerException("Send risc error!", exception);
         }
         try {
           Thread.sleep(RETRY_INTERVAL_TIME.toMillis());
         } catch (InterruptedException e) {
-          log.log(Level.INFO, "Thread sleep error when sending risc!", e);
+          throw new OAuth2ServerException("Thread sleep error when sending risc!", e);
         }
       }
     }

@@ -18,6 +18,7 @@ package com.google.googleidentity.oauth2.request;
 
 import com.google.common.base.Strings;
 import com.google.googleidentity.oauth2.exception.OAuth2Exception;
+import com.google.googleidentity.oauth2.exception.OAuth2ServerException;
 import com.google.googleidentity.oauth2.token.OAuth2AccessToken;
 import com.google.googleidentity.oauth2.token.OAuth2TokenService;
 import com.google.googleidentity.oauth2.util.OAuth2ParameterNames;
@@ -55,7 +56,7 @@ final class ImplicitRequestHandler implements RequestHandler {
       }
       response.sendRedirect(uriBuilder.build().toString());
     } catch (URISyntaxException e) {
-      log.log(Level.INFO, "Error when parsing response url for implicit flow.", e);
+      throw new OAuth2ServerException("Error when parsing response url for implicit flow.", e);
     }
   }
 }

@@ -17,6 +17,7 @@
 package com.google.googleidentity.oauth2.token;
 
 import com.google.common.collect.ImmutableList;
+import com.google.googleidentity.oauth2.exception.OAuth2ServerException;
 import com.google.googleidentity.oauth2.request.OAuth2Request;
 import com.google.inject.Singleton;
 
@@ -62,8 +63,7 @@ public class InMemoryOAuth2TokenService implements OAuth2TokenService {
       generator = KeyGenerator.getInstance("AES");
       generator.init(256);
     } catch (NoSuchAlgorithmException e) {
-      log.log(Level.SEVERE, "Error when init Key!", e);
-      return;
+      throw new OAuth2ServerException("Error when init Key!", e);
     }
     aesKey = generator.generateKey();
   }

@@ -16,6 +16,7 @@
 
 package com.google.googleidentity.servlet;
 
+import com.google.googleidentity.oauth2.exception.OAuth2ServerException;
 import com.google.inject.Singleton;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
@@ -57,17 +58,7 @@ public final class LoginServlet extends HttpServlet {
     try {
       displayLoginPage(response);
     } catch (TemplateException e) {
-      log.log(Level.INFO, "Error when display login page", e);
-    }
-  }
-
-  protected void doPost(HttpServletRequest request, HttpServletResponse response)
-      throws ServletException, IOException {
-
-    try {
-      displayLoginPage(response);
-    } catch (TemplateException e) {
-      log.log(Level.INFO, "Error when display login page", e);
+      throw new OAuth2ServerException( "Error when display login page", e);
     }
   }
 
