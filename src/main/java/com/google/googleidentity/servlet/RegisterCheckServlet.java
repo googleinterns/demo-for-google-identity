@@ -17,6 +17,7 @@
 package com.google.googleidentity.servlet;
 
 import com.google.appengine.repackaged.com.google.api.client.http.HttpStatusCodes;
+import com.google.common.base.Strings;
 import com.google.googleidentity.oauth2.util.OAuth2Utils;
 import com.google.googleidentity.user.UserDetails;
 import com.google.googleidentity.user.UserDetailsService;
@@ -47,6 +48,7 @@ public class RegisterCheckServlet extends HttpServlet {
       throws ServletException, IOException {
     String username = request.getParameter("username");
     String password = request.getParameter("password");
+    String email = request.getParameter("email");
 
     response.setContentType("text/html;charset=utf-8");
 
@@ -54,12 +56,15 @@ public class RegisterCheckServlet extends HttpServlet {
       response.setStatus(HttpStatusCodes.STATUS_CODE_UNAUTHORIZED);
     } else {
       userDetailsService.addUser(
-          UserDetails.newBuilder().setUsername(username).setPassword(password).build());
+          UserDetails.newBuilder()
+              .setUsername(username)
+              .setPassword(password)
+              .setEmail(email)
+              .build());
 
       response.setStatus(HttpStatusCodes.STATUS_CODE_OK);
     }
     response.getWriter().println("/login");
     response.getWriter().flush();
   }
-
 }
