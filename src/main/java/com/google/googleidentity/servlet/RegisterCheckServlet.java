@@ -50,17 +50,26 @@ public class RegisterCheckServlet extends HttpServlet {
     String password = request.getParameter("password");
     String email = request.getParameter("email");
 
+    if (Strings.isNullOrEmpty(username)
+        || Strings.isNullOrEmpty(password)
+        || Strings.isNullOrEmpty(email)) {
+      // This will not happen from the front end interface.
+      // Just avoid direct request error.
+      return;
+    }
+
     response.setContentType("text/html;charset=utf-8");
 
-    if (userDetailsService.getUserByName(username).isPresent()) {
+    if (userDetailsService.getUserByName(username).isPresent()
+        || userDetailsService.getUserByEmailOrGoogleAccountId(email, null).isPresent()) {
       response.setStatus(HttpStatusCodes.STATUS_CODE_UNAUTHORIZED);
     } else {
-      UserDetails.Builder builder =
-          UserDetails.newBuilder().setUsername(username).setPassword(password);
-      if (!Strings.isNullOrEmpty(email)) {
-        builder.setEmail(email);
-      }
-      userDetailsService.addUser(builder.build());
+      userDetailsService.addUser(
+          UserDetails.newBuilder()
+              .setUsername(username)
+              .setPassword(password)
+              .setEmail(email)
+              .build());
 
       response.setStatus(HttpStatusCodes.STATUS_CODE_OK);
     }

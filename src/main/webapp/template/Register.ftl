@@ -70,19 +70,31 @@ limitations under the License.
         var password = $("#password").val();
         var cpassword = $("#cpassword").val();
         var email = $("#email").val();
+        if (username == "") {
+          alert("Username can not be empty!");
+          window.location.reload();
+          return;
+        }
+        if (password == "") {
+          alert("Password can not be empty!");
+          window.location.reload();
+          return;
+        }
         if (password != cpassword) {
           alert("Passwords are not same!");
           window.location.reload();
           return;
         }
-        if (email != "") {
-          if (/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(email)){
-          }
-          else {
+        if (email == "") {
+          alert("Email can not be empty!");
+          window.location.reload();
+          return;
+        }
+        if (/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(email)){
+        } else {
             alert("Invalid email!");
             window.location.reload();
             return;
-           }
         }
 
         password = CryptoJS.SHA256(password);
@@ -95,7 +107,7 @@ limitations under the License.
                 window.location.href = data;
             },
             error : function(xhr){
-                alert("Username exists!");
+                alert("Username or Email exists!");
                 window.location.reload();
             }
         });
