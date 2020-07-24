@@ -106,8 +106,8 @@ limitations under the License.
             success : function(data){
                 window.location.href = data;
             },
-            error : function(xhr){
-                alert("Username or Email exists!");
+            error : function(xhr, status, error){
+                alert(xhr.responseText);
                 window.location.reload();
             }
         });
