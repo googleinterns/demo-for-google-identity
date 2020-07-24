@@ -37,11 +37,15 @@ limitations under the License.
             </div>
             <div class="form-group" style="margin-bottom: 10px">
               <label id="login_label1" style="text-align: left">Password</label><br>
-              <input class="form-control" name="lname" id="password" type="password" placeholder="Password">
+              <input class="form-control" id="password" type="password" placeholder="Password">
             </div>
             <div class="form-group" style="margin-bottom: 10px">
               <label id="login_label2" style="text-align: left">Confirm Password</label><br>
-              <input class="form-control" name="rname" id="cpassword" type="password" placeholder="Confirm Password">
+              <input class="form-control"id="cpassword" type="password" placeholder="Confirm Password">
+            </div>
+            <div class="form-group" style="margin-bottom: 10px">
+              <label id="login_label3" style="text-align: left">Email</label><br>
+              <input class="form-control"  id="email" type="text" placeholder="Email">
             </div>
             <div class="row" style="margin-top: 7%">
               <div class="col-6">
@@ -65,22 +69,45 @@ limitations under the License.
         var username = $("#username").val();
         var password = $("#password").val();
         var cpassword = $("#cpassword").val();
+        var email = $("#email").val();
+        if (username == "") {
+          alert("Username can not be empty!");
+          window.location.reload();
+          return;
+        }
+        if (password == "") {
+          alert("Password can not be empty!");
+          window.location.reload();
+          return;
+        }
         if (password != cpassword) {
           alert("Passwords are not same!");
           window.location.reload();
           return;
         }
+        if (email == "") {
+          alert("Email can not be empty!");
+          window.location.reload();
+          return;
+        }
+        if (/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(email)){
+        } else {
+            alert("Invalid email!");
+            window.location.reload();
+            return;
+        }
+
         password = CryptoJS.SHA256(password);
         var url = '/register_check';
         $.ajax({
             url : "/register_check",
             type : "POST",
-            data : "username=" + username + "&password=" +password,
+            data : "username=" + username + "&password=" +password + "&email=" + email,
             success : function(data){
                 window.location.href = data;
             },
-            error : function(xhr){
-                alert("Username exists!");
+            error : function(xhr, status, error){
+                alert(xhr.responseText);
                 window.location.reload();
             }
         });

@@ -17,6 +17,7 @@
 package com.google.googleidentity.servlet;
 
 import com.google.appengine.repackaged.com.google.api.client.http.HttpStatusCodes;
+import com.google.common.base.Strings;
 import com.google.googleidentity.oauth2.util.OAuth2Utils;
 import com.google.googleidentity.user.UserDetails;
 import com.google.googleidentity.user.UserDetailsService;
@@ -29,6 +30,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.apache.http.HttpStatus;
 
 // User register check page
 @Singleton
@@ -47,19 +49,33 @@ public class RegisterCheckServlet extends HttpServlet {
       throws ServletException, IOException {
     String username = request.getParameter("username");
     String password = request.getParameter("password");
+    String email = request.getParameter("email");
 
-    response.setContentType("text/html;charset=utf-8");
-
-    if (userDetailsService.getUserByName(username).isPresent()) {
-      response.setStatus(HttpStatusCodes.STATUS_CODE_UNAUTHORIZED);
+    if (Strings.isNullOrEmpty(username)) {
+      response.setStatus(HttpStatus.SC_BAD_REQUEST);
+      response.getWriter().println("Username missing!");
+    } else if (Strings.isNullOrEmpty(password)) {
+      response.setStatus(HttpStatus.SC_BAD_REQUEST);
+      response.getWriter().println("Password missing!");
+    } else if (Strings.isNullOrEmpty(email)) {
+      response.setStatus(HttpStatus.SC_BAD_REQUEST);
+      response.getWriter().println("Email missing!");
+    } else if (userDetailsService.getUserByName(username).isPresent()) {
+      response.setStatus((HttpStatus.SC_BAD_REQUEST));
+      response.getWriter().println("Username exists!");
+    } else if (userDetailsService.getUserByEmailOrGoogleAccountId(email, null).isPresent()) {
+      response.setStatus((HttpStatus.SC_BAD_REQUEST));
+      response.getWriter().println("Email exists!");
     } else {
       userDetailsService.addUser(
-          UserDetails.newBuilder().setUsername(username).setPassword(password).build());
-
+          UserDetails.newBuilder()
+              .setUsername(username)
+              .setPassword(password)
+              .setEmail(email)
+              .build());
       response.setStatus(HttpStatusCodes.STATUS_CODE_OK);
+      response.getWriter().println("/login");
     }
-    response.getWriter().println("/login");
     response.getWriter().flush();
   }
-
 }
