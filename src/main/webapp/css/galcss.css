@@ -333,7 +333,6 @@ form input[type='text']:hover, form input[type='password']:hover, form textarea:
     padding-top:15px;
     font-size:95%;
 }
-/**MARGIN 5*/
  .margin5{
     margin:5px !important
 }
@@ -480,7 +479,6 @@ form input[type='text']:hover, form input[type='password']:hover, form textarea:
      background: #EEF9EE;
      padding-left: 90px;
 }
-/*End header css*/
 body {
     background:#f9f9f9;
 }
