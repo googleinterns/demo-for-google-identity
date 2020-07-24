@@ -55,12 +55,12 @@ public class RegisterCheckServlet extends HttpServlet {
     if (userDetailsService.getUserByName(username).isPresent()) {
       response.setStatus(HttpStatusCodes.STATUS_CODE_UNAUTHORIZED);
     } else {
-      userDetailsService.addUser(
-          UserDetails.newBuilder()
-              .setUsername(username)
-              .setPassword(password)
-              .setEmail(email)
-              .build());
+      UserDetails.Builder builder =
+          UserDetails.newBuilder().setUsername(username).setPassword(password);
+      if (!Strings.isNullOrEmpty(email)) {
+        builder.setEmail(email);
+      }
+      userDetailsService.addUser(builder.build());
 
       response.setStatus(HttpStatusCodes.STATUS_CODE_OK);
     }
