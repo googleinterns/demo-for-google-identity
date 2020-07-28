@@ -24,4 +24,3 @@ limitations under the License.
 <meta name="format" content="image/jpeg">
 <meta name="language" content="en">
 <meta http-equiv="X-UA-Compatible" content="IE=Edge"/>
-<link rel='shortcut icon' href='http://biostat.ufl.edu/wp-content/themes/UFandShands/favicon-uf.ico' />
