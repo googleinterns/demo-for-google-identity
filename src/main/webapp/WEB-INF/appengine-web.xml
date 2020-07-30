@@ -9,6 +9,7 @@
         <env-var name="DB_USER" value="root" />
         <env-var name="DB_PASS" value="123456789" />
         <env-var name="DB_NAME" value="oauth2demo" />
+        <env-var name="JWT_AUD" value="567474276809-9j01no46fm5j26e0tk4sme835gd129df.apps.googleusercontent.com" />
         <env-var name="USE_CLOUD_SQL" value="false" />
         <env-var name="CLEAR_TABLES" value="true" />
     </env-variables>
