@@ -237,7 +237,7 @@ public class JwtAssertionHandlerTest {
     String assertion =
         Jwts.builder()
             .setIssuer("https://accounts.google.com")
-            .setAudience("567474276809-9j01no46fm5j26e0tk4sme835gd129df.apps.googleusercontent.com")
+            .setAudience("aud")
             .setIssuedAt(Date.from(Instant.now()))
             .setExpiration(Date.from(Instant.now().plusSeconds(600)))
             .claim("name", "a bc")

@@ -55,7 +55,7 @@ final class JwtAssertionRequestHandler implements RequestHandler {
   private static final String EMAIL = "email";
   private static final String SUB = "sub";
   private static final String AUD =
-      "567474276809-9j01no46fm5j26e0tk4sme835gd129df.apps.googleusercontent.com";
+      System.getenv("JWT_AUD") == null ? "aud" : System.getenv("JWT_AUD");
   private final OAuth2TokenService oauth2TokenService;
   private final UserDetailsService userDetailsService;
 
